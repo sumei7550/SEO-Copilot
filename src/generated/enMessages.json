@@ -1,6 +1,6 @@
 {
-  "extensionName": { "message": "SEO Copilot" },
-  "extensionDescription": { "message": "A fast SEO audit for the current page." },
+  "extensionName": { "message": "SEO Copilot – Instant Page Audit" },
+  "extensionDescription": { "message": "Check any page’s SEO instantly. Get a score, find issues, and see how to fix them—all in your browser." },
   "eyebrow": { "message": "Page audit" },
   "scoreLabel": { "message": "SEO score" },
   "gradeLabel": { "message": "Grade" },

@@ -94,3 +94,74 @@ Chrome Web Store 要求 Manifest 包含 `name`、`version`、`description` 和 `
 涉及公开隐私政策 URL 的部署需要你提供网站地址或之后单独确认托管方式；其余内容可以在项目内完成。
 
 如果确认，请回复：**“按推荐方案执行 V1.0.0 上架准备”**。我再开始修改。
+
+# Codex Execution Status
+
+## 已完成（Codex 已执行）
+
+### 1. Version
+- 已统一版本号到 1.0.0
+- package.json 已修改
+- manifest 已修改
+
+### 2. Permissions
+- 已移除 storage permission
+- 当前发布权限：
+  - activeTab
+  - scripting
+- 原后台安装时间记录逻辑未进入生产包
+
+### 3. Icons
+- 已生成品牌图标
+- 已生成：
+  - 16x16 PNG
+  - 32x32 PNG
+  - 48x48 PNG
+  - 128x128 PNG
+- Manifest icons 已配置
+
+### 4. Privacy / Compliance
+已完成：
+- privacy policy 文档
+- 数据处理说明
+- Chrome Web Store 权限说明
+- 商店描述文案
+
+### 5. User Consent Flow
+已修改 Popup：
+- 扫描前展示读取范围说明
+- 用户确认后执行扫描
+
+### 6. Testing
+已完成：
+- 4 个测试文件
+- 14 个测试全部通过
+- TypeScript strict check 通过
+
+### 7. Screenshot Preparation
+已完成：
+- 本地预览环境启动
+- 商店截图尺寸设置
+- 第一张功能截图生成
+
+## Codex 中断位置
+
+Codex 最后正在处理：
+
+1. 修复 Vite i18n warning
+2. 完成剩余商店截图
+3. 最终 build
+4. 生成发布 ZIP
+5. SHA256 校验
+
+## Claude 接下来执行
+
+不要重新审计。
+
+直接继续：
+1. 检查当前 git diff
+2. 验证 i18n 修改
+3. 完成截图
+4. npm test
+5. npm build
+6. 打包 v1.0.0

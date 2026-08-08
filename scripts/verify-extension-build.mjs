@@ -42,4 +42,11 @@ for (const locale of localeNames) {
   }
 }
 
+// Remove the icon master source file — it is not a runtime asset.
+const masterIcon = resolve(root, 'dist/icons/icon-master.png');
+if (existsSync(masterIcon)) {
+  const { rmSync } = await import('node:fs');
+  rmSync(masterIcon);
+}
+
 console.log('Extension build verified: V1.0.0, minimal permissions, self-contained content script, and valid Manifest V3 manifest.');

@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(node -e \"const r=require\\('./tmp/regression-results.json'\\); for \\(const s of r\\) { console.log\\(s.id, s.name.padEnd\\(20\\), s.ok?'OK':'FAIL', s.ok?\\(s.status+' '+s.htmlBytes+'B '+s.elapsed+'ms  title=\\\\\"'+\\(s.title||''\\).slice\\(0,40\\)+'\\\\\"  h1='+s.h1Count+' schemas='+s.jsonLd.count+'/'+s.jsonLd.invalid+' words='+s.wordCount+' score='+s.score\\):s.error\\);}\")",
+      "Bash(node tmp/regression-retry.mjs)",
+      "Bash(echo \"EXIT=$?\")",
+      "Bash(node tmp/regression-curl.mjs)",
+      "Bash(node -e ' *)",
+      "Bash(unzip -l seo-copilot-v1.0.0.zip)",
+      "Bash(python -c \"s='Check any page\\\\'s SEO instantly. Get a score, find issues, and see how to fix them—all in your browser.'; print\\(len\\(s\\),'chars'\\)\")",
+      "Bash(node -e \"console.log\\('Check any page\\\\'s SEO instantly. Get a score, find issues, and see how to fix them\\\\u2014all in your browser.'.length,'chars'\\)\")",
+      "Bash(npm test *)"
+    ]
+  }
+}

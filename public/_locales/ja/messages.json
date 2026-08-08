@@ -1,9 +1,9 @@
 {
   "extensionName": {
-    "message": "SEO Copilot"
+    "message": "SEO Copilot – Instant Page Audit"
   },
   "extensionDescription": {
-    "message": "現在のページをすばやくSEO監査します。"
+    "message": "任意のページをすぐにSEO診断。スコア確認・問題発見・修正方法確認がすべてブラウザ内で完結。"
   },
   "eyebrow": {
     "message": "ページ監査"
