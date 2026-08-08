@@ -1,5 +1,5 @@
 {
-  "extensionName": { "message": "SEO Copilot – 即时页面评测" },
+  "extensionName": { "message": "SEO Copilot – SEO分析工具" },
   "extensionDescription": { "message": "即时检测任意页面的 SEO，获取评分，发现问题，查看改善建议，全部在浏览器本地完成。" },
   "eyebrow": { "message": "页面审计" },
   "scoreLabel": { "message": "SEO 得分" },

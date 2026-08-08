@@ -10,7 +10,9 @@
       "Bash(unzip -l seo-copilot-v1.0.0.zip)",
       "Bash(python -c \"s='Check any page\\\\'s SEO instantly. Get a score, find issues, and see how to fix them—all in your browser.'; print\\(len\\(s\\),'chars'\\)\")",
       "Bash(node -e \"console.log\\('Check any page\\\\'s SEO instantly. Get a score, find issues, and see how to fix them\\\\u2014all in your browser.'.length,'chars'\\)\")",
-      "Bash(npm test *)"
+      "Bash(npm test *)",
+      "Bash(python -c \"from PIL import Image; print\\('PIL ok', Image.__version__\\)\")",
+      "Bash(node build-screenshots.mjs)"
     ]
   }
 }
