@@ -1,1 +1,268 @@
-{"extensionName":{"message":"SEO Copilot"},"extensionDescription":{"message":"現在のページをすばやくSEO監査します。"},"eyebrow":{"message":"ページ監査"},"scoreLabel":{"message":"SEOスコア"},"issuesLabel":{"message":"問題"},"reportTitle":{"message":"SEOレポート"},"noIssues":{"message":"問題は見つかりませんでした。"},"scanning":{"message":"ページをスキャン中…"},"scanUnavailable":{"message":"このページはスキャンできません。通常のHTTPまたはHTTPSページで再試行してください。"},"retry":{"message":"再試行"},"footer":{"message":"SEO Copilot MVP"},"severityError":{"message":"エラー"},"severityWarning":{"message":"警告"},"severityInfo":{"message":"情報"},"categoryTitle":{"message":"タイトル"},"categoryMeta":{"message":"メタ"},"categoryHeading":{"message":"見出し"},"categoryImages":{"message":"画像"},"categoryTechnical":{"message":"技術"},"categoryUrl":{"message":"URL"},"issueTitleMissing":{"message":"タイトルがありません。"},"fixTitleMissing":{"message":"30〜60文字の説明的なタイトルを追加してください。"},"issueTitleShort":{"message":"タイトルが短すぎます。"},"issueTitleLong":{"message":"タイトルが長すぎます。"},"fixTitleLength":{"message":"タイトルを30〜60文字にしてください。"},"issueMetaMissing":{"message":"メタディスクリプションがありません。"},"fixMetaMissing":{"message":"120〜160文字の説明を追加してください。"},"issueMetaLength":{"message":"メタディスクリプションの長さが推奨範囲外です。"},"fixMetaLength":{"message":"説明を120〜160文字に調整してください。"},"issueH1Missing":{"message":"H1がありません。"},"fixH1Missing":{"message":"ページの主題を表すH1を追加してください。"},"issueH1Multiple":{"message":"H1が複数あります。"},"fixH1Multiple":{"message":"主H1を1つにし、セクションにはH2を使ってください。"},"issueImageAlt":{"message":"altのない画像があります。"},"fixImageAlt":{"message":"意味のある画像に簡潔なaltを追加してください。"},"issueUrlInvalid":{"message":"URLが無効です。"},"fixUrlInvalid":{"message":"有効なHTTPまたはHTTPS URLを使用してください。"},"issueCanonicalMissing":{"message":"canonicalリンクがありません。"},"fixCanonicalMissing":{"message":"優先URLを指すcanonicalを追加してください。"},"issueSchemaMissing":{"message":"構造化データがありません。"},"fixSchemaMissing":{"message":"適切なJSON-LDを追加してください。"},"issueRobotsMissing":{"message":"robotsメタがありません。"},"fixRobotsMissing":{"message":"必要に応じてrobotsディレクティブを追加してください。"}}
+{
+  "extensionName": {
+    "message": "SEO Copilot"
+  },
+  "extensionDescription": {
+    "message": "現在のページをすばやくSEO監査します。"
+  },
+  "eyebrow": {
+    "message": "ページ監査"
+  },
+  "scoreLabel": {
+    "message": "SEOスコア"
+  },
+  "issuesLabel": {
+    "message": "問題"
+  },
+  "reportTitle": {
+    "message": "SEOレポート"
+  },
+  "noIssues": {
+    "message": "問題は見つかりませんでした。"
+  },
+  "scanning": {
+    "message": "ページをスキャン中…"
+  },
+  "scanUnavailable": {
+    "message": "このページはスキャンできません。通常のHTTPまたはHTTPSページで再試行してください。"
+  },
+  "retry": {
+    "message": "再試行"
+  },
+  "footer": {
+    "message": "SEO Copilot V1.0.0"
+  },
+  "severityError": {
+    "message": "エラー"
+  },
+  "severityWarning": {
+    "message": "警告"
+  },
+  "severityInfo": {
+    "message": "情報"
+  },
+  "categoryTitle": {
+    "message": "タイトル"
+  },
+  "categoryMeta": {
+    "message": "メタ"
+  },
+  "categoryHeading": {
+    "message": "見出し"
+  },
+  "categoryImages": {
+    "message": "画像"
+  },
+  "categoryTechnical": {
+    "message": "技術"
+  },
+  "categoryUrl": {
+    "message": "URL"
+  },
+  "issueTitleMissing": {
+    "message": "タイトルがありません。"
+  },
+  "fixTitleMissing": {
+    "message": "30〜60文字の説明的なタイトルを追加してください。"
+  },
+  "issueTitleShort": {
+    "message": "タイトルが短すぎます。"
+  },
+  "issueTitleLong": {
+    "message": "タイトルが長すぎます。"
+  },
+  "fixTitleLength": {
+    "message": "タイトルを30〜60文字にしてください。"
+  },
+  "issueMetaMissing": {
+    "message": "メタディスクリプションがありません。"
+  },
+  "fixMetaMissing": {
+    "message": "120〜160文字の説明を追加してください。"
+  },
+  "issueMetaLength": {
+    "message": "メタディスクリプションの長さが推奨範囲外です。"
+  },
+  "fixMetaLength": {
+    "message": "説明を120〜160文字に調整してください。"
+  },
+  "issueH1Missing": {
+    "message": "H1がありません。"
+  },
+  "fixH1Missing": {
+    "message": "ページの主題を表すH1を追加してください。"
+  },
+  "issueH1Multiple": {
+    "message": "H1が複数あります。"
+  },
+  "fixH1Multiple": {
+    "message": "主H1を1つにし、セクションにはH2を使ってください。"
+  },
+  "issueImageAlt": {
+    "message": "altのない画像があります。"
+  },
+  "fixImageAlt": {
+    "message": "意味のある画像に簡潔なaltを追加してください。"
+  },
+  "issueUrlInvalid": {
+    "message": "URLが無効です。"
+  },
+  "fixUrlInvalid": {
+    "message": "有効なHTTPまたはHTTPS URLを使用してください。"
+  },
+  "issueCanonicalMissing": {
+    "message": "canonicalリンクがありません。"
+  },
+  "fixCanonicalMissing": {
+    "message": "優先URLを指すcanonicalを追加してください。"
+  },
+  "issueSchemaMissing": {
+    "message": "構造化データがありません。"
+  },
+  "fixSchemaMissing": {
+    "message": "適切なJSON-LDを追加してください。"
+  },
+  "issueRobotsMissing": {
+    "message": "robotsメタがありません。"
+  },
+  "fixRobotsMissing": {
+    "message": "必要に応じてrobotsディレクティブを追加してください。"
+  },
+  "gradeLabel": {
+    "message": "評価"
+  },
+  "issuesFound": {
+    "message": "$COUNT$ 件の問題",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "categoryScores": {
+    "message": "カテゴリ別スコア"
+  },
+  "viewReport": {
+    "message": "レポートを表示"
+  },
+  "hideReport": {
+    "message": "レポートを閉じる"
+  },
+  "impactLabel": {
+    "message": "重要な理由"
+  },
+  "solutionLabel": {
+    "message": "修正方法"
+  },
+  "points": {
+    "message": "点"
+  },
+  "severityCritical": {
+    "message": "重大"
+  },
+  "gradeExcellent": {
+    "message": "優秀"
+  },
+  "gradeGood": {
+    "message": "良好"
+  },
+  "gradeNeedsImprovement": {
+    "message": "改善が必要"
+  },
+  "gradePoor": {
+    "message": "不良"
+  },
+  "categoryContent": {
+    "message": "コンテンツ"
+  },
+  "impactTitle": {
+    "message": "タイトルは検索エンジンと訪問者がページの主題を理解する助けになります。"
+  },
+  "impactMeta": {
+    "message": "有用な説明は検索結果の理解とクリック率を改善します。"
+  },
+  "impactHeading": {
+    "message": "論理的な見出し構造は読みやすさと主題の明確さを高めます。"
+  },
+  "impactImages": {
+    "message": "最適化された画像はアクセシビリティ、発見性、表示速度を改善します。"
+  },
+  "impactUrl": {
+    "message": "短く読みやすいURLは利用者とクローラーが理解しやすくなります。"
+  },
+  "impactTechnical": {
+    "message": "技術的シグナルは優先ページの解釈とインデックスを助けます。"
+  },
+  "impactContent": {
+    "message": "十分な可視コンテンツはページ評価に必要な文脈を提供します。"
+  },
+  "issueTitleDuplicate": {
+    "message": "文書に複数のtitle要素があります。"
+  },
+  "fixTitleDuplicate": {
+    "message": "head内のtitle要素を1つだけにしてください。"
+  },
+  "issueHeadingStructure": {
+    "message": "見出し階層が飛んでいます。"
+  },
+  "fixHeadingStructure": {
+    "message": "H1からH3へ飛ばさず順番に見出しを配置してください。"
+  },
+  "issueImageAltRatio": {
+    "message": "半数を超える画像に代替テキストがありません。"
+  },
+  "fixImageAltRatio": {
+    "message": "意味のある画像から優先して代替テキストを追加してください。"
+  },
+  "issueImageLarge": {
+    "message": "大きな画像がページを遅くする可能性があります。"
+  },
+  "fixImageLarge": {
+    "message": "画像を縮小・圧縮し、最新形式で配信してください。"
+  },
+  "issueUrlLong": {
+    "message": "ページURLが100文字を超えています。"
+  },
+  "fixUrlLong": {
+    "message": "説明的な語を残しながらパスを短くしてください。"
+  },
+  "issueUrlStructure": {
+    "message": "URLに複雑なパラメータまたは読みにくい識別子があります。"
+  },
+  "fixUrlStructure": {
+    "message": "安定した読みやすいスラッグを使い、不要なパラメータを削除してください。"
+  },
+  "issueSchemaInvalid": {
+    "message": "1つ以上のJSON-LDブロックに無効なJSONがあります。"
+  },
+  "fixSchemaInvalid": {
+    "message": "JSON-LD構文を検証し、不正なブロックを修正してください。"
+  },
+  "issueContentLowWords": {
+    "message": "ページの単語数が300未満です。"
+  },
+  "fixContentLowWords": {
+    "message": "訪問者の意図に十分答える有用で独自の内容を追加してください。"
+  },
+  "issueContentLowRatio": {
+    "message": "可視テキストの割合が低いです。"
+  },
+  "fixContentLowRatio": {
+    "message": "不要なマークアップを減らし、主要コンテンツを明確にしてください。"
+  },
+  "scanConsentTitle": {
+    "message": "現在のページを分析"
+  },
+  "scanConsentBody": {
+    "message": "SEO CopilotはSEOレポート作成のため、このタブのURL、メタデータ、見出し、画像、構造化データ、可視テキストを読み取ります。"
+  },
+  "scanPrivacyNote": {
+    "message": "分析は端末内で完結します。ページデータは保存、送信、共有されません。"
+  },
+  "scanPage": {
+    "message": "このページを分析"
+  },
+  "privacyPolicy": {
+    "message": "プライバシー"
+  }
+}

@@ -1,6 +1,6 @@
 # SEO Copilot
 
-SEO Copilot 是一个 React + TypeScript + Vite + Tailwind CSS 的 Chrome Manifest V3 SEO Audit Extension MVP。
+SEO Copilot V1.0.0 是一个 React + TypeScript + Vite + Tailwind CSS 的 Chrome Manifest V3 SEO Audit Extension。
 
 ## 安装与开发
 
@@ -19,4 +19,15 @@ npm run build
 3. 点击“加载已解压的扩展程序”，选择项目生成的 `dist` 目录。
 4. 打开任意 HTTP/HTTPS 页面，点击扩展图标查看扫描结果。
 
-扩展检测 Title、Meta Description、H1/H2、图片 ALT、URL、Canonical、Schema 和 Robots，并输出 0–100 分、分类问题与修复建议。所有 Popup 文案来自 Chrome i18n：en、zh_CN、ja、ko、es、de、fr、pt_BR。
+扩展按照最新 SEO Engine 规范检测 20 条规则，覆盖 Title、Meta Description、Heading、图片 ALT/体积、URL、Canonical、Schema 和正文质量，并输出 0–100 分、等级、分类得分、影响说明与修复建议。
+
+所有分析都在当前页面本地完成，不上传页面内容。扩展只申请 `activeTab` 和 `scripting` 权限，Popup 文案通过 Chrome i18n 资源提供：en、zh_CN、ja、ko、es、de、fr、pt_BR。
+
+## 测试
+
+```bash
+npm test
+npm run build
+```
+
+规则、评分和旧标签页按需注入流程均包含自动化测试。

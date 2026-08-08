@@ -11,7 +11,7 @@ export default defineConfig({
     outDir: 'dist',
     emptyOutDir: true,
     rollupOptions: {
-      input: { popup: resolve(root, 'index.html'), background: resolve(root, 'src/background/background.ts'), content: resolve(root, 'src/content/content.ts') },
+      input: { popup: resolve(root, 'index.html'), content: resolve(root, 'src/content/content.ts') },
       output: { entryFileNames: '[name].js', chunkFileNames: 'assets/[name].js', assetFileNames: 'assets/[name][extname]' }
     }
   }

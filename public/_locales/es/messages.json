@@ -1,1 +1,268 @@
-{"extensionName":{"message":"SEO Copilot"},"extensionDescription":{"message":"Auditoría SEO rápida de la página actual."},"eyebrow":{"message":"Auditoría de página"},"scoreLabel":{"message":"Puntuación SEO"},"issuesLabel":{"message":"Problemas"},"reportTitle":{"message":"Informe SEO"},"noIssues":{"message":"No se encontraron problemas."},"scanning":{"message":"Analizando esta página…"},"scanUnavailable":{"message":"No se puede analizar esta página. Abre una página HTTP o HTTPS."},"retry":{"message":"Reintentar"},"footer":{"message":"SEO Copilot MVP"},"severityError":{"message":"Error"},"severityWarning":{"message":"Advertencia"},"severityInfo":{"message":"Información"},"categoryTitle":{"message":"Título"},"categoryMeta":{"message":"Meta"},"categoryHeading":{"message":"Encabezado"},"categoryImages":{"message":"Imágenes"},"categoryTechnical":{"message":"Técnico"},"categoryUrl":{"message":"URL"},"issueTitleMissing":{"message":"La página no tiene título."},"fixTitleMissing":{"message":"Añade un título descriptivo de 30 a 60 caracteres."},"issueTitleShort":{"message":"El título es demasiado corto."},"issueTitleLong":{"message":"El título es demasiado largo."},"fixTitleLength":{"message":"Usa un título de 30 a 60 caracteres."},"issueMetaMissing":{"message":"Falta la meta descripción."},"fixMetaMissing":{"message":"Añade una descripción de 120 a 160 caracteres."},"issueMetaLength":{"message":"La longitud de la meta descripción no es recomendada."},"fixMetaLength":{"message":"Ajusta la descripción a 120–160 caracteres."},"issueH1Missing":{"message":"Falta el encabezado H1."},"fixH1Missing":{"message":"Añade un H1 claro que describa el tema."},"issueH1Multiple":{"message":"Hay varios encabezados H1."},"fixH1Multiple":{"message":"Conserva un H1 principal y usa H2 para secciones."},"issueImageAlt":{"message":"Hay imágenes sin texto alternativo."},"fixImageAlt":{"message":"Añade texto alt conciso a las imágenes informativas."},"issueUrlInvalid":{"message":"La URL no es válida."},"fixUrlInvalid":{"message":"Usa una URL HTTP o HTTPS válida."},"issueCanonicalMissing":{"message":"Falta el enlace canonical."},"fixCanonicalMissing":{"message":"Añade un canonical a la URL preferida."},"issueSchemaMissing":{"message":"No se detectó schema."},"fixSchemaMissing":{"message":"Añade datos estructurados JSON-LD relevantes."},"issueRobotsMissing":{"message":"No se detectó meta robots."},"fixRobotsMissing":{"message":"Añade directivas robots cuando sea necesario."}}
+{
+  "extensionName": {
+    "message": "SEO Copilot"
+  },
+  "extensionDescription": {
+    "message": "Auditoría SEO rápida de la página actual."
+  },
+  "eyebrow": {
+    "message": "Auditoría de página"
+  },
+  "scoreLabel": {
+    "message": "Puntuación SEO"
+  },
+  "issuesLabel": {
+    "message": "Problemas"
+  },
+  "reportTitle": {
+    "message": "Informe SEO"
+  },
+  "noIssues": {
+    "message": "No se encontraron problemas."
+  },
+  "scanning": {
+    "message": "Analizando esta página…"
+  },
+  "scanUnavailable": {
+    "message": "No se puede analizar esta página. Abre una página HTTP o HTTPS."
+  },
+  "retry": {
+    "message": "Reintentar"
+  },
+  "footer": {
+    "message": "SEO Copilot V1.0.0"
+  },
+  "severityError": {
+    "message": "Error"
+  },
+  "severityWarning": {
+    "message": "Advertencia"
+  },
+  "severityInfo": {
+    "message": "Información"
+  },
+  "categoryTitle": {
+    "message": "Título"
+  },
+  "categoryMeta": {
+    "message": "Meta"
+  },
+  "categoryHeading": {
+    "message": "Encabezado"
+  },
+  "categoryImages": {
+    "message": "Imágenes"
+  },
+  "categoryTechnical": {
+    "message": "Técnico"
+  },
+  "categoryUrl": {
+    "message": "URL"
+  },
+  "issueTitleMissing": {
+    "message": "La página no tiene título."
+  },
+  "fixTitleMissing": {
+    "message": "Añade un título descriptivo de 30 a 60 caracteres."
+  },
+  "issueTitleShort": {
+    "message": "El título es demasiado corto."
+  },
+  "issueTitleLong": {
+    "message": "El título es demasiado largo."
+  },
+  "fixTitleLength": {
+    "message": "Usa un título de 30 a 60 caracteres."
+  },
+  "issueMetaMissing": {
+    "message": "Falta la meta descripción."
+  },
+  "fixMetaMissing": {
+    "message": "Añade una descripción de 120 a 160 caracteres."
+  },
+  "issueMetaLength": {
+    "message": "La longitud de la meta descripción no es recomendada."
+  },
+  "fixMetaLength": {
+    "message": "Ajusta la descripción a 120–160 caracteres."
+  },
+  "issueH1Missing": {
+    "message": "Falta el encabezado H1."
+  },
+  "fixH1Missing": {
+    "message": "Añade un H1 claro que describa el tema."
+  },
+  "issueH1Multiple": {
+    "message": "Hay varios encabezados H1."
+  },
+  "fixH1Multiple": {
+    "message": "Conserva un H1 principal y usa H2 para secciones."
+  },
+  "issueImageAlt": {
+    "message": "Hay imágenes sin texto alternativo."
+  },
+  "fixImageAlt": {
+    "message": "Añade texto alt conciso a las imágenes informativas."
+  },
+  "issueUrlInvalid": {
+    "message": "La URL no es válida."
+  },
+  "fixUrlInvalid": {
+    "message": "Usa una URL HTTP o HTTPS válida."
+  },
+  "issueCanonicalMissing": {
+    "message": "Falta el enlace canonical."
+  },
+  "fixCanonicalMissing": {
+    "message": "Añade un canonical a la URL preferida."
+  },
+  "issueSchemaMissing": {
+    "message": "No se detectó schema."
+  },
+  "fixSchemaMissing": {
+    "message": "Añade datos estructurados JSON-LD relevantes."
+  },
+  "issueRobotsMissing": {
+    "message": "No se detectó meta robots."
+  },
+  "fixRobotsMissing": {
+    "message": "Añade directivas robots cuando sea necesario."
+  },
+  "gradeLabel": {
+    "message": "Calificación"
+  },
+  "issuesFound": {
+    "message": "$COUNT$ problemas encontrados",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "categoryScores": {
+    "message": "Puntuaciones por categoría"
+  },
+  "viewReport": {
+    "message": "Ver informe"
+  },
+  "hideReport": {
+    "message": "Ocultar informe"
+  },
+  "impactLabel": {
+    "message": "Por qué importa"
+  },
+  "solutionLabel": {
+    "message": "Cómo corregirlo"
+  },
+  "points": {
+    "message": "puntos"
+  },
+  "severityCritical": {
+    "message": "Crítico"
+  },
+  "gradeExcellent": {
+    "message": "Excelente"
+  },
+  "gradeGood": {
+    "message": "Bueno"
+  },
+  "gradeNeedsImprovement": {
+    "message": "Necesita mejorar"
+  },
+  "gradePoor": {
+    "message": "Deficiente"
+  },
+  "categoryContent": {
+    "message": "Contenido"
+  },
+  "impactTitle": {
+    "message": "Los títulos ayudan a buscadores y visitantes a entender el tema de la página."
+  },
+  "impactMeta": {
+    "message": "Una descripción útil puede mejorar la comprensión y los clics del resultado."
+  },
+  "impactHeading": {
+    "message": "Una jerarquía lógica mejora la lectura y la claridad temática."
+  },
+  "impactImages": {
+    "message": "Las imágenes optimizadas mejoran accesibilidad, descubrimiento y rendimiento."
+  },
+  "impactUrl": {
+    "message": "Las URL breves y legibles son más fáciles de entender."
+  },
+  "impactTechnical": {
+    "message": "Las señales técnicas ayudan a interpretar e indexar la página preferida."
+  },
+  "impactContent": {
+    "message": "Un contenido visible suficiente aporta contexto para evaluar la página."
+  },
+  "issueTitleDuplicate": {
+    "message": "El documento contiene varios elementos title."
+  },
+  "fixTitleDuplicate": {
+    "message": "Conserva un solo elemento title en el encabezado."
+  },
+  "issueHeadingStructure": {
+    "message": "La jerarquía de encabezados omite un nivel."
+  },
+  "fixHeadingStructure": {
+    "message": "Ordena los encabezados sin saltar de H1 a H3."
+  },
+  "issueImageAltRatio": {
+    "message": "Más de la mitad de las imágenes no tienen texto alternativo."
+  },
+  "fixImageAltRatio": {
+    "message": "Prioriza el texto alternativo de las imágenes informativas."
+  },
+  "issueImageLarge": {
+    "message": "Una imagen grande puede ralentizar la página."
+  },
+  "fixImageLarge": {
+    "message": "Redimensiona, comprime y usa un formato moderno."
+  },
+  "issueUrlLong": {
+    "message": "La URL supera los 100 caracteres."
+  },
+  "fixUrlLong": {
+    "message": "Acorta la ruta manteniendo palabras descriptivas."
+  },
+  "issueUrlStructure": {
+    "message": "La URL contiene parámetros complejos o un identificador ilegible."
+  },
+  "fixUrlStructure": {
+    "message": "Usa una ruta estable y legible y elimina parámetros innecesarios."
+  },
+  "issueSchemaInvalid": {
+    "message": "Uno o más bloques JSON-LD contienen JSON no válido."
+  },
+  "fixSchemaInvalid": {
+    "message": "Valida la sintaxis JSON-LD y corrige los bloques dañados."
+  },
+  "issueContentLowWords": {
+    "message": "La página contiene menos de 300 palabras."
+  },
+  "fixContentLowWords": {
+    "message": "Añade contenido útil y original que responda a la intención del visitante."
+  },
+  "issueContentLowRatio": {
+    "message": "La proporción de texto visible es baja."
+  },
+  "fixContentLowRatio": {
+    "message": "Reduce el marcado innecesario y destaca el contenido principal."
+  },
+  "scanConsentTitle": {
+    "message": "Analizar la página actual"
+  },
+  "scanConsentBody": {
+    "message": "SEO Copilot leerá la URL, metadatos, encabezados, imágenes, datos estructurados y texto visible de esta pestaña para crear el informe SEO."
+  },
+  "scanPrivacyNote": {
+    "message": "El análisis permanece en tu dispositivo. Los datos de la página no se guardan, suben ni comparten."
+  },
+  "scanPage": {
+    "message": "Analizar esta página"
+  },
+  "privacyPolicy": {
+    "message": "Privacidad"
+  }
+}

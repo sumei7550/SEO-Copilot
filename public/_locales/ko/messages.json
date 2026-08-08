@@ -1,1 +1,268 @@
-{"extensionName":{"message":"SEO Copilot"},"extensionDescription":{"message":"현재 페이지를 빠르게 SEO 감사합니다."},"eyebrow":{"message":"페이지 감사"},"scoreLabel":{"message":"SEO 점수"},"issuesLabel":{"message":"문제"},"reportTitle":{"message":"SEO 보고서"},"noIssues":{"message":"문제가 없습니다."},"scanning":{"message":"페이지를 스캔하는 중…"},"scanUnavailable":{"message":"이 페이지를 스캔할 수 없습니다. HTTP 또는 HTTPS 페이지에서 다시 시도하세요."},"retry":{"message":"다시 시도"},"footer":{"message":"SEO Copilot MVP"},"severityError":{"message":"오류"},"severityWarning":{"message":"경고"},"severityInfo":{"message":"정보"},"categoryTitle":{"message":"제목"},"categoryMeta":{"message":"메타"},"categoryHeading":{"message":"헤딩"},"categoryImages":{"message":"이미지"},"categoryTechnical":{"message":"기술"},"categoryUrl":{"message":"URL"},"issueTitleMissing":{"message":"페이지에 제목이 없습니다."},"fixTitleMissing":{"message":"30~60자의 설명적인 제목을 추가하세요."},"issueTitleShort":{"message":"제목이 너무 짧습니다."},"issueTitleLong":{"message":"제목이 너무 깁니다."},"fixTitleLength":{"message":"제목을 30~60자로 작성하세요."},"issueMetaMissing":{"message":"메타 설명이 없습니다."},"fixMetaMissing":{"message":"120~160자의 메타 설명을 추가하세요."},"issueMetaLength":{"message":"메타 설명 길이가 권장 범위를 벗어났습니다."},"fixMetaLength":{"message":"설명을 120~160자로 조정하세요."},"issueH1Missing":{"message":"H1이 없습니다."},"fixH1Missing":{"message":"페이지 주제를 설명하는 H1을 추가하세요."},"issueH1Multiple":{"message":"H1이 여러 개입니다."},"fixH1Multiple":{"message":"기본 H1 하나와 H2 섹션을 사용하세요."},"issueImageAlt":{"message":"alt가 없는 이미지가 있습니다."},"fixImageAlt":{"message":"의미 있는 이미지에 alt를 추가하세요."},"issueUrlInvalid":{"message":"URL이 올바르지 않습니다."},"fixUrlInvalid":{"message":"유효한 HTTP 또는 HTTPS URL을 사용하세요."},"issueCanonicalMissing":{"message":"canonical 링크가 없습니다."},"fixCanonicalMissing":{"message":"기본 URL을 가리키는 canonical을 추가하세요."},"issueSchemaMissing":{"message":"구조화 데이터가 없습니다."},"fixSchemaMissing":{"message":"적절한 JSON-LD를 추가하세요."},"issueRobotsMissing":{"message":"robots 메타가 없습니다."},"fixRobotsMissing":{"message":"필요한 경우 robots 지시어를 추가하세요."}}
+{
+  "extensionName": {
+    "message": "SEO Copilot"
+  },
+  "extensionDescription": {
+    "message": "현재 페이지를 빠르게 SEO 감사합니다."
+  },
+  "eyebrow": {
+    "message": "페이지 감사"
+  },
+  "scoreLabel": {
+    "message": "SEO 점수"
+  },
+  "issuesLabel": {
+    "message": "문제"
+  },
+  "reportTitle": {
+    "message": "SEO 보고서"
+  },
+  "noIssues": {
+    "message": "문제가 없습니다."
+  },
+  "scanning": {
+    "message": "페이지를 스캔하는 중…"
+  },
+  "scanUnavailable": {
+    "message": "이 페이지를 스캔할 수 없습니다. HTTP 또는 HTTPS 페이지에서 다시 시도하세요."
+  },
+  "retry": {
+    "message": "다시 시도"
+  },
+  "footer": {
+    "message": "SEO Copilot V1.0.0"
+  },
+  "severityError": {
+    "message": "오류"
+  },
+  "severityWarning": {
+    "message": "경고"
+  },
+  "severityInfo": {
+    "message": "정보"
+  },
+  "categoryTitle": {
+    "message": "제목"
+  },
+  "categoryMeta": {
+    "message": "메타"
+  },
+  "categoryHeading": {
+    "message": "헤딩"
+  },
+  "categoryImages": {
+    "message": "이미지"
+  },
+  "categoryTechnical": {
+    "message": "기술"
+  },
+  "categoryUrl": {
+    "message": "URL"
+  },
+  "issueTitleMissing": {
+    "message": "페이지에 제목이 없습니다."
+  },
+  "fixTitleMissing": {
+    "message": "30~60자의 설명적인 제목을 추가하세요."
+  },
+  "issueTitleShort": {
+    "message": "제목이 너무 짧습니다."
+  },
+  "issueTitleLong": {
+    "message": "제목이 너무 깁니다."
+  },
+  "fixTitleLength": {
+    "message": "제목을 30~60자로 작성하세요."
+  },
+  "issueMetaMissing": {
+    "message": "메타 설명이 없습니다."
+  },
+  "fixMetaMissing": {
+    "message": "120~160자의 메타 설명을 추가하세요."
+  },
+  "issueMetaLength": {
+    "message": "메타 설명 길이가 권장 범위를 벗어났습니다."
+  },
+  "fixMetaLength": {
+    "message": "설명을 120~160자로 조정하세요."
+  },
+  "issueH1Missing": {
+    "message": "H1이 없습니다."
+  },
+  "fixH1Missing": {
+    "message": "페이지 주제를 설명하는 H1을 추가하세요."
+  },
+  "issueH1Multiple": {
+    "message": "H1이 여러 개입니다."
+  },
+  "fixH1Multiple": {
+    "message": "기본 H1 하나와 H2 섹션을 사용하세요."
+  },
+  "issueImageAlt": {
+    "message": "alt가 없는 이미지가 있습니다."
+  },
+  "fixImageAlt": {
+    "message": "의미 있는 이미지에 alt를 추가하세요."
+  },
+  "issueUrlInvalid": {
+    "message": "URL이 올바르지 않습니다."
+  },
+  "fixUrlInvalid": {
+    "message": "유효한 HTTP 또는 HTTPS URL을 사용하세요."
+  },
+  "issueCanonicalMissing": {
+    "message": "canonical 링크가 없습니다."
+  },
+  "fixCanonicalMissing": {
+    "message": "기본 URL을 가리키는 canonical을 추가하세요."
+  },
+  "issueSchemaMissing": {
+    "message": "구조화 데이터가 없습니다."
+  },
+  "fixSchemaMissing": {
+    "message": "적절한 JSON-LD를 추가하세요."
+  },
+  "issueRobotsMissing": {
+    "message": "robots 메타가 없습니다."
+  },
+  "fixRobotsMissing": {
+    "message": "필요한 경우 robots 지시어를 추가하세요."
+  },
+  "gradeLabel": {
+    "message": "등급"
+  },
+  "issuesFound": {
+    "message": "문제 $COUNT$개 발견",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "categoryScores": {
+    "message": "카테고리 점수"
+  },
+  "viewReport": {
+    "message": "보고서 보기"
+  },
+  "hideReport": {
+    "message": "보고서 숨기기"
+  },
+  "impactLabel": {
+    "message": "중요한 이유"
+  },
+  "solutionLabel": {
+    "message": "해결 방법"
+  },
+  "points": {
+    "message": "점"
+  },
+  "severityCritical": {
+    "message": "심각"
+  },
+  "gradeExcellent": {
+    "message": "매우 좋음"
+  },
+  "gradeGood": {
+    "message": "좋음"
+  },
+  "gradeNeedsImprovement": {
+    "message": "개선 필요"
+  },
+  "gradePoor": {
+    "message": "나쁨"
+  },
+  "categoryContent": {
+    "message": "콘텐츠"
+  },
+  "impactTitle": {
+    "message": "제목은 검색엔진과 방문자가 페이지 주제를 이해하도록 돕습니다."
+  },
+  "impactMeta": {
+    "message": "유용한 설명은 검색결과의 이해도와 클릭률을 높일 수 있습니다."
+  },
+  "impactHeading": {
+    "message": "논리적인 제목 구조는 가독성과 주제 명확성을 높입니다."
+  },
+  "impactImages": {
+    "message": "최적화된 이미지는 접근성, 검색 노출, 성능을 개선합니다."
+  },
+  "impactUrl": {
+    "message": "짧고 읽기 쉬운 URL은 사용자와 크롤러가 이해하기 쉽습니다."
+  },
+  "impactTechnical": {
+    "message": "기술 신호는 선호 페이지의 해석과 색인 생성을 돕습니다."
+  },
+  "impactContent": {
+    "message": "충분한 가시 콘텐츠는 페이지 평가에 필요한 맥락을 제공합니다."
+  },
+  "issueTitleDuplicate": {
+    "message": "문서에 title 요소가 여러 개 있습니다."
+  },
+  "fixTitleDuplicate": {
+    "message": "문서 head에는 title 요소 하나만 유지하세요."
+  },
+  "issueHeadingStructure": {
+    "message": "제목 구조에서 단계가 건너뛰어졌습니다."
+  },
+  "fixHeadingStructure": {
+    "message": "H1에서 H3로 건너뛰지 말고 순서대로 구성하세요."
+  },
+  "issueImageAltRatio": {
+    "message": "이미지의 절반 이상에 대체 텍스트가 없습니다."
+  },
+  "fixImageAltRatio": {
+    "message": "의미 있는 이미지부터 대체 텍스트를 추가하세요."
+  },
+  "issueImageLarge": {
+    "message": "큰 이미지가 페이지 속도를 늦출 수 있습니다."
+  },
+  "fixImageLarge": {
+    "message": "이미지 크기를 조정하고 압축한 뒤 최신 형식으로 제공하세요."
+  },
+  "issueUrlLong": {
+    "message": "페이지 URL이 100자를 초과합니다."
+  },
+  "fixUrlLong": {
+    "message": "설명 단어를 유지하면서 경로를 줄이세요."
+  },
+  "issueUrlStructure": {
+    "message": "URL에 복잡한 매개변수나 읽기 어려운 식별자가 있습니다."
+  },
+  "fixUrlStructure": {
+    "message": "안정적이고 읽기 쉬운 슬러그를 사용하고 불필요한 매개변수를 제거하세요."
+  },
+  "issueSchemaInvalid": {
+    "message": "하나 이상의 JSON-LD 블록에 잘못된 JSON이 있습니다."
+  },
+  "fixSchemaInvalid": {
+    "message": "JSON-LD 구문을 검사하고 잘못된 블록을 수정하세요."
+  },
+  "issueContentLowWords": {
+    "message": "페이지의 단어 수가 300개 미만입니다."
+  },
+  "fixContentLowWords": {
+    "message": "방문자의 의도를 충분히 충족하는 유용하고 독창적인 콘텐츠를 추가하세요."
+  },
+  "issueContentLowRatio": {
+    "message": "표시되는 텍스트 비율이 낮습니다."
+  },
+  "fixContentLowRatio": {
+    "message": "불필요한 마크업을 줄이고 주요 콘텐츠를 명확하게 만드세요."
+  },
+  "scanConsentTitle": {
+    "message": "현재 페이지 분석"
+  },
+  "scanConsentBody": {
+    "message": "SEO Copilot은 SEO 보고서를 만들기 위해 이 탭의 URL, 메타데이터, 제목, 이미지, 구조화 데이터 및 표시 텍스트를 읽습니다."
+  },
+  "scanPrivacyNote": {
+    "message": "분석은 기기에서만 수행됩니다. 페이지 데이터는 저장, 업로드 또는 공유되지 않습니다."
+  },
+  "scanPage": {
+    "message": "이 페이지 분석"
+  },
+  "privacyPolicy": {
+    "message": "개인정보 보호"
+  }
+}
