@@ -196,10 +196,10 @@
   "impactContent": {
     "message": "Conteúdo visível suficiente fornece contexto para avaliar a página."
   },
-  "issueTitleDuplicate": {
+  "issueTitleMultiple": {
     "message": "O documento contém vários elementos title."
   },
-  "fixTitleDuplicate": {
+  "fixTitleMultiple": {
     "message": "Mantenha apenas um elemento title no cabeçalho."
   },
   "issueHeadingStructure": {

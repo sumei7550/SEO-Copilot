@@ -196,10 +196,10 @@
   "impactContent": {
     "message": "Un contenido visible suficiente aporta contexto para evaluar la página."
   },
-  "issueTitleDuplicate": {
+  "issueTitleMultiple": {
     "message": "El documento contiene varios elementos title."
   },
-  "fixTitleDuplicate": {
+  "fixTitleMultiple": {
     "message": "Conserva un solo elemento title en el encabezado."
   },
   "issueHeadingStructure": {

@@ -196,10 +196,10 @@
   "impactContent": {
     "message": "Ausreichend sichtbarer Inhalt gibt Suchmaschinen genug Kontext zur Bewertung der Seite."
   },
-  "issueTitleDuplicate": {
+  "issueTitleMultiple": {
     "message": "Das Dokument enthält mehrere title-Elemente."
   },
-  "fixTitleDuplicate": {
+  "fixTitleMultiple": {
     "message": "Behalten Sie nur ein title-Element im Dokumentkopf."
   },
   "issueHeadingStructure": {

@@ -5,6 +5,8 @@ interface FixtureOptions {
   schemaScripts?: string[];
   bodyText?: string;
   html?: string;
+  headTitleCount?: number;
+  bodyTitleCount?: number;
 }
 
 function documentFixture(options: FixtureOptions = {}): Document {
@@ -16,7 +18,7 @@ function documentFixture(options: FixtureOptions = {}): Document {
   const scripts = (options.schemaScripts ?? ['{"@type":"Article"}']).map((textContent) => ({ textContent }));
   const images = [{
     currentSrc: 'https://example.com/hero.webp', src: 'https://example.com/hero.webp', alt: 'SEO report',
-    naturalWidth: 1200, naturalHeight: 800,
+    naturalWidth: 1200, naturalHeight: 800, width: 1200, height: 800,
     hasAttribute: (name: string) => name === 'alt'
   }];
 
@@ -28,7 +30,8 @@ function documentFixture(options: FixtureOptions = {}): Document {
     querySelectorAll: (selector: string) => {
       if (selector === 'h1, h2, h3') return headings;
       if (selector === 'script[type="application/ld+json"]') return scripts;
-      if (selector === 'title') return [{ textContent: 'A complete SEO title for the scanner fixture' }];
+      if (selector === 'head > title') return Array.from({ length: options.headTitleCount ?? 1 }, () => ({ textContent: 'A complete SEO title for the scanner fixture' }));
+      if (selector === 'title') return Array.from({ length: options.bodyTitleCount ?? 1 }, () => ({ textContent: 'Example title in body content' }));
       return [];
     },
     querySelector: (selector: string) => {
@@ -46,7 +49,7 @@ describe('scanPage', () => {
     const page = scanPage(documentFixture(), locationFixture, { getEntriesByType: () => [] } as unknown as Performance);
     expect(page.url).toBe('https://example.com/audit');
     expect(page.headings.map((heading) => heading.level)).toEqual([1, 2, 3]);
-    expect(page.images[0]).toMatchObject({ alt: 'SEO report', naturalWidth: 1200 });
+    expect(page.images[0]).toMatchObject({ alt: 'SEO report', auditable: true, naturalWidth: 1200, renderedWidth: 1200, renderedHeight: 800 });
     expect(page.schemas).toEqual([{ type: 'Article' }]);
     expect(page.wordCount).toBeGreaterThan(300);
     expect(page).not.toHaveProperty('visibleText');
@@ -61,5 +64,15 @@ describe('scanPage', () => {
   it('counts CJK characters for multilingual content analysis', () => {
     const page = scanPage(documentFixture({ bodyText: '这是一个用于搜索引擎优化分析的中文页面内容。'.repeat(20) }), locationFixture, { getEntriesByType: () => [] } as unknown as Performance);
     expect(page.wordCount).toBeGreaterThan(300);
+  });
+
+  it('counts only title elements directly under head', () => {
+    const page = scanPage(documentFixture({ headTitleCount: 1, bodyTitleCount: 3 }), locationFixture, { getEntriesByType: () => [] } as unknown as Performance);
+    expect(page.titleTagCount).toBe(1);
+  });
+
+  it('counts multiple title elements in head', () => {
+    const page = scanPage(documentFixture({ headTitleCount: 2 }), locationFixture, { getEntriesByType: () => [] } as unknown as Performance);
+    expect(page.titleTagCount).toBe(2);
   });
 });

@@ -11,7 +11,7 @@
 用户流程：
 
 打开网页 → 点击 SEO Copilot → 扫描页面 → 分析 SEO 问题 → 计算 SEO Score
-→ 生成报告
+→ 生成报告 →（可选）生成 AI 文案建议 → 复制到页面 → Re-scan 验证
 
 # 2. 技术选型
 
@@ -157,6 +157,18 @@ Popup： 快速查看。
 
 Report： 完整分析。
 
+## 4.8 AI Fix 服务边界
+
+AI Fix 只处理可通过文案生成直接修复的问题：
+
+- `TITLE_001`、`TITLE_002`、`TITLE_003`
+- `META_001`、`META_002`、`META_003`
+- `HEADING_001`、`HEADING_003`
+
+`IssueList` 通过 `canUseAiFix()` 判断是否显示入口，并由 `buildAiFixContext()` 组装最小页面上下文（URL、标题、描述、H1、语言、页面类型、品牌和问题诊断）。`generateSeoFix()` 是唯一的服务入口，当前实现调用本地 `generateSeoFixMock()`，返回 3 条候选、理由和重点。组件不直接依赖 provider，便于后续替换真实 API。
+
+AI Fix 不会自动修改网页，也不处理 Canonical、Schema、重复标签、图片或其他技术/结构问题。用户必须自行复制并修改页面，再通过重新扫描验证。
+
 # 5. 项目目录结构
 
 SEO-Copilot/
@@ -177,15 +189,17 @@ imageRules.ts - technicalRules.ts
 
 scoring/ - scoreEngine.ts
 
-popup/ - App.tsx - main.tsx
+popup/ - App.tsx - main.tsx - previewResult.ts - scanActiveTab.ts
 
-report/
+report/ - Report.tsx
 
-components/
+components/ - AiFixPanel.tsx - IssueList.tsx - ScoreCard.tsx
 
-types/ - seo.ts
+types/ - seo.ts - aiFix.ts
 
-utils/
+services/ - buildAiFixContext.ts - generateSeoFix.ts - generateSeoFix.mock.ts
+
+utils/ - aiFix.ts - i18n.ts
 
 \_locales/
 
@@ -278,6 +292,19 @@ MVP：
 -   URL
 -   Score
 -   Date
+
+AI Fix MVP 不持久化页面内容、建议或扫描历史；Mock Provider 仅在当前 Popup 生命周期内生成结果。
+
+# 9. 验证要求
+
+提交前至少执行：
+
+```bash
+npm test
+npm run build
+```
+
+`npm run build` 会同步 i18n fallback、执行 TypeScript 检查、构建 Vite 产物，并验证 Manifest V3 扩展包及自包含 content script。
 
 不保存：
 

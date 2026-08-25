@@ -196,10 +196,10 @@
   "impactContent": {
     "message": "十分な可視コンテンツはページ評価に必要な文脈を提供します。"
   },
-  "issueTitleDuplicate": {
+  "issueTitleMultiple": {
     "message": "文書に複数のtitle要素があります。"
   },
-  "fixTitleDuplicate": {
+  "fixTitleMultiple": {
     "message": "head内のtitle要素を1つだけにしてください。"
   },
   "issueHeadingStructure": {

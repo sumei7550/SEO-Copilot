@@ -196,10 +196,10 @@
   "impactContent": {
     "message": "충분한 가시 콘텐츠는 페이지 평가에 필요한 맥락을 제공합니다."
   },
-  "issueTitleDuplicate": {
+  "issueTitleMultiple": {
     "message": "문서에 title 요소가 여러 개 있습니다."
   },
-  "fixTitleDuplicate": {
+  "fixTitleMultiple": {
     "message": "문서 head에는 title 요소 하나만 유지하세요."
   },
   "issueHeadingStructure": {

@@ -11,8 +11,12 @@ export interface HeadingData {
 export interface ImageData {
   src: string;
   alt: string | null;
+  auditable: boolean;
   naturalWidth: number;
   naturalHeight: number;
+  /** Rendered CSS dimensions, when available from the live DOM. */
+  renderedWidth?: number;
+  renderedHeight?: number;
   transferSize: number;
 }
 
@@ -32,6 +36,8 @@ export interface PageData {
   invalidSchemaCount: number;
   wordCount: number;
   textRatio: number;
+  /** Optional document hint used by downstream features such as AI Fix. */
+  language?: string;
 }
 
 export interface PageMetrics {
@@ -39,6 +45,7 @@ export interface PageMetrics {
   h2Count: number;
   h3Count: number;
   imageCount: number;
+  auditableImageCount: number;
   imagesWithoutAlt: number;
   altCoverage: number;
   schemaTypes: string[];

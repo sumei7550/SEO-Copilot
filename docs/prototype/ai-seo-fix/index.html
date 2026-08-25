@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SEO Copilot — AI SEO Fix Prototype</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="extension" aria-labelledby="app-title">
+      <header class="app-header">
+        <div>
+          <p class="eyebrow">SEO COPILOT</p>
+          <h1 id="app-title">SEO Report</h1>
+        </div>
+        <span class="scan-status"><span></span> Scan complete</span>
+      </header>
+
+      <section class="score-card" aria-label="SEO score">
+        <div>
+          <p class="label">SEO SCORE</p>
+          <p class="score"><span id="score-value">72</span><small>/100</small></p>
+        </div>
+        <div class="score-side">
+          <p class="label">GRADE</p>
+          <strong id="grade-value">Good</strong>
+          <p id="issue-summary">12 issues found</p>
+        </div>
+        <p class="page-url">acme.com/enterprise-seo-platform</p>
+      </section>
+
+      <section id="report-view">
+        <div class="section-heading">
+          <div>
+            <h2>Issues found</h2>
+            <p>Prioritized by SEO impact</p>
+          </div>
+          <span class="issue-count">12</span>
+        </div>
+
+        <div class="severity-summary" aria-label="Issue severity summary">
+          <span><b>3</b> Critical</span><span><b>6</b> Warnings</span><span><b>3</b> Info</span>
+        </div>
+
+        <div class="issue-list">
+          <article class="issue-card" data-issue="meta">
+            <div class="issue-topline"><span class="severity high">High</span><span class="impact">−10 pts</span></div>
+            <h3>Missing Meta Description</h3>
+            <p class="issue-context"><b>Current</b>No meta description found</p>
+            <p class="issue-context"><b>Impact</b>Search engines may show irrelevant snippets</p>
+            <button class="ai-fix-button" type="button" data-fix-toggle="meta"><svg class="ai-sparkles" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5 9.2 6.8 14.5 8l-5.3 1.2L8 14.5 6.8 9.2 1.5 8l5.3-1.2L8 1.5Z"/><path d="m13 1 .45 1.55L15 3l-1.55.45L13 5l-.45-1.55L11 3l1.55-.45L13 1Z"/></svg> Improve with AI <span class="chevron" aria-hidden="true"></span></button>
+
+            <div class="fix-panel" id="fix-meta">
+              <div class="fix-intro">
+                <svg class="ai-sparkles ai-sparkles-large" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5 9.2 6.8 14.5 8l-5.3 1.2L8 14.5 6.8 9.2 1.5 8l5.3-1.2L8 1.5Z"/><path d="m13 1 .45 1.55L15 3l-1.55.45L13 5l-.45-1.55L11 3l1.55-.45L13 1Z"/></svg>
+                <div><h4>AI SEO Fix</h4><p>Generate a better meta description for this page.</p></div>
+              </div>
+              <div class="fix-detail-grid"><div><span>Issue</span><strong>Missing Meta Description</strong></div><div><span>Current</span><strong>No meta description found</strong></div></div>
+              <div class="before-after"><div><span>Before</span><code>&lt;meta name="description" content=""&gt;</code></div><div class="after-preview"><span>After · AI recommendation</span><p id="meta-after-preview"></p></div></div>
+              <div class="suggestion-header"><h4>3 AI recommendations</h4><span>Select one to copy</span></div>
+              <div class="suggestion-list" id="meta-suggestions"></div>
+              <div class="fix-actions">
+                <button class="secondary-button regenerate" type="button" data-regenerate="meta">↻ Generate another</button>
+                <button class="primary-button copy-selected" type="button" data-copy="meta">Copy selected</button>
+              </div>
+              <p class="copy-feedback" aria-live="polite"></p>
+            </div>
+          </article>
+
+          <article class="issue-card" data-issue="title">
+            <div class="issue-topline"><span class="severity high">High</span><span class="impact">−8 pts</span></div>
+            <h3>Title is too short</h3>
+            <p class="issue-context"><b>Current</b>Enterprise SEO Platform</p>
+            <p class="issue-context"><b>Impact</b>May not describe the page topic or attract clicks</p>
+            <button class="ai-fix-button" type="button" data-fix-toggle="title"><svg class="ai-sparkles" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5 9.2 6.8 14.5 8l-5.3 1.2L8 14.5 6.8 9.2 1.5 8l5.3-1.2L8 1.5Z"/><path d="m13 1 .45 1.55L15 3l-1.55.45L13 5l-.45-1.55L11 3l1.55-.45L13 1Z"/></svg> Improve with AI <span class="chevron" aria-hidden="true"></span></button>
+            <div class="fix-panel" id="fix-title"><div class="fix-intro"><svg class="ai-sparkles ai-sparkles-large" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5 9.2 6.8 14.5 8l-5.3 1.2L8 14.5 6.8 9.2 1.5 8l5.3-1.2L8 1.5Z"/><path d="m13 1 .45 1.55L13 5l-.45-1.55L11 3l1.55-.45L13 1Z"/></svg><div><h4>AI SEO Fix</h4><p>Create a stronger SEO title for this page.</p></div></div><div class="fix-detail-grid"><div><span>Issue</span><strong>Title is too short</strong></div><div><span>Current</span><strong>Enterprise SEO Platform</strong></div></div><div class="before-after"><div><span>Before</span><code>&lt;title&gt;Enterprise SEO Platform&lt;/title&gt;</code></div><div class="after-preview"><span>After · AI recommendation</span><p id="title-after-preview"></p></div></div><div class="suggestion-header"><h4>3 AI recommendations</h4><span>Select one to copy</span></div><div class="suggestion-list" id="title-suggestions"></div><div class="fix-actions"><button class="secondary-button regenerate" type="button" data-regenerate="title">↻ Generate another</button><button class="primary-button copy-selected" type="button" data-copy="title">Copy selected</button></div><p class="copy-feedback" aria-live="polite"></p></div>
+          </article>
+
+          <article class="issue-card compact"><div class="issue-topline"><span class="severity warning">Warning</span><span class="impact">−5 pts</span></div><h3>Multiple H1 headings</h3><p class="issue-context"><b>Impact</b>Page hierarchy is unclear to crawlers</p><div class="recommended-action"><span>Recommended Action</span><strong>Keep one primary H1 and demote the others to H2</strong></div></article>
+          <article class="issue-card compact"><div class="issue-topline"><span class="severity warning">Warning</span><span class="impact">−5 pts</span></div><h3>Images missing ALT text</h3><p class="issue-context"><b>Impact</b>Screen readers and image search lose context</p><div class="recommended-action"><span>Recommended Action</span><strong>Add descriptive ALT text to 4 images</strong></div></article>
+          <article class="issue-card compact"><div class="issue-topline"><span class="severity warning">Warning</span><span class="impact">−5 pts</span></div><h3>Canonical tag not found</h3><p class="issue-context"><b>Impact</b>Search engines may index duplicate URLs</p><div class="recommended-action"><span>Recommended Action</span><strong>Add a self-referencing canonical tag</strong></div></article>
+        </div>
+
+        <button class="rescan-button" id="rescan" type="button">Done editing? Re-scan page <span>→</span></button>
+      </section>
+
+      <section id="verified-view" hidden aria-labelledby="verified-title">
+        <div class="verified-hero"><span class="check">✓</span><div><p class="eyebrow">RE-SCAN COMPLETE</p><h2 id="verified-title">Your SEO health improved</h2><p>Great progress. The changes are visible in this scan.</p></div></div>
+        <div class="comparison" aria-label="Before and after scan comparison"><div><span>Before</span><strong>72<small>/100</small></strong><p>12 issues</p></div><span class="comparison-arrow">→</span><div class="after"><span>After</span><strong>86<small>/100</small></strong><p>5 issues</p></div></div>
+        <section class="fixed-list"><h3>Fixed issues <span>3 fixed</span></h3><ul><li><span>✓</span> Meta Description improved</li><li><span>✓</span> Title optimized</li><li><span>✓</span> H1 improved</li></ul></section>
+        <button class="secondary-button full-width" id="back-to-report" type="button">← Back to report</button>
+      </section>
+      <footer>SEO Copilot v1.1 prototype · AI suggestions are simulated</footer>
+    </main>
+    <script src="mock-data.js"></script>
+  </body>
+</html>

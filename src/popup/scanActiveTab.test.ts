@@ -18,7 +18,7 @@ const response: ScanResponse = {
       wordCount: 100,
       textRatio: 0.2
     },
-    metrics: { h1Count: 1, h2Count: 0, h3Count: 0, imageCount: 0, imagesWithoutAlt: 0, altCoverage: 100, schemaTypes: [], wordCount: 100, textRatio: 0.2 },
+    metrics: { h1Count: 1, h2Count: 0, h3Count: 0, imageCount: 0, auditableImageCount: 0, imagesWithoutAlt: 0, altCoverage: 100, schemaTypes: [], wordCount: 100, textRatio: 0.2 },
     issues: [],
     score: 100,
     grade: 'excellent',
