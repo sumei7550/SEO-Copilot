@@ -10,7 +10,6 @@ function getAiFixType(issue: SeoIssue): AiFixType | undefined {
   if (!canUseAiFix(issue)) return undefined;
   if (issue.id.startsWith('TITLE_')) return 'title';
   if (issue.id.startsWith('META_')) return 'metaDescription';
-  if (issue.id === 'HEADING_001' || issue.id === 'HEADING_003') return 'h1';
   return undefined;
 }
 

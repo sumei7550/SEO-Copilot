@@ -13,8 +13,8 @@ if (manifest.manifest_version !== 3 || !manifest.action?.default_popup) {
   throw new Error('dist/manifest.json is not a valid Manifest V3 popup extension manifest.');
 }
 
-if (manifest.version !== '1.0.0') {
-  throw new Error(`Expected release version 1.0.0, received ${manifest.version}.`);
+if (manifest.version !== '1.1.0') {
+  throw new Error(`Expected release version 1.1.0, received ${manifest.version}.`);
 }
 
 const permissions = [...(manifest.permissions ?? [])].sort().join(',');
@@ -49,4 +49,4 @@ if (existsSync(masterIcon)) {
   rmSync(masterIcon);
 }
 
-console.log('Extension build verified: V1.0.0, minimal permissions, self-contained content script, and valid Manifest V3 manifest.');
+console.log('Extension build verified: V1.1.0, minimal permissions, self-contained content script, and valid Manifest V3 manifest.');

@@ -48,8 +48,8 @@ for (const [locale, messages] of Object.entries(translations)) {
     catalog[key] ??= {};
     catalog[key].message = message;
   }
-  catalog.footer.message = 'SEO Copilot V1.0.0';
+  catalog.footer.message = 'SEO Copilot V1.1.0';
   writeFileSync(path, `${JSON.stringify(catalog, null, 2)}\n`, 'utf8');
 }
 
-console.log(`Applied V1.0.0 translations to ${Object.keys(translations).length} locale catalogs.`);
+console.log(`Applied V1.1.0 translations to ${Object.keys(translations).length} locale catalogs.`);

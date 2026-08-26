@@ -1,0 +1,8 @@
+{
+  "url": "https://en.wikipedia.org/wiki/Main_Page",
+  "score": 86,
+  "scoreBasis": "DOM-derived; Popup score not observed",
+  "issues": ["META_001", "HEADING_002"],
+  "metrics": {"imageCount": 23, "auditableImageCount": 23, "imagesWithoutAlt": 0, "altCoverage": 100, "image3PixelCandidates": 0, "wordCount": 1306, "htmlBytes": 505293, "h1Count": 2, "schemaCount": 1},
+  "qa": {"popupScan": "not_observed", "scanPageMessage": "not_observed", "timeout": "not_observed", "domReadMs": 45}
+}

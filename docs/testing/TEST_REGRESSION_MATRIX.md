@@ -1,14 +1,14 @@
-# SEO Copilot v1.0.0 - 20站人工验收回归测试
+# SEO Copilot v1.2 - 20站人工验收回归测试
 
 ## 测试目标
 验证扩展在不同网站架构下的稳定性、扫描成功率和结果合理性。
 **重要**：不以SEO得分高低判定测试通过/失败，重点关注扫描稳定性。
 
 ## 测试环境
-- **扩展版本**: 1.0.0
+- **扩展版本**: v1.2 rules / AI Fix MVP
 - **Chrome版本**: _待填写_
-- **测试日期**: 2026-08-08
-- **测试人员**: _待填写_
+- **测试日期**: 2026-08-26
+- **测试人员**: Codex + 用户提供 Chrome 截图证据
 
 ## 测试维度
 每个网站记录以下指标：
@@ -199,3 +199,15 @@ Chrome版本: chrome://version
 扩展加载方式: 开发者模式/打包加载
 扩展ID: 
 ```
+
+### D. v1.2 最终 Chrome QA 证据
+
+真实 Chrome Popup 截图已确认：
+
+- Amazon 首页：87 / Good，3 issues，AI Fix 可用。
+- Apple iPhone 16：97 / Excellent，`IMAGE_003` 触发。
+- Shopify 首页：97 / Excellent，`TITLE_003` 触发，AI Fix 可用。
+
+详细 JSON 结果见：[docs/testing/results/v1.2](E:/susm-program/SEO-Copilot/docs/testing/results/v1.2)。
+
+Amazon 截图为首页而非 Product Page，因此 Product Schema 不计入已完成证据。

@@ -1,0 +1,8 @@
+{
+  "url": "https://www.apple.com/shop/buy-iphone/iphone-16",
+  "score": 97,
+  "scoreBasis": "Popup screenshot",
+  "issues": ["IMAGE_003"],
+  "metrics": {"imageCount": null, "auditableImageCount": null, "imagesWithoutAlt": null, "altCoverage": null, "image3PixelCandidates": null},
+  "qa": {"popupScan": "verified_by_screenshot", "scanComplete": true, "reportDisplayed": true, "aiFixDisplayed": false, "image3Displayed": true, "image3TransferSize": "issue_displayed; numeric transfer size not shown", "note": "Screenshot shows Score 97, Excellent, 1 Info issue: image performance opportunity."}
+}

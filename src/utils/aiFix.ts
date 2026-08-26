@@ -6,13 +6,10 @@ const AI_FIX_ISSUE_IDS = new Set([
   'TITLE_003',
   'META_001',
   'META_002',
-  'META_003',
-  'HEADING_001',
-  'HEADING_003'
+  'META_003'
 ]);
 
-/** AI Fix is limited to issues where generating copy is a direct remediation. */
+/** Alpha Real AI is limited to Title and Meta Description copy generation. */
 export function canUseAiFix(issue: SeoIssue): boolean {
   return AI_FIX_ISSUE_IDS.has(issue.id);
 }
-

@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/v1/seo-fixes.ts": {
+      "maxDuration": 15
+    }
+  }
+}

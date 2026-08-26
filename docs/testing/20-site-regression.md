@@ -1,4 +1,4 @@
-# SEO Copilot V1.0.0 — 20-Site Regression Test
+# SEO Copilot V1.2 — 20-Site Regression Test
 
 **Date:** 2026-08-08
 **Extension version:** 1.0.0
@@ -139,7 +139,7 @@ No JS console output is measurable from static HTML fetches. This dimension requ
 
 ---
 
-## Conclusion for V1.0.0 launch
+## Historical static regression conclusion
 
 **Blocking issues: none found in the static regression.**
 
@@ -153,7 +153,7 @@ Remaining verification that still requires a human with real Chrome:
 * Time the scan on CNN and YouTube (expect <3s on a modern laptop).
 * Verify chrome:// and file:// pages show the `scanUnavailable` fallback (not a crash).
 
-Recommendation: **proceed to live-Chrome pass** on the same 20 URLs before shipping. Static regression indicates the scanner is ready for that pass.
+Historical recommendation: **proceed to live-Chrome pass** on the same 20 URLs before shipping. The v1.2 Chrome QA update below records the newly completed screenshot evidence and remaining scope boundaries.
 
 ---
 
@@ -164,3 +164,17 @@ Harness scripts (kept for future runs, not shipped):
 * `tmp/regression-runner.mjs` — parallel fetch pass
 * `tmp/regression-retry.mjs` — sequential UA-fallback retry
 * `tmp/regression-curl.mjs` — `curl`-based retry for sites Node fetch can't reach
+
+## v1.2 Chrome QA 更新（2026-08-26）
+
+本轮已补充真实 Chrome Popup 截图证据，确认以下页面完成 `Scan complete` 并显示 Report：
+
+| 页面 | Score | Issues | AI Fix | 结果 |
+|---|---:|---:|---|---|
+| Amazon 首页 | 87 / Good | 3 | ✅ | Popup 链路通过；截图不是 Product Page |
+| Apple iPhone 16 | 97 / Excellent | 1 | — | `IMAGE_003` 正常触发 |
+| Shopify 首页 | 97 / Excellent | 1 | ✅ | `TITLE_003` 与 AI Fix 正常 |
+
+产品/性能 DOM 采样结果已保存到 `docs/testing/results/v1.2/`。DOM 采样确认 Amazon、eBay、Shopify、Apple 页面可读取，CNN、YouTube、Wikipedia 页面未发生 DOM 读取超时；这些耗时不等同于 Popup 的完整 Extension scan time。
+
+当前结论：静态回归稳定，Popup/Report/AI Fix MVP 已获得真实截图验证；Amazon Product Schema、真实 transfer size 数值和 CNN/YouTube/Wikipedia Popup 扫描耗时仍属于后续补充项。

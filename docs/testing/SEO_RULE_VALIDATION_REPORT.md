@@ -37,3 +37,30 @@
 - 已完成 Chrome extension validation，并使用真实 Chrome DOM 验证扩展扫描链路。
 - 静态 HTML 回归主要用于验证规则稳定性、解析安全性和评分结果；对于客户端 hydration、反爬壳页面及运行时 DOM，应以 Chrome extension real DOM validation 结果为准。
 
+## v1.2 最终 Chrome Extension QA（2026-08-26）
+
+用户提供的 Chrome 扫描截图确认了真实 Popup 结果链路：页面加载后能够完成扫描，Popup 显示 Score、Grade、Issue 列表和 Report；AI Fix 能够在文案类问题上生成、选择和复制推荐内容。
+
+| 页面 | Popup 结果 | Score | 主要结论 |
+|---|---|---:|---|
+| Amazon 首页 | ✅ Scan complete / Report / AI Fix | 87 | 3 issues：META_003、HEADING_001、TECH_002 |
+| Apple iPhone 16 | ✅ Scan complete / Report | 97 | IMAGE_003 正常触发，显示图片性能优化建议 |
+| Shopify 首页 | ✅ Scan complete / Report / AI Fix | 97 | TITLE_003 正常触发，AI Fix 生成 3 个标题推荐 |
+
+注意：Amazon 截图 URL 为首页 `https://www.amazon.com/`，不是 Product Page；Amazon Product Schema 尚未由截图证据覆盖。
+
+### 图片规则最终结论
+
+- `IMAGE_001`：Amazon 产品 DOM 数据中，24 个可审查图片中 10 个缺少 alt，覆盖率 58%；规则触发合理。
+- `IMAGE_002`：Amazon 覆盖率高于 50%，未触发；eBay、Shopify、Apple 的可审查图片 alt coverage 为 100%，未见误报。
+- `IMAGE_003`：Apple iPhone 16 Popup 明确显示图片性能优化问题；规则能够在真实页面中触发。截图未显示具体 transfer size 数值，transfer-size 分支仍需单独性能采样确认。
+
+### AI Fix 最终结论
+
+- Amazon Meta Description：显示 3 个候选推荐，并支持选择/复制。
+- Shopify Title：显示 3 个候选推荐，并支持选择/复制。
+- `IMAGE_003`、标题结构、Schema 等结构性问题不会被当作文案自动修复目标。
+
+### 发布阶段建议
+
+Popup、Report 和 AI Fix MVP 已达到进入真实 AI API 阶段的条件，建议以受控 Alpha 方式推进。真实 API 接入前仍需补测 API 超时、错误、额度限制，以及 Amazon Product Page 的 Product Schema。

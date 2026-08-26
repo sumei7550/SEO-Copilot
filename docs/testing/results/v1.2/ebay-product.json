@@ -1,0 +1,8 @@
+{
+  "url": "https://www.ebay.com/itm/386708545260",
+  "score": 97,
+  "scoreBasis": "DOM-derived; Popup score not observed",
+  "issues": ["TITLE_003"],
+  "metrics": {"imageCount": 80, "auditableImageCount": 51, "imagesWithoutAlt": 0, "altCoverage": 100, "image3PixelCandidates": 0, "wordCount": 2624, "htmlBytes": 3011659, "h1Count": 1, "schemaCount": 2},
+  "qa": {"popupScan": "not_observed", "scanPageMessage": "not_observed", "image3TransferSize": "not_observed", "domReadMs": 73}
+}

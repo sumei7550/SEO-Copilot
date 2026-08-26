@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# SEO Copilot v1.0.0 - 快速测试启动脚本
+# SEO Copilot v1.1.0 - 快速测试启动脚本
 # 用于验证扩展构建状态并准备测试环境
 
 echo "======================================"
-echo "SEO Copilot v1.0.0 测试准备"
+echo "SEO Copilot v1.1.0 测试准备"
 echo "======================================"
 echo ""
 
@@ -16,8 +16,8 @@ PACKAGE_VERSION=$(grep -o '"version": "[^"]*"' package.json | head -1 | cut -d'"
 echo "  - manifest.json: $MANIFEST_VERSION"
 echo "  - package.json: $PACKAGE_VERSION"
 
-if [ "$MANIFEST_VERSION" != "1.0.0" ] || [ "$PACKAGE_VERSION" != "1.0.0" ]; then
-    echo "  ⚠️  警告: 版本号不一致或不是 1.0.0"
+if [ "$MANIFEST_VERSION" != "1.1.0" ] || [ "$PACKAGE_VERSION" != "1.1.0" ]; then
+    echo "  ⚠️  警告: 版本号不一致或不是 1.1.0"
 else
     echo "  ✅ 版本号验证通过"
 fi

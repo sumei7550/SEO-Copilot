@@ -21,7 +21,7 @@
   "scanPage": { "message": "Analyze this page" },
   "scanUnavailable": { "message": "This page cannot be scanned. Open a regular HTTP or HTTPS page and try again." },
   "retry": { "message": "Try again" },
-  "footer": { "message": "SEO Copilot V1.0.0" },
+  "footer": { "message": "SEO Copilot V1.1.0" },
   "privacyPolicy": { "message": "Privacy" },
   "severityCritical": { "message": "Critical" },
   "severityError": { "message": "Critical" },

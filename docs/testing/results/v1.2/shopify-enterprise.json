@@ -1,0 +1,8 @@
+{
+  "url": "https://www.shopify.com/enterprise",
+  "score": 95,
+  "scoreBasis": "DOM-derived; Popup score not observed",
+  "issues": ["TITLE_003", "TECH_002"],
+  "metrics": {"imageCount": 134, "auditableImageCount": 43, "imagesWithoutAlt": 0, "altCoverage": 100, "image3PixelCandidates": 0, "wordCount": 1240, "htmlBytes": 368848, "h1Count": 1, "schemaCount": 0},
+  "qa": {"popupScan": "not_observed", "scanPageMessage": "not_observed", "image3TransferSize": "not_observed", "domReadMs": 48, "note": "Shopify Enterprise page used; no public Shopify product detail URL was exposed from the homepage."}
+}

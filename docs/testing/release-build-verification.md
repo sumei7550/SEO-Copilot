@@ -1,4 +1,39 @@
-# SEO Copilot V1.0.0 — Release Build Verification
+# SEO Copilot V1.1.0 — Release Build Verification
+
+## V1.1.0 本地构建记录
+
+**日期：** 2026-08-26
+**版本：** `1.1.0`
+**命令：** `npm run build`
+
+### 结果
+
+- ✅ i18n fallback 同步完成
+- ✅ TypeScript 增量检查通过
+- ✅ Vite production build 通过
+- ✅ Extension build verifier 通过
+- ✅ Manifest V3、最小权限和自包含 content script 验证通过
+
+### 构建产物摘要
+
+| 文件 | 大小 | gzip |
+| --- | ---: | ---: |
+| `dist/index.html` | 0.33 kB | 0.24 kB |
+| `dist/assets/popup.css` | 17.90 kB | 4.94 kB |
+| `dist/content.js` | 8.51 kB | 2.77 kB |
+| `dist/popup.js` | 215.07 kB | 67.96 kB |
+
+构建产物未纳入 Git（`dist/` 在 `.gitignore` 中），使用以下命令即可重新生成：
+
+```bash
+npm run build
+```
+
+以下为 V1.0.0 的历史验证记录。
+
+---
+
+# SEO Copilot V1.0.0 — Historical Release Build Verification
 
 **Date:** 2026-08-08
 **Node/npm:** as shipped with local environment

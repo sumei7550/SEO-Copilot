@@ -1,0 +1,8 @@
+{
+  "url": "https://www.cnn.com/",
+  "score": 92,
+  "scoreBasis": "DOM-derived; Popup score not observed",
+  "issues": ["HEADING_001"],
+  "metrics": {"imageCount": 124, "auditableImageCount": 32, "imagesWithoutAlt": 0, "altCoverage": 100, "image3PixelCandidates": 0, "wordCount": 1298, "htmlBytes": 6986487, "h1Count": 0, "schemaCount": 1},
+  "qa": {"popupScan": "not_observed", "scanPageMessage": "not_observed", "timeout": "not_observed", "domReadMs": 106}
+}

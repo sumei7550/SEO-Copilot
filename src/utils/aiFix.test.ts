@@ -14,15 +14,14 @@ describe('canUseAiFix', () => {
     expect(canUseAiFix(issue('META_001', 'meta'))).toBe(true);
     expect(canUseAiFix(issue('META_002', 'meta'))).toBe(true);
     expect(canUseAiFix(issue('META_003', 'meta'))).toBe(true);
-    expect(canUseAiFix(issue('HEADING_001', 'heading'))).toBe(true);
-    expect(canUseAiFix(issue('HEADING_003', 'heading'))).toBe(true);
   });
 
-  it('rejects technical and structural issues even in a related category', () => {
+  it('rejects H1, technical, and structural issues', () => {
+    expect(canUseAiFix(issue('HEADING_001', 'heading'))).toBe(false);
+    expect(canUseAiFix(issue('HEADING_003', 'heading'))).toBe(false);
     expect(canUseAiFix(issue('TITLE_004', 'title'))).toBe(false);
     expect(canUseAiFix(issue('HEADING_002', 'heading'))).toBe(false);
     expect(canUseAiFix(issue('TECH_001', 'technical'))).toBe(false);
     expect(canUseAiFix(issue('IMAGE_001', 'images'))).toBe(false);
   });
 });
-

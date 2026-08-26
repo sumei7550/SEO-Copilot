@@ -21,7 +21,7 @@
   "scanPage": { "message": "分析此页面" },
   "scanUnavailable": { "message": "无法扫描此页面，请打开普通 HTTP 或 HTTPS 页面后重试。" },
   "retry": { "message": "重试" },
-  "footer": { "message": "SEO Copilot V1.0.0" },
+  "footer": { "message": "SEO Copilot V1.1.0" },
   "privacyPolicy": { "message": "隐私政策" },
   "severityCritical": { "message": "严重" },
   "severityError": { "message": "严重" },

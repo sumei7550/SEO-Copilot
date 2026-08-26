@@ -1,10 +1,10 @@
 import type { AiFixRequest, AiFixResponse } from '../types/aiFix';
-import { generateSeoFixMock } from './generateSeoFix.mock';
+import { getAiProviderForRequest } from './aiProvider';
 
 /**
- * Single service entry point for UI consumers. Swap the provider here when the
- * product is connected to a real AI API; components stay unchanged.
+ * Single service entry point for UI consumers. Components do not know which
+ * provider is configured.
  */
 export function generateSeoFix(request: AiFixRequest): Promise<AiFixResponse> {
-  return generateSeoFixMock(request);
+  return getAiProviderForRequest(request).generate(request);
 }

@@ -1,0 +1,19 @@
+{
+  "extension": "SEO Copilot",
+  "dist": "E:/susm-program/SEO-Copilot/dist",
+  "popupChain": {
+    "pageLoaded": true,
+    "popupReport": true,
+    "scanComplete": true,
+    "scoreDisplayed": true,
+    "issuesDisplayed": true,
+    "aiFixDisplayed": true,
+    "scanPageMessage": "not directly observable; successful Scan complete and Report are screenshot evidence"
+  },
+  "evidence": [
+    {"page": "https://www.amazon.com/", "score": 87, "grade": "Good", "issuesFound": 3, "aiFix": true},
+    {"page": "https://www.apple.com/shop/buy-iphone/iphone-16", "score": 97, "grade": "Excellent", "issuesFound": 1, "issue": "IMAGE_003", "aiFix": false},
+    {"page": "https://www.shopify.com/", "score": 97, "grade": "Excellent", "issuesFound": 1, "issue": "TITLE_003", "aiFix": true}
+  ],
+  "source": "User-provided Chrome screenshots"
+}

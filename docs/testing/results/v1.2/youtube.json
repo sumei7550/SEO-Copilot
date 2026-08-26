@@ -1,0 +1,8 @@
+{
+  "url": "https://www.youtube.com/",
+  "score": 89,
+  "scoreBasis": "DOM-derived; Popup score not observed",
+  "issues": ["TITLE_002", "HEADING_002", "TECH_002"],
+  "metrics": {"imageCount": 97, "auditableImageCount": 12, "imagesWithoutAlt": 0, "altCoverage": 100, "image3PixelCandidates": 0, "wordCount": 611, "htmlBytes": 3009769, "h1Count": 4, "schemaCount": 0},
+  "qa": {"popupScan": "not_observed", "scanPageMessage": "not_observed", "timeout": "not_observed", "domReadMs": 55}
+}

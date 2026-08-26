@@ -1,0 +1,8 @@
+{
+  "url": "https://www.shopify.com/",
+  "score": 97,
+  "scoreBasis": "Popup screenshot",
+  "issues": ["TITLE_003"],
+  "metrics": {"imageCount": null, "auditableImageCount": null, "imagesWithoutAlt": null, "altCoverage": null, "image3PixelCandidates": null},
+  "qa": {"popupScan": "verified_by_screenshot", "scanComplete": true, "reportDisplayed": true, "aiFixDisplayed": true, "image3TransferSize": "not_observed", "note": "Screenshot shows Score 97, Excellent, 1 Warning issue: title longer than recommended; AI Fix with 3 recommendations and Copy selected displayed."}
+}

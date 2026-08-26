@@ -1,5 +1,9 @@
 node_modules/
 .npm-cache/
 dist/
+server-dist/
 *.tsbuildinfo
+.env
+.env.*
+!.env.example
 .DS_Store

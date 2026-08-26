@@ -1,0 +1,8 @@
+{
+  "url": "https://www.amazon.com/dp/B0DVBL912R",
+  "score": 78,
+  "scoreBasis": "DOM-derived; Popup score not observed",
+  "issues": ["META_001", "IMAGE_001", "TECH_001", "TECH_002"],
+  "metrics": {"imageCount": 38, "auditableImageCount": 24, "imagesWithoutAlt": 10, "altCoverage": 58, "image3PixelCandidates": 0, "wordCount": 2427, "htmlBytes": 747659, "h1Count": 1, "schemaCount": 0},
+  "qa": {"popupScan": "verified_by_screenshot_on_amazon_home", "scanPageMessage": "inferred_from_scan_complete", "reportDisplayed": true, "aiFixDisplayed": true, "image3TransferSize": "not_observed", "domReadMs": 48, "note": "Screenshot URL is https://www.amazon.com/ (homepage), not the product URL above. Screenshot score 87 with 3 issues: META_003, HEADING_001, TECH_002."}
+}

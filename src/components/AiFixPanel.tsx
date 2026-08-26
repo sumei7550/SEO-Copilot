@@ -19,13 +19,17 @@ export function AiFixPanel({ request }: { request: AiFixRequest }) {
   const [selectedId, setSelectedId] = useState('');
   const [copyStatus, setCopyStatus] = useState<'idle' | 'success' | 'failed'>('idle');
   const [generating, setGenerating] = useState(false);
+  const [generationError, setGenerationError] = useState(false);
 
   const refreshRecommendations = async () => {
     setGenerating(true);
+    setGenerationError(false);
     try {
       const result = await generateSeoFix(request);
       setResponse(result);
       setSelectedId((currentId) => result.recommendations.some((recommendation) => recommendation.id === currentId) ? currentId : result.recommendations[0]?.id ?? '');
+    } catch {
+      setGenerationError(true);
     } finally {
       setGenerating(false);
     }
@@ -71,12 +75,12 @@ export function AiFixPanel({ request }: { request: AiFixRequest }) {
   return <div className="fix-panel">
     <div className="fix-intro"><Sparkles large /><div><h4>AI SEO Fix</h4><p>Generate a better {request.type === 'metaDescription' ? 'meta description' : request.type === 'h1' ? 'H1 heading' : 'SEO title'} for this page.</p></div></div>
     <div className="fix-detail-grid"><div><span>Issue</span><strong>{request.issueLabel}</strong></div><div><span>Current</span><strong>{request.currentValue || 'Not found'}</strong></div></div>
-    {response ? <><div className="before-after"><div><span>Before</span><code>{beforeMarkup(request)}</code></div><div className="after-preview"><span>After · AI recommendation</span><p>{selected?.content}</p></div></div>
+    {response && !generationError ? <><div className="before-after"><div><span>Before</span><code>{beforeMarkup(request)}</code></div><div className="after-preview"><span>After · AI recommendation</span><p>{selected?.content}</p></div></div>
       <div className="suggestion-header"><h4>3 AI recommendations</h4><span>Select one to copy</span></div>
       <div className="suggestion-list">{response.recommendations.map((recommendation, index) => <RecommendationCard key={recommendation.id} recommendation={recommendation} label={labels[index] ?? `Alternative ${index}`} selected={recommendation.id === selectedId} onSelect={() => setSelectedId(recommendation.id)} />)}</div>
       <div className="fix-actions"><button type="button" onClick={() => void refreshRecommendations()} className="secondary-button" disabled={generating}>↻ Generate another</button><button type="button" onClick={() => void copySelected()} className="primary-button">{copyStatus === 'success' ? '✓ Copied' : copyStatus === 'failed' ? 'Copy failed' : 'Copy selected'}</button></div>
       <p className="copy-feedback" aria-live="polite">{copyStatus === 'success' ? 'Copied — paste this into your page source or CMS.' : copyStatus === 'failed' ? 'Copy failed' : ''}</p>
-    </> : <p className="generating">Generating AI recommendations…</p>}
+    </> : generationError ? <div className="generating"><p>AI suggestions unavailable.<br />Please try again.</p><button type="button" onClick={() => void refreshRecommendations()} className="secondary-button" disabled={generating}>Retry</button></div> : <p className="generating">Generating AI recommendations…</p>}
   </div>;
 }
 
