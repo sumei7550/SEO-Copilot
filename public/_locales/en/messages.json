@@ -1,6 +1,6 @@
 {
-  "extensionName": { "message": "SEO Copilot – SEO Checker" },
-  "extensionDescription": { "message": "Check any page’s SEO instantly. Get a score, find issues, and see how to fix them—all in your browser." },
+  "extensionName": { "message": "SEO Copilot – AI SEO Checker" },
+  "extensionDescription": { "message": "AI-powered SEO checker. Audit pages, find SEO issues, and generate optimized title and meta description suggestions." },
   "eyebrow": { "message": "Page audit" },
   "scoreLabel": { "message": "SEO score" },
   "gradeLabel": { "message": "Grade" },

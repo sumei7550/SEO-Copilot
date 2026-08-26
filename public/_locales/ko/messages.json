@@ -1,9 +1,9 @@
 {
   "extensionName": {
-    "message": "SEO Copilot – SEO 분석 도구"
+    "message": "SEO Copilot – AI SEO 검사 도구"
   },
   "extensionDescription": {
-    "message": "어떤 페이지든 즉시 SEO 검사. 점수 확인, 문제 발견, 수정 방법 확인을 브라우저에서 바로 완료하세요."
+    "message": "AI 기반 SEO 검사 도구입니다. 페이지를 SEO 감사하고, SEO 문제를 찾고, 최적화된 제목과 메타 설명 제안을 생성하세요."
   },
   "eyebrow": {
     "message": "페이지 감사"

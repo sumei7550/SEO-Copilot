@@ -1,6 +1,6 @@
 {
-  "extensionName": { "message": "SEO Copilot – SEO分析工具" },
-  "extensionDescription": { "message": "即时检测任意页面的 SEO，获取评分，发现问题，查看改善建议，全部在浏览器本地完成。" },
+  "extensionName": { "message": "SEO Copilot – AI SEO 检查器" },
+  "extensionDescription": { "message": "AI 驱动的 SEO 检查器。审计页面、发现 SEO 问题，并生成优化后的标题和 Meta Description 建议。" },
   "eyebrow": { "message": "页面审计" },
   "scoreLabel": { "message": "SEO 得分" },
   "gradeLabel": { "message": "等级" },

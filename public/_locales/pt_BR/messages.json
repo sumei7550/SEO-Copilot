@@ -1,9 +1,9 @@
 {
   "extensionName": {
-    "message": "SEO Copilot – Análise SEO"
+    "message": "SEO Copilot – Verificador de SEO com IA"
   },
   "extensionDescription": {
-    "message": "Verifique o SEO de qualquer página ao instante. Obtenha uma pontuação, encontre problemas e veja como corrigi-los no seu navegador."
+    "message": "Verificador de SEO com IA. Audite páginas, encontre problemas de SEO e gere sugestões otimizadas para o título e a meta descrição."
   },
   "eyebrow": {
     "message": "Auditoria da página"

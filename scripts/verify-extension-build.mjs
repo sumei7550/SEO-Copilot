@@ -30,7 +30,7 @@ for (const size of [16, 32, 48, 128]) {
 }
 
 const localeRoot = resolve(root, 'dist', '_locales');
-const localeNames = ['en', 'zh_CN', 'ja', 'ko', 'es', 'de', 'fr', 'pt_BR'];
+const localeNames = ['en', 'zh_CN', 'zh_TW', 'ja', 'ko', 'es', 'de', 'fr', 'pt_BR', 'pt_PT', 'it', 'nl', 'pl', 'id', 'hi', 'th', 'ms', 'ro', 'cs', 'tr', 'sv', 'uk'];
 const englishMessages = JSON.parse(readFileSync(resolve(localeRoot, 'en', 'messages.json'), 'utf8'));
 const englishKeys = Object.keys(englishMessages).sort().join(',');
 for (const locale of localeNames) {

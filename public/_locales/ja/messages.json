@@ -1,9 +1,9 @@
 {
   "extensionName": {
-    "message": "SEO Copilot – SEO分析"
+    "message": "SEO Copilot – AI SEOチェッカー"
   },
   "extensionDescription": {
-    "message": "任意のページをすぐにSEO診断。スコア確認・問題発見・修正方法確認がすべてブラウザ内で完結。"
+    "message": "AI搭載のSEOチェッカー。ページをSEO監査し、SEO上の問題を見つけ、最適化されたタイトルとメタディスクリプションの候補を生成します。"
   },
   "eyebrow": {
     "message": "ページ監査"

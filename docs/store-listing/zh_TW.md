@@ -1,0 +1,36 @@
+# Extension Name
+
+SEO Copilot – AI SEO 檢查器
+
+# Short Description
+
+使用 SEO 檢查器稽核網頁、找出問題、取得 AI 標題與中繼描述建議，並在更新後重新掃描。
+
+# Detailed Description
+
+## 1. Product positioning
+
+SEO Copilot is an AI-powered SEO checker for the page currently open in Chrome. It helps you review on-page SEO and decide what to improve.
+
+## 2. Core features
+
+- SEO audit and SEO issue detection
+- AI title suggestions for title optimization
+- AI meta description suggestions
+- Page re-scan after updates
+
+## 3. How it works
+
+Run an SEO audit, review detected issues, request AI suggestions, make any changes yourself, then re-scan the page to check its latest state.
+
+## 4. Privacy and limitations
+
+SEO Copilot provides analysis and suggestions. It does not automatically modify websites, guarantee that every SEO issue is fixed, guarantee ranking improvements, or guarantee Google rankings.
+
+# Keywords
+
+SEO 檢查器、SEO 稽核、頁面 SEO、SEO 問題、AI SEO、標題最佳化、中繼描述、網站分析、技術 SEO
+
+# Notes
+
+Localized v1.1.0 listing draft. Keep “SEO Copilot” unchanged. Short-description length and final market-specific ASO should be validated in Chrome Web Store before publication.
