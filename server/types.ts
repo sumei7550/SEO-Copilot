@@ -1,6 +1,7 @@
 export type SupportedIssueType = 'title' | 'meta-description';
 
 export interface SeoFixRequest {
+  deviceId: string;
   issueType: SupportedIssueType | string;
   currentValue: string;
   title: string;
@@ -26,7 +27,10 @@ export type SeoFixErrorCode =
   | 'AI_TIMEOUT'
   | 'AI_PROVIDER_ERROR'
   | 'AI_INVALID_OUTPUT'
-  | 'EMPTY_RESULT';
+  | 'EMPTY_RESULT'
+  | 'DAILY_QUOTA_EXCEEDED'
+  | 'RATE_LIMITED'
+  | 'SERVICE_LIMIT_REACHED';
 
 export class SeoFixError extends Error {
   constructor(

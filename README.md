@@ -58,6 +58,8 @@ npm run vercel:dev
 
 在 Vercel Project Settings → Environment Variables 中设置 `DEEPSEEK_API_KEY`、`DEEPSEEK_MODEL` 和 `DEEPSEEK_BASE_URL`。API Key 不应写入代码、仓库或 Extension。`DEEPSEEK_MODEL` 未设置时默认为 `deepseek-chat`，`DEEPSEEK_BASE_URL` 未设置时默认为 `https://api.deepseek.com`。
 
+Real AI 发布前还需要配置 Upstash Redis REST：`UPSTASH_REDIS_REST_URL`、`UPSTASH_REDIS_REST_TOKEN`、`AI_RATE_LIMIT_SALT` 和可选的 `AI_DAILY_GLOBAL_LIMIT`（默认 500）。AI Endpoint 使用 Redis 执行 device 每日 5 次成功额度、IP 每分钟 3 次、device 10 秒 cooldown 和全局每日请求熔断；供应商失败会释放 device 成功额度预留。未配置 Redis 时仅适合本地开发，生产环境应配置并验证这些变量。
+
 部署 Backend 时可在仓库根目录执行：
 
 ```bash

@@ -40,6 +40,9 @@ export function validateRequest(value: unknown, bodyBytes = JSON.stringify(value
   if (input.brand !== undefined && input.brand !== null && typeof input.brand !== 'string') {
     throw new SeoFixError('INVALID_REQUEST', 'brand must be a string or null.');
   }
+  if (typeof input.deviceId !== 'string' || !/^[a-zA-Z0-9_-]{16,128}$/.test(input.deviceId)) {
+    throw new SeoFixError('INVALID_REQUEST', 'deviceId is required.');
+  }
 
   return input as unknown as SeoFixRequest;
 }

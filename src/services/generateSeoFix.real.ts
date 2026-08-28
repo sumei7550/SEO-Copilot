@@ -11,13 +11,14 @@ interface BackendRecommendation {
 
 interface BackendResponse {
   recommendations?: BackendRecommendation[];
-  error?: { message?: unknown };
+  error?: { message?: unknown; code?: unknown };
 }
 
 export interface RealProviderOptions {
   backendUrl?: string;
   timeoutMs?: number;
   fetchImpl?: typeof fetch;
+  deviceId?: string;
 }
 
 /** Calls the Backend proxy. DeepSeek credentials and provider URLs never enter the extension. */
@@ -32,6 +33,7 @@ export async function generateSeoFixReal(request: AiFixRequest, options: RealPro
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), options.timeoutMs ?? DEFAULT_TIMEOUT_MS);
   const fetchImpl = options.fetchImpl ?? fetch;
+  const deviceId = options.deviceId ?? await getDeviceId();
   try {
     const response = await fetchImpl(`${backendUrl.replace(/\/$/, '')}/api/v1/seo-fixes`, {
       method: 'POST',
@@ -45,13 +47,15 @@ export async function generateSeoFixReal(request: AiFixRequest, options: RealPro
         url: request.context.url,
         brand: request.context.brand.name,
         pageContext: request.context,
+        deviceId,
       }),
       signal: controller.signal,
     });
 
     const payload = await readJson(response);
     if (!response.ok) {
-      const message = typeof payload.error?.message === 'string' ? payload.error.message : 'SEO Copilot backend request failed.';
+      const code = typeof payload.error?.code === 'string' ? payload.error.code : undefined;
+      const message = code === 'DAILY_QUOTA_EXCEEDED' ? "Today's free AI limit has been reached. Try again tomorrow." : typeof payload.error?.message === 'string' ? payload.error.message : 'SEO Copilot backend request failed.';
       throw new BackendResponseError(message);
     }
     return normalizeResponse(request.type, payload);
@@ -63,6 +67,24 @@ export async function generateSeoFixReal(request: AiFixRequest, options: RealPro
   } finally {
     clearTimeout(timeout);
   }
+}
+
+let deviceIdPromise: Promise<string> | undefined;
+async function getDeviceId(): Promise<string> {
+  if (deviceIdPromise) return deviceIdPromise;
+  deviceIdPromise = createDeviceId();
+  return deviceIdPromise;
+}
+
+async function createDeviceId(): Promise<string> {
+  if (typeof chrome !== 'undefined' && chrome.storage?.local) {
+    const stored = await chrome.storage.local.get('deviceId');
+    if (typeof stored.deviceId === 'string' && /^[a-zA-Z0-9_-]{16,128}$/.test(stored.deviceId)) return stored.deviceId;
+    const deviceId = crypto.randomUUID();
+    await chrome.storage.local.set({ deviceId });
+    return deviceId;
+  }
+  return crypto.randomUUID();
 }
 
 async function readJson(response: Response): Promise<BackendResponse> {

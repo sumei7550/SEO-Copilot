@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { validateRequest } from './requestValidation';
 
-const valid = { issueType: 'title', currentValue: 'Old', title: 'Title', meta: 'Meta', h1: 'H1', url: 'https://example.com', brand: 'Acme', pageContext: { language: 'en', pageType: 'home' } };
+const valid = { deviceId: '0123456789abcdef0123456789abcdef', issueType: 'title', currentValue: 'Old', title: 'Title', meta: 'Meta', h1: 'H1', url: 'https://example.com', brand: 'Acme', pageContext: { language: 'en', pageType: 'home' } };
 
 describe('validateRequest', () => {
   it('accepts title and meta-description', () => {

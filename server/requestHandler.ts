@@ -2,6 +2,8 @@ import { randomUUID } from 'node:crypto';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { generateSeoFix } from './seoFixService.js';
 import { SeoFixError } from './types.js';
+import { getClientIp, getRedisRateLimiter } from './rateLimiter.js';
+import { validateRequest } from './requestValidation.js';
 
 type VercelCompatibleRequest = IncomingMessage & {
   body?: unknown;
@@ -17,6 +19,7 @@ export async function handleSeoFixRequest(
   let issueType = 'unknown';
   let httpStatus = 500;
   let recommendationCount: number | null = null;
+  let finalize: ((success?: boolean) => Promise<void>) | undefined;
 
   try {
     const path = req.url?.split('?')[0];
@@ -31,7 +34,10 @@ export async function handleSeoFixRequest(
 
     const body = await readJson(req);
     issueType = getLoggableIssueType(body.value);
-    const result = await generateSeoFix(body.value, body.bytes);
+    const validated = validateRequest(body.value, body.bytes);
+    finalize = await getRedisRateLimiter().reserve({ deviceId: validated.deviceId, ip: getClientIp(req) });
+    const result = await generateSeoFix(validated, body.bytes);
+    await finalize(true);
     httpStatus = 200;
     recommendationCount = result.recommendations.length;
     return writeJson(res, httpStatus, {
@@ -40,12 +46,14 @@ export async function handleSeoFixRequest(
       model: process.env.DEEPSEEK_MODEL ?? 'deepseek-chat',
     });
   } catch (error) {
+    if (finalize) await finalize(false).catch(() => undefined);
     const normalized = error instanceof SeoFixError
       ? error
       : new SeoFixError('AI_PROVIDER_ERROR', 'AI provider request failed.', true);
     const status = normalized.code === 'INVALID_REQUEST' ? 400
       : normalized.code === 'UNSUPPORTED_ISSUE_TYPE' ? 422
-        : normalized.code === 'AI_TIMEOUT' ? 504 : 502;
+        : normalized.code === 'AI_TIMEOUT' ? 504
+          : ['DAILY_QUOTA_EXCEEDED', 'RATE_LIMITED', 'SERVICE_LIMIT_REACHED'].includes(normalized.code) ? 429 : 502;
     httpStatus = status;
     return writeError(res, requestId, httpStatus, normalized.code, normalized.message, normalized.retryable);
   } finally {

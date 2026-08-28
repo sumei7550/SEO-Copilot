@@ -19,17 +19,17 @@ export function AiFixPanel({ request }: { request: AiFixRequest }) {
   const [selectedId, setSelectedId] = useState('');
   const [copyStatus, setCopyStatus] = useState<'idle' | 'success' | 'failed'>('idle');
   const [generating, setGenerating] = useState(false);
-  const [generationError, setGenerationError] = useState(false);
+  const [generationError, setGenerationError] = useState<string | undefined>();
 
   const refreshRecommendations = async () => {
     setGenerating(true);
-    setGenerationError(false);
+    setGenerationError(undefined);
     try {
       const result = await generateSeoFix(request);
       setResponse(result);
       setSelectedId((currentId) => result.recommendations.some((recommendation) => recommendation.id === currentId) ? currentId : result.recommendations[0]?.id ?? '');
-    } catch {
-      setGenerationError(true);
+    } catch (error) {
+      setGenerationError(error instanceof Error && error.message === "Today's free AI limit has been reached. Try again tomorrow." ? error.message : 'AI suggestions unavailable.');
     } finally {
       setGenerating(false);
     }
@@ -80,7 +80,7 @@ export function AiFixPanel({ request }: { request: AiFixRequest }) {
       <div className="suggestion-list">{response.recommendations.map((recommendation, index) => <RecommendationCard key={recommendation.id} recommendation={recommendation} label={labels[index] ?? `Alternative ${index}`} selected={recommendation.id === selectedId} onSelect={() => setSelectedId(recommendation.id)} />)}</div>
       <div className="fix-actions"><button type="button" onClick={() => void refreshRecommendations()} className="secondary-button" disabled={generating}>↻ Generate another</button><button type="button" onClick={() => void copySelected()} className="primary-button">{copyStatus === 'success' ? '✓ Copied' : copyStatus === 'failed' ? 'Copy failed' : 'Copy selected'}</button></div>
       <p className="copy-feedback" aria-live="polite">{copyStatus === 'success' ? 'Copied — paste this into your page source or CMS.' : copyStatus === 'failed' ? 'Copy failed' : ''}</p>
-    </> : generationError ? <div className="generating"><p>AI suggestions unavailable.<br />Please try again.</p><button type="button" onClick={() => void refreshRecommendations()} className="secondary-button" disabled={generating}>Retry</button></div> : <p className="generating">Generating AI recommendations…</p>}
+    </> : generationError ? <div className="generating"><p>{generationError === "Today's free AI limit has been reached. Try again tomorrow." ? <>Today's free AI limit has been reached.<br />Try again tomorrow.</> : <>AI suggestions unavailable.<br />Please try again.</>}</p><button type="button" onClick={() => void refreshRecommendations()} className="secondary-button" disabled={generating}>Retry</button></div> : <p className="generating">Generating AI recommendations…</p>}
   </div>;
 }
 
