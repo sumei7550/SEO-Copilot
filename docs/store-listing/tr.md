@@ -8,24 +8,21 @@ Sayfaları SEO denetleyiciyle inceleyin, sorunları bulun, yapay zekâdan başl�
 
 # Detailed Description
 
-## 1. Product positioning
+SEO Copilot, Chrome’da açık olan sayfa için yapay zekâ destekli bir SEO denetleyicidir. Sayfa içi SEO ve teknik SEO sinyallerini hızlıca incelemenize, hangi noktaların iyileştirilmesi gerektiğini anlamanıza yardımcı olur.
 
-SEO Copilot is an AI-powered SEO checker for the page currently open in Chrome. It helps you review on-page SEO and decide what to improve.
+Tarama başlatarak SEO puanını ve yaygın SEO sorunlarını görün. Title etiketi, meta açıklama, H1 ve diğer başlıklar, canonical etiketi, yapılandırılmış veri/schema, alt metin gibi görsel SEO unsurları, URL yapısı ve diğer sayfa sinyalleri kontrol edilir. Sorun önem dereceleri öncelik belirlemenizi kolaylaştırır.
 
-## 2. Core features
+Desteklenen title ve meta açıklama sorunları için sayfa bağlamına göre yapay zekâ başlık önerileri ve meta açıklama önerileri üretir. Seçenekleri karşılaştırın, uygun olanı seçip Copy selected ile kopyalayın. Başka bir öneri için Generate another seçeneğini kullanın. Bunlar başlık optimizasyonu ve içerik çalışmasına yardımcı olan önerilerdir; yayın kararını siz verirsiniz.
 
-- SEO audit and SEO issue detection
-- AI title suggestions for title optimization
-- AI meta description suggestions
-- Page re-scan after updates
+## Kullanım
 
-## 3. How it works
+Bir sayfa açın, SEO Copilot’ı çalıştırın ve denetimi başlatın. SEO puanını ve tespit edilen sorunları inceleyin, değişiklikleri CMS veya kodunuzda kendiniz yapın ve güncel durumu görmek için Re-scan düğmesine basın.
 
-Run an SEO audit, review detected issues, request AI suggestions, make any changes yourself, then re-scan the page to check its latest state.
+SEO uzmanları, ajanslar, geliştiriciler, içerik ekipleri, blog yazarları, e-ticaret ve SaaS ekipleri ile site sahipleri için uygundur.
 
-## 4. Privacy and limitations
+## Gizlilik ve sınırlamalar
 
-SEO Copilot provides analysis and suggestions. It does not automatically modify websites, guarantee that every SEO issue is fixed, guarantee ranking improvements, or guarantee Google rankings.
+SEO Copilot yalnızca analiz ve yapay zekâ destekli öneriler sunar. Siteleri otomatik olarak değiştirmez, tüm SEO sorunlarını otomatik çözmez ve trafik, arama sıralaması veya Google sıralaması artışı garanti etmez. Yapay zekâ çıktısını kullanmadan önce kontrol edin.
 
 # Keywords
 

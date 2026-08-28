@@ -8,24 +8,21 @@ Proveďte SEO audit stránek, odhalte problémy, získejte návrhy nadpisů a me
 
 # Detailed Description
 
-## 1. Product positioning
+SEO Copilot je SEO kontrola s AI pro stránku právě otevřenou v Chromu. Nabízí rychlý SEO audit a přehled on-page SEO, abyste věděli, co stojí za kontrolu a zlepšení.
 
-SEO Copilot is an AI-powered SEO checker for the page currently open in Chrome. It helps you review on-page SEO and decide what to improve.
+Spusťte sken a zobrazte SEO skóre i odhalené problémy. Kontrola zahrnuje title, meta description, H1 a další nadpisy, canonical, strukturovaná data/schema, SEO obrázků včetně alternativních textů, strukturu URL a další technické SEO signály. Závažnost problémů usnadňuje stanovení priorit.
 
-## 2. Core features
+U podporovaných problémů s title a meta description získáte AI návrhy nadpisů a meta popisů podle obsahu stránky. Porovnejte varianty, vyberte vhodnou a použijte Copy selected pro její zkopírování. Další variantu vytvoříte volbou Generate another. Návrhy slouží jako pomoc při optimalizaci titulku a obsahu; konečné rozhodnutí je na vás.
 
-- SEO audit and SEO issue detection
-- AI title suggestions for title optimization
-- AI meta description suggestions
-- Page re-scan after updates
+## Jak na to
 
-## 3. How it works
+Otevřete stránku, spusťte SEO Copilot a proveďte audit. Projděte skóre a zjištěné problémy, změny proveďte sami v CMS nebo kódu a kliknutím na Re-scan ověřte aktuální stav.
 
-Run an SEO audit, review detected issues, request AI suggestions, make any changes yourself, then re-scan the page to check its latest state.
+Nástroj je vhodný pro SEO specialisty, agentury, vývojáře, obsahové týmy, blogery, e-shopy, SaaS týmy i majitele webů při kontrole landing pages, článků a produktových stránek.
 
-## 4. Privacy and limitations
+## Soukromí a omezení
 
-SEO Copilot provides analysis and suggestions. It does not automatically modify websites, guarantee that every SEO issue is fixed, guarantee ranking improvements, or guarantee Google rankings.
+SEO Copilot poskytuje analýzu a AI návrhy. Weby automaticky neupravuje, neopravuje zaručeně všechny SEO problémy a nezaručuje vyšší návštěvnost ani lepší pozice ve vyhledávání či na Googlu. Návrhy AI před použitím zkontrolujte.
 
 # Keywords
 

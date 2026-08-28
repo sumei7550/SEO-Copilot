@@ -8,24 +8,19 @@ SEO Copilot – SEO-перевірка зі ШІ
 
 # Detailed Description
 
-## 1. Product positioning
+SEO Copilot — це SEO-перевірка зі ШІ для сторінки, відкритої в Chrome. Інструмент допомагає швидко провести аудит внутрішньої оптимізації та зрозуміти, що варто перевірити або покращити.
 
-SEO Copilot is an AI-powered SEO checker for the page currently open in Chrome. It helps you review on-page SEO and decide what to improve.
+Запустіть сканування, щоб побачити SEO-оцінку й виявлені SEO-проблеми. Перевіряються title, метаопис, H1 та інші заголовки, canonical, структуровані дані/schema, SEO зображень, зокрема alt-тексти, структура URL та інші сигнали технічного SEO. Рівень проблеми допомагає визначити пріоритети.
 
-## 2. Core features
+Для сумісних проблем title і метаопису SEO Copilot створює пропозиції заголовків і метаописів за контекстом сторінки. Порівняйте варіанти, виберіть потрібний і натисніть Copy selected, щоб скопіювати його. Ще один варіант можна отримати через Generate another. Це рекомендації для оптимізації заголовка й контенту, а рішення про публікацію залишається за вами.
 
-- SEO audit and SEO issue detection
-- AI title suggestions for title optimization
-- AI meta description suggestions
-- Page re-scan after updates
+## Як користуватися
 
-## 3. How it works
+Відкрийте сторінку, запустіть SEO Copilot і виконайте аудит. Перегляньте оцінку та проблеми, внесіть зміни самостійно в CMS або коді, потім натисніть Re-scan для перевірки оновленого стану. Інструмент підходить SEO-фахівцям, агенціям, розробникам, контент-командам, блогерам, інтернет-магазинам, SaaS-командам і власникам сайтів.
 
-Run an SEO audit, review detected issues, request AI suggestions, make any changes yourself, then re-scan the page to check its latest state.
+## Конфіденційність і обмеження
 
-## 4. Privacy and limitations
-
-SEO Copilot provides analysis and suggestions. It does not automatically modify websites, guarantee that every SEO issue is fixed, guarantee ranking improvements, or guarantee Google rankings.
+SEO Copilot надає аналіз і рекомендації зі ШІ. Він не змінює сайти автоматично, не виправляє всі SEO-проблеми та не гарантує зростання трафіку, позицій у пошуку або позицій Google. Перевіряйте результат ШІ перед використанням.
 
 # Keywords
 

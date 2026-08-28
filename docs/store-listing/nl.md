@@ -8,24 +8,21 @@ Controleer pagina’s met een SEO-checker, ontdek problemen, krijg AI-suggesties
 
 # Detailed Description
 
-## 1. Product positioning
+SEO Copilot is een SEO-checker met AI voor de pagina die in Chrome openstaat. De extensie biedt een snelle on-page SEO-audit en website-analyse, zodat je ziet wat aandacht verdient.
 
-SEO Copilot is an AI-powered SEO checker for the page currently open in Chrome. It helps you review on-page SEO and decide what to improve.
+Start een scan voor een SEO-score en detectie van veelvoorkomende SEO-problemen. De controle omvat de title-tag, metabeschrijving, H1 en andere koppen, canonical-tag, gestructureerde gegevens/schema, beeld-SEO zoals alt-tekst, URL-structuur en andere technische SEO-signalen. De ernst van een probleem helpt bij het bepalen van de volgorde.
 
-## 2. Core features
+Voor ondersteunde problemen met title en metabeschrijving maakt SEO Copilot AI-suggesties voor titels en meta descriptions op basis van de pagina. Vergelijk varianten, kies een optie en gebruik Copy selected om die te kopiëren. Met Generate another vraag je een andere suggestie aan. De aanbevelingen ondersteunen titeloptimalisatie en contentwerk; jij bepaalt wat je publiceert.
 
-- SEO audit and SEO issue detection
-- AI title suggestions for title optimization
-- AI meta description suggestions
-- Page re-scan after updates
+## Zo werkt het
 
-## 3. How it works
+Open een webpagina, start SEO Copilot en voer de audit uit. Bekijk de score en gevonden problemen, voer wijzigingen zelf door in je CMS of code en kies Re-scan om de actuele status opnieuw te controleren.
 
-Run an SEO audit, review detected issues, request AI suggestions, make any changes yourself, then re-scan the page to check its latest state.
+Geschikt voor SEO-specialisten, bureaus, ontwikkelaars, contentteams, bloggers, webshops, SaaS-teams en website-eigenaren voor landingspagina’s, artikelen en productpagina’s.
 
-## 4. Privacy and limitations
+## Privacy en beperkingen
 
-SEO Copilot provides analysis and suggestions. It does not automatically modify websites, guarantee that every SEO issue is fixed, guarantee ranking improvements, or guarantee Google rankings.
+SEO Copilot geeft analyse en AI-ondersteunde suggesties. De extensie wijzigt websites niet automatisch, lost niet elk SEO-probleem automatisch op en garandeert geen meer verkeer, betere posities of Google-ranking. Controleer AI-suggesties voordat je ze gebruikt.
 
 # Keywords
 

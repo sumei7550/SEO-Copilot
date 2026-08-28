@@ -8,24 +8,19 @@ Audit halaman dengan pemeriksa SEO, kesan isu, dapatkan cadangan AI untuk tajuk 
 
 # Detailed Description
 
-## 1. Product positioning
+SEO Copilot ialah pemeriksa SEO berkuasa AI untuk halaman yang sedang dibuka dalam Chrome. Ia membantu anda menjalankan audit SEO pada halaman dan memahami perkara yang patut diperbaiki.
 
-SEO Copilot is an AI-powered SEO checker for the page currently open in Chrome. It helps you review on-page SEO and decide what to improve.
+Jalankan imbasan untuk melihat skor SEO serta mengesan isu SEO. Pemeriksaan merangkumi tag title, meta description, H1 dan tajuk lain, tag canonical, data berstruktur/schema, SEO imej termasuk teks alt, struktur URL dan isyarat SEO teknikal yang berkaitan. Tahap isu membantu anda menetapkan keutamaan.
 
-## 2. Core features
+Untuk isu title dan meta description yang disokong, dapatkan cadangan tajuk AI dan cadangan meta description berdasarkan konteks halaman. Bandingkan pilihan, pilih yang sesuai dan gunakan Copy selected untuk menyalinnya. Pilih Generate another jika mahukan cadangan lain. Cadangan ini menyokong pengoptimuman tajuk dan kandungan; keputusan untuk menerbitkan tetap milik anda.
 
-- SEO audit and SEO issue detection
-- AI title suggestions for title optimization
-- AI meta description suggestions
-- Page re-scan after updates
+## Cara menggunakan
 
-## 3. How it works
+Buka halaman, jalankan SEO Copilot dan mulakan audit. Semak skor serta isu yang dikesan, buat perubahan sendiri dalam CMS atau kod, kemudian tekan Re-scan untuk menyemak keadaan terkini. Sesuai untuk pakar SEO, agensi, pembangun, pasukan kandungan, blogger, e-dagang, pasukan SaaS dan pemilik laman web.
 
-Run an SEO audit, review detected issues, request AI suggestions, make any changes yourself, then re-scan the page to check its latest state.
+## Privasi dan had
 
-## 4. Privacy and limitations
-
-SEO Copilot provides analysis and suggestions. It does not automatically modify websites, guarantee that every SEO issue is fixed, guarantee ranking improvements, or guarantee Google rankings.
+SEO Copilot menyediakan analisis dan cadangan berbantukan AI. Ia tidak mengubah laman secara automatik, tidak membaiki semua isu SEO dan tidak menjamin peningkatan trafik, kedudukan carian atau kedudukan Google. Semak hasil AI sebelum digunakan.
 
 # Keywords
 

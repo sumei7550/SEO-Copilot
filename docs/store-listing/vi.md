@@ -8,24 +8,19 @@ Kiểm tra trang bằng công cụ SEO, phát hiện vấn đề, nhận gợi �
 
 # Detailed Description
 
-## 1. Product positioning
+SEO Copilot là công cụ kiểm tra SEO bằng AI cho trang đang mở trong Chrome. Công cụ hỗ trợ audit SEO trên trang và phân tích website nhanh, giúp bạn biết phần nào cần xem xét hoặc tối ưu.
 
-SEO Copilot is an AI-powered SEO checker for the page currently open in Chrome. It helps you review on-page SEO and decide what to improve.
+Chạy quét để xem điểm SEO và phát hiện các vấn đề SEO phổ biến. Phạm vi kiểm tra gồm thẻ title, meta description, H1 và các heading khác, thẻ canonical, dữ liệu có cấu trúc/schema, SEO hình ảnh như alt text, cấu trúc URL và các tín hiệu technical SEO liên quan. Mức độ vấn đề giúp bạn sắp xếp ưu tiên.
 
-## 2. Core features
+Với các vấn đề title và meta description được hỗ trợ, SEO Copilot tạo gợi ý tiêu đề AI và gợi ý meta description dựa trên ngữ cảnh trang. So sánh các lựa chọn, chọn phương án phù hợp rồi dùng Copy selected để sao chép. Chọn Generate another để nhận gợi ý khác. Đây là đề xuất hỗ trợ tối ưu tiêu đề và nội dung; bạn tự quyết định nội dung sẽ đăng.
 
-- SEO audit and SEO issue detection
-- AI title suggestions for title optimization
-- AI meta description suggestions
-- Page re-scan after updates
+## Cách sử dụng
 
-## 3. How it works
+Mở trang web, chạy SEO Copilot và bắt đầu audit. Xem điểm SEO cùng các vấn đề phát hiện được, tự chỉnh sửa trong CMS hoặc mã nguồn, sau đó chọn Re-scan để kiểm tra trạng thái mới nhất. Công cụ phù hợp với chuyên gia SEO, agency, developer, nhóm nội dung, blogger, đội ngũ thương mại điện tử, SaaS và chủ website.
 
-Run an SEO audit, review detected issues, request AI suggestions, make any changes yourself, then re-scan the page to check its latest state.
+## Quyền riêng tư và giới hạn
 
-## 4. Privacy and limitations
-
-SEO Copilot provides analysis and suggestions. It does not automatically modify websites, guarantee that every SEO issue is fixed, guarantee ranking improvements, or guarantee Google rankings.
+SEO Copilot chỉ cung cấp phân tích và gợi ý có AI hỗ trợ. Công cụ không tự động sửa website, không tự động khắc phục mọi vấn đề SEO và không đảm bảo tăng lưu lượng, thứ hạng tìm kiếm hoặc thứ hạng Google. Hãy kiểm tra kết quả AI trước khi sử dụng.
 
 # Keywords
 

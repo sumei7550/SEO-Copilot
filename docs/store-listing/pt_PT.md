@@ -8,24 +8,21 @@ Audite páginas, detete problemas, obtenha títulos e meta descriptions com IA e
 
 # Detailed Description
 
-## 1. Product positioning
+SEO Copilot é um verificador de SEO com IA para a página aberta no Chrome. É uma ferramenta simples de auditoria SEO on-page que ajuda a perceber o que deve ser analisado e melhorado.
 
-SEO Copilot is an AI-powered SEO checker for the page currently open in Chrome. It helps you review on-page SEO and decide what to improve.
+Execute uma análise para obter a pontuação de SEO e detetar problemas comuns. O diagnóstico verifica a title tag, a meta description, o H1 e outros títulos, a tag canonical, dados estruturados/schema, SEO de imagens como texto alternativo, a estrutura do URL e outros sinais de SEO técnico. A gravidade dos problemas facilita a definição de prioridades.
 
-## 2. Core features
+Para problemas compatíveis, recebe sugestões de títulos e meta descriptions geradas por IA com base no contexto da página. Compare as opções, escolha uma e use Copy selected para a copiar. Se precisar de outra formulação, selecione Generate another. As sugestões apoiam a otimização de títulos e o trabalho de conteúdo; a decisão final é sua.
 
-- SEO audit and SEO issue detection
-- AI title suggestions for title optimization
-- AI meta description suggestions
-- Page re-scan after updates
+## Como funciona
 
-## 3. How it works
+Abra uma página, inicie o SEO Copilot e faça o diagnóstico. Consulte a pontuação e os problemas, aplique as alterações manualmente no CMS ou no código e selecione Re-scan para verificar o estado mais recente.
 
-Run an SEO audit, review detected issues, request AI suggestions, make any changes yourself, then re-scan the page to check its latest state.
+É adequado para especialistas de SEO, agências, programadores, equipas de conteúdo, bloggers, lojas online, equipas SaaS e proprietários de sites, em páginas de destino, artigos e páginas de produto.
 
-## 4. Privacy and limitations
+## Privacidade e limitações
 
-SEO Copilot provides analysis and suggestions. It does not automatically modify websites, guarantee that every SEO issue is fixed, guarantee ranking improvements, or guarantee Google rankings.
+O SEO Copilot fornece análises e sugestões assistidas por IA. Não altera sites automaticamente, não resolve todos os problemas de SEO e não garante mais tráfego, melhores posições ou posições no Google. Verifique as sugestões da IA antes de as utilizar.
 
 # Keywords
 

@@ -8,24 +8,19 @@ Audit halaman dengan pemeriksa SEO, temukan masalah, dapatkan saran AI untuk jud
 
 # Detailed Description
 
-## 1. Product positioning
+SEO Copilot adalah pemeriksa SEO dengan AI untuk halaman yang sedang terbuka di Chrome. Gunakan audit SEO on-page dan analisis situs yang ringkas untuk memahami bagian yang perlu ditinjau.
 
-SEO Copilot is an AI-powered SEO checker for the page currently open in Chrome. It helps you review on-page SEO and decide what to improve.
+Jalankan pemindaian untuk melihat skor SEO dan mendeteksi masalah SEO. Pemeriksaan mencakup tag title, meta description, H1 dan heading lain, tag canonical, structured data/schema, SEO gambar termasuk teks alt, struktur URL, serta sinyal teknis lainnya. Tingkat masalah membantu menentukan prioritas.
 
-## 2. Core features
+Untuk masalah title dan meta description yang didukung, SEO Copilot membuat saran judul AI dan saran meta description berdasarkan konteks halaman. Bandingkan beberapa opsi, pilih yang sesuai, lalu gunakan Copy selected untuk menyalinnya. Gunakan Generate another untuk saran lain. Saran ini membantu optimasi judul dan konten, sementara keputusan akhir tetap di tangan Anda.
 
-- SEO audit and SEO issue detection
-- AI title suggestions for title optimization
-- AI meta description suggestions
-- Page re-scan after updates
+## Cara menggunakan
 
-## 3. How it works
+Buka halaman, jalankan SEO Copilot, lalu mulai audit. Tinjau skor dan masalah, lakukan perubahan sendiri melalui CMS atau kode, kemudian pilih Re-scan untuk memeriksa kondisi terbaru. Cocok untuk spesialis SEO, agensi, developer, tim konten, blogger, toko online, tim SaaS, dan pemilik situs.
 
-Run an SEO audit, review detected issues, request AI suggestions, make any changes yourself, then re-scan the page to check its latest state.
+## Privasi dan batasan
 
-## 4. Privacy and limitations
-
-SEO Copilot provides analysis and suggestions. It does not automatically modify websites, guarantee that every SEO issue is fixed, guarantee ranking improvements, or guarantee Google rankings.
+SEO Copilot menyediakan analisis dan saran berbantuan AI. Ekstensi ini tidak mengubah situs secara otomatis, tidak memperbaiki semua masalah SEO secara otomatis, dan tidak menjamin peningkatan trafik, peringkat pencarian, atau peringkat Google. Periksa hasil AI sebelum digunakan.
 
 # Keywords
 
