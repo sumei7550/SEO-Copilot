@@ -2,7 +2,33 @@ import type { AiFixRequest, AiFixResponse, Recommendation } from '../types/aiFix
 
 const DEFAULT_TIMEOUT_MS = 10_000;
 
-class BackendResponseError extends Error {}
+type KnownAiErrorCode =
+  | 'INVALID_REQUEST'
+  | 'UNSUPPORTED_ISSUE_TYPE'
+  | 'AI_TIMEOUT'
+  | 'AI_PROVIDER_ERROR'
+  | 'AI_INVALID_OUTPUT'
+  | 'EMPTY_RESULT'
+  | 'DAILY_QUOTA_EXCEEDED'
+  | 'RATE_LIMITED'
+  | 'SERVICE_LIMIT_REACHED';
+
+/** Backend codes are preserved even when a newer code is not known by this UI. */
+export type AiErrorCode = KnownAiErrorCode | (string & {});
+
+export class AiServiceError extends Error {
+  constructor(
+    message: string,
+    public readonly code?: AiErrorCode,
+    public readonly retryAfter?: number,
+    public readonly retryAfterSeconds?: number,
+  ) {
+    super(message);
+    this.name = 'AiServiceError';
+  }
+}
+
+class BackendResponseError extends AiServiceError {}
 
 interface BackendRecommendation {
   content?: unknown;
@@ -11,7 +37,7 @@ interface BackendRecommendation {
 
 interface BackendResponse {
   recommendations?: BackendRecommendation[];
-  error?: { message?: unknown; code?: unknown };
+  error?: { message?: unknown; code?: unknown; retryAfter?: unknown; retryAfterSeconds?: unknown };
 }
 
 export interface RealProviderOptions {
@@ -56,7 +82,10 @@ export async function generateSeoFixReal(request: AiFixRequest, options: RealPro
     if (!response.ok) {
       const code = typeof payload.error?.code === 'string' ? payload.error.code : undefined;
       const message = code === 'DAILY_QUOTA_EXCEEDED' ? "Today's free AI limit has been reached. Try again tomorrow." : typeof payload.error?.message === 'string' ? payload.error.message : 'SEO Copilot backend request failed.';
-      throw new BackendResponseError(message);
+      const retryAfter = toRetrySeconds(payload.error?.retryAfter);
+      const retryAfterSeconds = toRetrySeconds(payload.error?.retryAfterSeconds);
+      const headerRetryAfter = toHeaderRetrySeconds(response.headers.get('Retry-After'));
+      throw new BackendResponseError(message, code, retryAfter ?? headerRetryAfter, retryAfterSeconds);
     }
     return normalizeResponse(request.type, payload);
   } catch (error) {
@@ -92,6 +121,20 @@ async function readJson(response: Response): Promise<BackendResponse> {
   try { value = await response.json(); } catch { throw new Error('SEO Copilot backend returned an empty response.'); }
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('SEO Copilot backend returned an empty response.');
   return value as BackendResponse;
+}
+
+function toRetrySeconds(value: unknown): number | undefined {
+  if (typeof value === 'number' && Number.isFinite(value) && value >= 0) return Math.ceil(value);
+  if (typeof value === 'string' && /^\d+(?:\.\d+)?$/.test(value.trim())) return Math.ceil(Number(value));
+  return undefined;
+}
+
+function toHeaderRetrySeconds(value: string | null): number | undefined {
+  const deltaSeconds = toRetrySeconds(value);
+  if (deltaSeconds !== undefined) return deltaSeconds;
+  if (!value) return undefined;
+  const retryAt = Date.parse(value);
+  return Number.isNaN(retryAt) ? undefined : Math.max(0, Math.ceil((retryAt - Date.now()) / 1000));
 }
 
 function normalizeResponse(type: AiFixRequest['type'], payload: BackendResponse): AiFixResponse {

@@ -37,6 +37,26 @@ describe('generateSeoFixReal', () => {
     await expect(generateSeoFixReal(request, { backendUrl: 'http://backend', fetchImpl: empty })).rejects.toThrow('empty response');
   });
 
+  it('preserves a structured backend error code and retry seconds', async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(new Response(JSON.stringify({ error: {
+      code: 'RATE_LIMITED', message: 'Too many requests.', retryAfter: 4, retryAfterSeconds: 3,
+    } }), { status: 429 }));
+
+    await expect(generateSeoFixReal(request, { backendUrl: 'http://backend', fetchImpl })).rejects.toMatchObject({
+      name: 'AiServiceError', code: 'RATE_LIMITED', retryAfter: 4, retryAfterSeconds: 3,
+    });
+  });
+
+  it('uses the HTTP Retry-After header when the payload has no retry value', async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(new Response(JSON.stringify({ error: { code: 'RATE_LIMITED' } }), {
+      status: 429, headers: { 'Retry-After': '6' },
+    }));
+
+    await expect(generateSeoFixReal(request, { backendUrl: 'http://backend', fetchImpl })).rejects.toMatchObject({
+      code: 'RATE_LIMITED', retryAfter: 6,
+    });
+  });
+
   it('rejects H1 because the Alpha Backend contract supports title and meta only', async () => {
     await expect(generateSeoFixReal({ ...request, type: 'h1' })).rejects.toThrow('H1');
   });

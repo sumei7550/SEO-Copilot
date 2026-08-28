@@ -18,7 +18,7 @@ if (manifest.version !== '1.1.0') {
 }
 
 const permissions = [...(manifest.permissions ?? [])].sort().join(',');
-if (permissions !== 'activeTab,scripting') {
+if (permissions !== 'activeTab,scripting,storage') {
   throw new Error(`Unexpected release permissions: ${permissions}.`);
 }
 
