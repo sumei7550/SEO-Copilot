@@ -8,21 +8,79 @@ Proveďte SEO audit stránek, odhalte problémy, získejte návrhy nadpisů a me
 
 # Detailed Description
 
-SEO Copilot je SEO kontrola s AI pro stránku právě otevřenou v Chromu. Nabízí rychlý SEO audit a přehled on-page SEO, abyste věděli, co stojí za kontrolu a zlepšení.
+SEO Copilot je AI nástroj pro kontrolu SEO stránky, kterou máte právě otevřenou v Chromu. Pomáhá rychle provést on-page SEO audit, odhalit běžné problémy a určit, které prvky stojí za další kontrolu nebo optimalizaci.
 
-Spusťte sken a zobrazte SEO skóre i odhalené problémy. Kontrola zahrnuje title, meta description, H1 a další nadpisy, canonical, strukturovaná data/schema, SEO obrázků včetně alternativních textů, strukturu URL a další technické SEO signály. Závažnost problémů usnadňuje stanovení priorit.
+Nástroj se zaměřuje na jednotlivé stránky a web automaticky neupravuje. Můžete ho použít pro vstupní stránky, články, produktové stránky, ceníky, dokumentaci a další obsah před publikací nebo při běžné SEO kontrole.
 
-U podporovaných problémů s title a meta description získáte AI návrhy nadpisů a meta popisů podle obsahu stránky. Porovnejte varianty, vyberte vhodnou a použijte Copy selected pro její zkopírování. Další variantu vytvoříte volbou Generate another. Návrhy slouží jako pomoc při optimalizaci titulku a obsahu; konečné rozhodnutí je na vás.
+Po spuštění skenu uvidíte SEO skóre, nalezené problémy a jejich závažnost.
 
-## Jak na to
+SEO Copilot kontroluje například:
 
-Otevřete stránku, spusťte SEO Copilot a proveďte audit. Projděte skóre a zjištěné problémy, změny proveďte sami v CMS nebo kódu a kliknutím na Re-scan ověřte aktuální stav.
+- title tag
+- meta description
+- H1 a další nadpisy
+- canonical tag
+- strukturovaná data (Schema)
+- alternativní texty obrázků
+- strukturu URL
+- další on-page a technické SEO prvky
 
-Nástroj je vhodný pro SEO specialisty, agentury, vývojáře, obsahové týmy, blogery, e-shopy, SaaS týmy i majitele webů při kontrole landing pages, článků a produktových stránek.
+Závažnost jednotlivých problémů vám pomůže lépe určit priority a rozhodnout, čemu se věnovat jako první.
+
+## AI návrhy pro SEO
+
+U podporovaných problémů s title tagem a meta description vytváří SEO Copilot několik návrhů pomocí AI na základě obsahu aktuální stránky.
+
+Můžete porovnat stávající obsah s návrhy AI, vybrat vhodnou variantu a zkopírovat ji. Pokud chcete jiný směr, můžete si nechat vygenerovat další návrh.
+
+AI návrhy jsou určeny jako podpora při optimalizaci title tagů a meta description. O finálním obsahu vždy rozhodujete vy podle účelu stránky, obsahu a tónu značky.
+
+## Hlavní funkce
+
+- SEO analýza aktuálně otevřené stránky
+- SEO skóre a detekce problémů
+- kontrola title tagu a meta description
+- kontrola H1 a struktury nadpisů
+- kontrola canonical tagu
+- kontrola strukturovaných dat (Schema)
+- kontrola alternativních textů obrázků
+- kontrola URL a technických SEO prvků
+- AI návrhy title tagů
+- AI návrhy meta description
+- porovnání více AI variant
+- opětovný sken stránky po úpravách
+
+## Jak SEO Copilot používat
+
+1. Otevřete stránku, kterou chcete zkontrolovat.
+2. Spusťte SEO Copilot a proveďte sken.
+3. Projděte SEO skóre a nalezené problémy.
+4. U podporovaných problémů můžete využít AI návrhy.
+5. Změny proveďte sami v CMS, administraci webu nebo v kódu.
+6. Po úpravách stránku znovu naskenujte a zkontrolujte aktuální SEO stav.
+
+## Pro koho je SEO Copilot určen?
+
+SEO Copilot může být užitečný pro:
+
+- SEO specialisty
+- SEO freelancery a agentury
+- správce a majitele webů
+- vývojáře
+- obsahové a marketingové týmy
+- blogery
+- e-commerce týmy
+- SaaS týmy
+
+Hodí se pro rychlou kontrolu vstupních stránek, článků, produktových stránek, ceníků, dokumentace a dalších důležitých stránek webu.
 
 ## Soukromí a omezení
 
-SEO Copilot poskytuje analýzu a AI návrhy. Weby automaticky neupravuje, neopravuje zaručeně všechny SEO problémy a nezaručuje vyšší návštěvnost ani lepší pozice ve vyhledávání či na Googlu. Návrhy AI před použitím zkontrolujte.
+SEO Copilot poskytuje SEO analýzu a návrhy podporované AI.
+
+Web automaticky neupravuje a automaticky neopravuje všechny SEO problémy. Nezaručuje vyšší návštěvnost, lepší pozice ve vyhledávačích ani lepší umístění na Googlu.
+
+Návrhy vytvořené pomocí AI je vhodné před použitím zkontrolovat z hlediska správnosti, relevance a souladu s obsahem stránky.
 
 # Keywords
 

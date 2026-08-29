@@ -1,6 +1,7 @@
 import type { AiFixRequest, AiFixResponse, Recommendation } from '../types/aiFix';
 
 const DEFAULT_TIMEOUT_MS = 10_000;
+const DEFAULT_PRODUCTION_BACKEND_URL = 'https://seo-copilot-seven.vercel.app';
 
 type KnownAiErrorCode =
   | 'INVALID_REQUEST'
@@ -53,7 +54,8 @@ export async function generateSeoFixReal(request: AiFixRequest, options: RealPro
     throw new Error('AI fixes for H1 are not supported by the real provider yet.');
   }
 
-  const backendUrl = options.backendUrl ?? import.meta.env.VITE_SEO_COPILOT_BACKEND_URL;
+  const backendUrl = options.backendUrl ?? import.meta.env.VITE_SEO_COPILOT_BACKEND_URL ??
+    (import.meta.env.MODE === 'production' ? DEFAULT_PRODUCTION_BACKEND_URL : undefined);
   if (!backendUrl) throw new Error('SEO Copilot backend is not configured.');
 
   const controller = new AbortController();

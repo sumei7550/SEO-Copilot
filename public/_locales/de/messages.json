@@ -257,7 +257,7 @@
     "message": "SEO Copilot liest URL, Metadaten, Überschriften, Bilder, strukturierte Daten und sichtbaren Text dieses Tabs, um den SEO-Bericht zu erstellen."
   },
   "scanPrivacyNote": {
-    "message": "Die Analyse bleibt auf Ihrem Gerät. Seitendaten werden nicht gespeichert, hochgeladen oder geteilt."
+    "message": "Der grundlegende SEO-Scan läuft auf Ihrem Gerät. Wenn Sie KI-Vorschläge anfordern, werden die erforderlichen Seiteninformationen an das SEO-Copilot-Backend und seinen KI-Dienst gesendet."
   },
   "scanPage": {
     "message": "Diese Seite analysieren"

@@ -21,5 +21,7 @@ export function getAiProviderForRequest(request: AiFixRequest): AiProvider {
 }
 
 export function getConfiguredProviderMode(): AiProviderMode {
-  return import.meta.env.VITE_AI_PROVIDER === 'real' ? 'real' : 'mock';
+  if (import.meta.env.VITE_AI_PROVIDER === 'real') return 'real';
+  if (import.meta.env.VITE_AI_PROVIDER === 'mock') return 'mock';
+  return import.meta.env.MODE === 'production' ? 'real' : 'mock';
 }

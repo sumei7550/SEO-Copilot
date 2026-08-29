@@ -8,23 +8,68 @@ Auditez vos pages, détectez les problèmes, obtenez des titres et méta-descrip
 
 # Detailed Description
 
-SEO Copilot est un vérificateur SEO avec IA pour la page ouverte dans Chrome. Cet outil d’audit SEO on-page vous aide à comprendre rapidement l’état d’une page et à décider quelles optimisations examiner.
+SEO Copilot est un outil de vérification SEO assisté par IA pour la page actuellement ouverte dans Chrome. Il permet d’effectuer rapidement un audit SEO on-page, d’identifier les problèmes courants et de repérer les éléments à optimiser en priorité.
 
-## Analyse et fonctionnalités
+L’extension analyse une page à la fois. Elle peut être utilisée pour contrôler une landing page, un article de blog, une fiche produit, une page tarifaire, une documentation ou tout autre contenu avant publication ou lors d’une vérification SEO régulière.
 
-Lancez un scan pour obtenir un score SEO et détecter les problèmes SEO courants. L’analyse porte notamment sur la balise title, la méta-description, la structure H1 et des titres, la balise canonical, les données structurées/schema, le SEO des images comme les textes alternatifs, ainsi que la structure de l’URL et d’autres signaux techniques. Les indications de gravité facilitent la priorisation.
+## Analyse SEO
 
-Pour les problèmes compatibles, SEO Copilot génère des suggestions IA de titres et de méta-descriptions à partir du contexte de la page. Comparez les variantes, choisissez celle qui convient à votre contenu, puis utilisez Copy selected pour la copier. Besoin d’une autre formulation ? Sélectionnez Generate another. Ces propositions accompagnent votre travail éditorial et l’optimisation du titre ; vous gardez la décision finale.
+Lancez un scan pour obtenir un score SEO, consulter les problèmes détectés et évaluer leur niveau de gravité.
+
+SEO Copilot vérifie notamment :
+
+- la balise title
+- la méta-description
+- le H1 et la structure des titres
+- la balise canonical
+- les données structurées (Schema)
+- les textes alternatifs des images
+- la structure de l’URL
+- d’autres éléments de SEO on-page et de SEO technique
+
+Le niveau de gravité vous aide à déterminer quels problèmes traiter en priorité.
+
+## Suggestions SEO assistées par IA
+
+Pour les problèmes compatibles concernant le title ou la méta-description, SEO Copilot génère plusieurs suggestions d’optimisation à partir du contenu de la page.
+
+Vous pouvez comparer le contenu actuel avec les propositions générées par l’IA, sélectionner la variante la plus adaptée et la copier.
+
+Si vous souhaitez explorer une autre formulation, vous pouvez générer de nouvelles suggestions.
+
+Ces recommandations sont conçues pour faciliter l’optimisation des titres et des méta-descriptions. Vous restez libre de décider quelle version correspond le mieux au contenu, à l’intention de la page et au ton de votre marque.
 
 ## Mode d’emploi
 
-Ouvrez une page, lancez SEO Copilot et effectuez l’audit. Consultez le score et les problèmes détectés, demandez une suggestion si elle est disponible, puis appliquez vous-même les modifications dans votre CMS ou votre code. Cliquez ensuite sur Re-scan pour contrôler le nouvel état de la page.
+1. Ouvrez la page à analyser dans Chrome.
+2. Lancez SEO Copilot et effectuez un scan.
+3. Consultez le score SEO et les problèmes détectés.
+4. Utilisez les suggestions IA lorsqu’elles sont disponibles.
+5. Appliquez vous-même les modifications dans votre CMS, votre interface d’administration ou votre code.
+6. Effectuez un nouveau scan pour vérifier l’état SEO de la page après vos modifications.
 
-L’extension convient aux spécialistes SEO, agences, développeurs, équipes contenu, blogueurs, e-commerçants, équipes SaaS et propriétaires de sites, pour les landing pages, articles, fiches produit et contrôles qualité.
+## À qui s’adresse SEO Copilot ?
+
+SEO Copilot peut être utile aux :
+
+- spécialistes SEO
+- freelances SEO et agences
+- propriétaires et gestionnaires de sites
+- développeurs
+- équipes éditoriales et marketing
+- blogueurs
+- équipes e-commerce
+- équipes SaaS
+
+Il permet de vérifier rapidement des landing pages, articles, fiches produit, pages tarifaires, documentations et autres pages importantes d’un site.
 
 ## Confidentialité et limites
 
-SEO Copilot fournit une analyse et des suggestions assistées par IA. Il ne modifie pas automatiquement les sites, ne répare pas chaque problème SEO et ne garantit ni hausse de trafic, ni meilleur classement, ni classement Google. Vérifiez les suggestions IA avant publication.
+SEO Copilot fournit une analyse SEO et des suggestions assistées par IA.
+
+L’extension ne modifie pas automatiquement votre site et ne corrige pas automatiquement tous les problèmes SEO. Elle ne garantit ni augmentation du trafic, ni amélioration du positionnement dans les moteurs de recherche, ni meilleur classement sur Google.
+
+Les suggestions générées par l’IA doivent être vérifiées avant utilisation afin de confirmer leur exactitude, leur pertinence et leur cohérence avec le contenu et le ton de votre marque.
 
 # Keywords
 

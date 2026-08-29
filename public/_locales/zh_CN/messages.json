@@ -17,7 +17,7 @@
   "scanning": { "message": "正在扫描页面…" },
   "scanConsentTitle": { "message": "分析当前页面" },
   "scanConsentBody": { "message": "SEO Copilot 将读取当前标签页的 URL、元数据、标题层级、图片、结构化数据和可见文本，用于生成 SEO 报告。" },
-  "scanPrivacyNote": { "message": "分析仅在你的设备上进行，页面数据不会被存储、上传或共享。" },
+  "scanPrivacyNote": { "message": "基础 SEO 扫描在设备上完成。使用 AI 建议时，生成所需的页面上下文会发送到 SEO Copilot 后端及其 AI 服务，用于生成标题或 Meta Description 建议。" },
   "scanPage": { "message": "分析此页面" },
   "scanUnavailable": { "message": "无法扫描此页面，请打开普通 HTTP 或 HTTPS 页面后重试。" },
   "retry": { "message": "重试" },

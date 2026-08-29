@@ -17,7 +17,7 @@
   "scanning": { "message": "Scanning this page…" },
   "scanConsentTitle": { "message": "Analyze the current page" },
   "scanConsentBody": { "message": "SEO Copilot will read this tab's URL, metadata, headings, images, structured data, and visible text to produce your SEO report." },
-  "scanPrivacyNote": { "message": "Analysis stays on your device. Page data is not stored, uploaded, or shared." },
+  "scanPrivacyNote": { "message": "Basic SEO scanning runs on your device. When you request AI suggestions, the necessary page context is sent to the SEO Copilot backend and its AI provider to generate title or meta description suggestions." },
   "scanPage": { "message": "Analyze this page" },
   "scanUnavailable": { "message": "This page cannot be scanned. Open a regular HTTP or HTTPS page and try again." },
   "retry": { "message": "Try again" },

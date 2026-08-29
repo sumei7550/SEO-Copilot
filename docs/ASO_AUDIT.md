@@ -432,7 +432,7 @@ Elevate to position 2, expand slightly:
 **"Your privacy guaranteed"**
 
 Unlike cloud-based SEO tools, SEO Copilot analyzes pages **entirely in your browser**:
-- ✓ **No data uploaded** — Your content never leaves your device
+- ✓ **Conditional transmission** — Basic scans stay local; AI suggestions send necessary page context to the disclosed backend and AI provider
 - ✓ **No account required** — Start analyzing immediately
 - ✓ **No tracking** — We don't collect analytics or usage data
 - ✓ **No remote code** — Everything runs locally
@@ -908,7 +908,7 @@ Current screenshot shows empty consent screen.
 
 **What to show:**
 - Consent screen with privacy message highlighted:
-  "Analysis stays on your device. Page data is not stored, uploaded, or shared."
+  "Basic SEO scanning runs on your device; AI suggestions send necessary page context to the SEO Copilot backend and AI provider."
 
 **Annotation:**
 - "All processing happens locally"
@@ -1261,7 +1261,7 @@ Test icon at 32×32 alongside competitor icons. If it doesn't clearly signal "SE
 4. **Consent screen appears:**
    - Title: "Analyze the current page"
    - Body: "SEO Copilot will read this tab's URL, metadata, headings..."
-   - Privacy note: "Analysis stays on your device..."
+   - Privacy note: "Basic SEO scanning runs on your device; AI suggestions send necessary page context to the backend and AI provider."
    - Button: "Analyze this page"
 5. User clicks "Analyze this page"
 6. Scan runs (2-5 seconds)
@@ -1315,7 +1315,7 @@ Analyze the current page
 
 SEO Copilot will check this page's SEO locally in your browser.
 
-✓ Analysis stays on your device. No data uploaded.
+✓ Basic SEO scanning runs on your device; AI suggestions use the disclosed backend and AI provider flow.
 
 [Analyze this page]  [Privacy policy]
 ```

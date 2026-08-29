@@ -146,7 +146,7 @@ Intro paragraph
 ## Your privacy guaranteed
 
 Unlike cloud-based SEO tools, SEO Copilot analyzes pages entirely in your browser:
-✓ No data uploaded — Your content never leaves your device
+✓ Conditional transmission — Basic scans stay local; AI suggestions send necessary page context to the disclosed backend and AI provider
 ✓ No account required — Start analyzing immediately
 ✓ No tracking — We don't collect analytics or usage data
 ✓ No remote code — Everything runs locally

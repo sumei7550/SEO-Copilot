@@ -91,7 +91,7 @@ Extension build verified: V1.0.0, minimal permissions, self-contained content sc
   * `dist/content.js` contains no ESM `import`/`export` statements (Chrome content scripts are not modules).
   * `dist/manifest.json` is a valid Manifest V3 popup extension.
   * Manifest version is exactly `1.0.0`.
-  * Permissions are exactly `activeTab,scripting` (no `storage`, no host permissions).
+  * Permissions are exactly `activeTab,scripting,storage` plus the configured SEO Copilot backend host permission.
   * All four icon sizes (16/32/48/128) exist in `dist/icons/`.
   * All 8 locales (`en`, `zh_CN`, `ja`, `ko`, `es`, `de`, `fr`, `pt_BR`) have message catalogs whose keys match the English catalog exactly.
 

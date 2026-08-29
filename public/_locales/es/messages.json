@@ -257,7 +257,7 @@
     "message": "SEO Copilot leerá la URL, metadatos, encabezados, imágenes, datos estructurados y texto visible de esta pestaña para crear el informe SEO."
   },
   "scanPrivacyNote": {
-    "message": "El análisis permanece en tu dispositivo. Los datos de la página no se guardan, suben ni comparten."
+    "message": "El análisis SEO básico se realiza en tu dispositivo. Cuando solicitas sugerencias de IA, el contexto necesario de la página se envía al backend de SEO Copilot y a su servicio de IA."
   },
   "scanPage": {
     "message": "Analizar esta página"

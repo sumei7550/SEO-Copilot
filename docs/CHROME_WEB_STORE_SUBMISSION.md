@@ -28,14 +28,14 @@ SEO Copilot uses `scripting` to inject its packaged, self-contained scanner into
 
 ## Data-use disclosure
 
-SEO Copilot processes the active page's URL, metadata, headings, image SEO attributes, JSON-LD, and visible text locally to generate the user-requested report. It does not transmit, persist, sell, or share this data. Full details are in `PRIVACY_POLICY.md` and `PRIVACY_DATA_MAP.md`.
+SEO Copilot processes the active page's URL, metadata, headings, image SEO attributes, JSON-LD, and visible text locally to generate the user-requested report. When the user explicitly requests AI title or meta description suggestions, necessary page context is transmitted via HTTPS to the SEO Copilot backend and configured AI provider. It is not sold or used for advertising. Full details are in `PRIVACY_POLICY.md` and `PRIVACY_DATA_MAP.md`.
 
 ## Required dashboard selections
 
 1. Declare the single purpose verbatim from this document.
 2. Justify `activeTab` and `scripting` using the text above.
 3. Declare website content and active-page browsing activity because the scanner processes them locally.
-4. Declare that data is not sold, used for advertising, or transmitted off-device.
+4. Declare that data is not sold or used for advertising; disclose conditional AI Fix transmission to the backend and configured AI provider.
 5. Certify compliance with Limited Use requirements.
 6. Add the live privacy-policy URL.
 7. Select public distribution and desired regions.
@@ -47,4 +47,3 @@ SEO Copilot processes the active page's URL, metadata, headings, image SEO attri
 - Small promo tile: `store-assets/seo-copilot-small-promo-440x280.png`
 - Screenshots: `store-assets/screenshots/*.png`
 - Optional marquee: `store-assets/seo-copilot-marquee-1400x560.png`
-

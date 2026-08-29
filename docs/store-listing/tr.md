@@ -8,21 +8,79 @@ Sayfaları SEO denetleyiciyle inceleyin, sorunları bulun, yapay zekâdan başl�
 
 # Detailed Description
 
-SEO Copilot, Chrome’da açık olan sayfa için yapay zekâ destekli bir SEO denetleyicidir. Sayfa içi SEO ve teknik SEO sinyallerini hızlıca incelemenize, hangi noktaların iyileştirilmesi gerektiğini anlamanıza yardımcı olur.
+SEO Copilot, Chrome’da açık olan sayfayı analiz eden yapay zekâ destekli bir SEO aracıdır. Sayfa içi SEO ve teknik SEO öğelerini hızlıca kontrol etmenize, yaygın sorunları tespit etmenize ve hangi alanların önce ele alınması gerektiğini anlamanıza yardımcı olur.
 
-Tarama başlatarak SEO puanını ve yaygın SEO sorunlarını görün. Title etiketi, meta açıklama, H1 ve diğer başlıklar, canonical etiketi, yapılandırılmış veri/schema, alt metin gibi görsel SEO unsurları, URL yapısı ve diğer sayfa sinyalleri kontrol edilir. Sorun önem dereceleri öncelik belirlemenizi kolaylaştırır.
+Araç tek tek sayfaları analiz eder ve web sitenizi otomatik olarak değiştirmez. Landing page’ler, blog yazıları, ürün sayfaları, fiyatlandırma sayfaları, dokümantasyon ve diğer içerikler için yayın öncesi veya rutin SEO kontrollerinde kullanılabilir.
 
-Desteklenen title ve meta açıklama sorunları için sayfa bağlamına göre yapay zekâ başlık önerileri ve meta açıklama önerileri üretir. Seçenekleri karşılaştırın, uygun olanı seçip Copy selected ile kopyalayın. Başka bir öneri için Generate another seçeneğini kullanın. Bunlar başlık optimizasyonu ve içerik çalışmasına yardımcı olan önerilerdir; yayın kararını siz verirsiniz.
+Tarama tamamlandığında SEO puanını, tespit edilen sorunları ve her sorunun önem düzeyini görebilirsiniz.
 
-## Kullanım
+SEO Copilot şu öğeleri kontrol eder:
 
-Bir sayfa açın, SEO Copilot’ı çalıştırın ve denetimi başlatın. SEO puanını ve tespit edilen sorunları inceleyin, değişiklikleri CMS veya kodunuzda kendiniz yapın ve güncel durumu görmek için Re-scan düğmesine basın.
+- title etiketi
+- meta açıklama
+- H1 ve diğer başlıklar
+- canonical etiketi
+- yapılandırılmış veri (Schema)
+- görsellerde alt metin
+- URL yapısı
+- diğer sayfa içi ve teknik SEO öğeleri
 
-SEO uzmanları, ajanslar, geliştiriciler, içerik ekipleri, blog yazarları, e-ticaret ve SaaS ekipleri ile site sahipleri için uygundur.
+Sorunların önem düzeyi, hangi konuların önce incelenmesi veya düzeltilmesi gerektiğini belirlemenizi kolaylaştırır.
+
+## Yapay zekâ destekli SEO önerileri
+
+Desteklenen title ve meta açıklama sorunlarında SEO Copilot, mevcut sayfanın içeriğine göre birden fazla yapay zekâ destekli optimizasyon önerisi oluşturur.
+
+Mevcut içeriği yapay zekâ önerileriyle karşılaştırabilir, size en uygun seçeneği belirleyip kopyalayabilirsiniz. Farklı bir yaklaşım denemek isterseniz yeni öneriler de oluşturabilirsiniz.
+
+Yapay zekâ önerileri title optimizasyonunu ve meta açıklama iyileştirmelerini desteklemek için tasarlanmıştır. Hangi içeriğin yayınlanacağına sayfanın amacı, içeriği ve marka tonu doğrultusunda siz karar verirsiniz.
+
+## Temel özellikler
+
+- mevcut sayfanın SEO analizi
+- SEO puanı ve sorun tespiti
+- title etiketi ve meta açıklama kontrolü
+- H1 ve başlık yapısı analizi
+- canonical etiketi kontrolü
+- yapılandırılmış veri (Schema) kontrolü
+- görsellerin alt metin kontrolü
+- URL ve teknik SEO öğelerinin analizi
+- yapay zekâ destekli title önerileri
+- yapay zekâ destekli meta açıklama önerileri
+- birden fazla yapay zekâ önerisini karşılaştırma
+- değişikliklerden sonra sayfayı yeniden tarama
+
+## Nasıl kullanılır?
+
+1. Chrome’da kontrol etmek istediğiniz sayfayı açın.
+2. SEO Copilot’ı başlatın ve taramayı çalıştırın.
+3. SEO puanını ve tespit edilen sorunları inceleyin.
+4. Desteklenen sorunlarda yapay zekâ önerilerinden yararlanın.
+5. Değişiklikleri CMS, site yönetim paneli veya kod üzerinden kendiniz uygulayın.
+6. Güncel SEO durumunu kontrol etmek için sayfayı yeniden tarayın.
+
+## Kimler için uygundur?
+
+SEO Copilot şu kullanıcılar için faydalıdır:
+
+- SEO uzmanları
+- SEO freelancer’ları ve ajanslar
+- web sitesi sahipleri ve yöneticileri
+- geliştiriciler
+- içerik ve pazarlama ekipleri
+- blog yazarları
+- e-ticaret ekipleri
+- SaaS ekipleri
+
+Landing page’leri, blog yazılarını, ürün sayfalarını, fiyatlandırma sayfalarını, dokümantasyonu ve diğer önemli sayfaları hızlıca kontrol etmek için kullanılabilir.
 
 ## Gizlilik ve sınırlamalar
 
-SEO Copilot yalnızca analiz ve yapay zekâ destekli öneriler sunar. Siteleri otomatik olarak değiştirmez, tüm SEO sorunlarını otomatik çözmez ve trafik, arama sıralaması veya Google sıralaması artışı garanti etmez. Yapay zekâ çıktısını kullanmadan önce kontrol edin.
+SEO Copilot SEO analizi ve yapay zekâ destekli öneriler sunar.
+
+Web sitenizi otomatik olarak değiştirmez ve tüm SEO sorunlarını otomatik olarak çözmez. Ayrıca trafik artışı, arama motorlarında daha iyi sıralama veya Google’da daha iyi konum garantisi vermez.
+
+Yapay zekâ tarafından oluşturulan önerileri kullanmadan önce doğruluk, alaka düzeyi ve marka tonuyla uyumluluk açısından kontrol etmeniz önerilir.
 
 # Keywords
 

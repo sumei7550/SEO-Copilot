@@ -8,23 +8,66 @@ SEO-Checker für Webseiten: Probleme erkennen, KI-Titel und Meta-Beschreibungen 
 
 # Detailed Description
 
-SEO Copilot ist ein KI-gestützter SEO-Checker und ein kompaktes Tool für Website-Analysen in Chrome. Es prüft die aktuell geöffnete Seite und hilft Ihnen, Onpage-SEO sowie technische SEO-Signale schnell einzuordnen.
+SEO Copilot ist ein KI-gestützter SEO-Checker für Chrome, mit dem Sie die aktuell geöffnete Webseite schnell auf Onpage-SEO und technische SEO-Aspekte prüfen können.
+
+Die Erweiterung konzentriert sich auf einzelne Seiten und hilft dabei, typische SEO-Probleme zu erkennen, Optimierungspotenziale einzuordnen und Änderungen gezielt zu priorisieren.
+
+Sie eignet sich zum Beispiel für Landingpages, Blogbeiträge, Produktseiten, Preisseiten, Dokumentationen und andere Inhalte, die vor der Veröffentlichung oder im laufenden Betrieb überprüft werden sollen.
 
 ## Funktionen
 
-Starten Sie einen SEO-Audit und erhalten Sie einen SEO-Score sowie eine verständliche Erkennung von SEO-Problemen. Geprüft werden unter anderem Title-Tag, Meta-Beschreibung, H1 und weitere Überschriften, Canonical-Tag, strukturierte Daten bzw. Schema, Bild-SEO einschließlich Alt-Texte und die URL-Struktur. So sehen Sie, welche Punkte zuerst geprüft werden sollten.
+Starten Sie einen SEO-Audit und erhalten Sie einen SEO-Score sowie eine übersichtliche Darstellung erkannter SEO-Probleme.
 
-Für unterstützte Probleme erstellt SEO Copilot KI-Vorschläge für Titel und Meta-Beschreibungen. Vergleichen Sie mehrere Varianten, wählen Sie eine passende Option und verwenden Sie Copy selected, um sie zu kopieren. Mit Generate another können Sie einen weiteren Vorschlag anfordern. Die Empfehlungen unterstützen Ihre Titeloptimierung und redaktionelle Arbeit; welche Änderung veröffentlicht wird, entscheiden Sie selbst.
+SEO Copilot prüft unter anderem:
+
+- Title-Tag
+- Meta-Beschreibung
+- H1 und weitere Überschriften
+- Canonical-Tag
+- strukturierte Daten (Schema)
+- Alt-Texte von Bildern
+- URL-Struktur
+- weitere Onpage- und technische SEO-Aspekte
+
+Der Schweregrad der erkannten Probleme hilft Ihnen dabei, schneller zu entscheiden, welche Punkte Sie zuerst bearbeiten sollten.
+
+Für unterstützte Probleme mit Title-Tags und Meta-Beschreibungen erstellt SEO Copilot mehrere KI-gestützte Optimierungsvorschläge auf Basis des aktuellen Seiteninhalts.
+
+Sie können die vorhandenen Inhalte mit den Vorschlägen vergleichen, eine passende Variante auswählen und kopieren. Wenn Sie eine andere Richtung ausprobieren möchten, können Sie weitere KI-Vorschläge generieren.
+
+Die KI-Empfehlungen unterstützen Sie bei der Titeloptimierung und bei der Verbesserung von Meta-Beschreibungen. Welche Inhalte tatsächlich veröffentlicht werden, entscheiden Sie selbst.
 
 ## Ablauf
 
-Öffnen Sie eine Webseite in Chrome, starten Sie SEO Copilot und führen Sie den Scan aus. Prüfen Sie Score, Schweregrad und gefundene Hinweise, übernehmen Sie Änderungen in Ihrem CMS oder Code und wählen Sie anschließend Re-scan, um den aktuellen Stand erneut zu prüfen.
+1. Öffnen Sie die gewünschte Webseite in Chrome.
+2. Starten Sie SEO Copilot und führen Sie einen Scan durch.
+3. Prüfen Sie SEO-Score, Schweregrad und erkannte Probleme.
+4. Nutzen Sie bei unterstützten Problemen die KI-Vorschläge.
+5. Nehmen Sie Änderungen selbst im CMS, im Website-Backend oder im Code vor.
+6. Scannen Sie die Seite anschließend erneut, um den aktuellen SEO-Stand zu überprüfen.
 
-Das Tool eignet sich für SEO-Fachleute, Agenturen, Entwickler, Content-Teams, Blogger, Onlineshops, SaaS-Teams und Website-Betreiber – etwa für Landingpages, Blogbeiträge, Produktseiten und technische Qualitätsprüfungen.
+## Für wen eignet sich SEO Copilot?
+
+SEO Copilot eignet sich unter anderem für:
+
+- SEO-Spezialisten
+- SEO-Freelancer und Agenturen
+- Website-Betreiber
+- Entwickler
+- Content- und Marketing-Teams
+- Blogger
+- E-Commerce-Teams
+- SaaS-Teams
+
+Damit lassen sich einzelne Seiten schnell prüfen, bevor Inhalte veröffentlicht werden oder nachdem SEO-Anpassungen vorgenommen wurden.
 
 ## Datenschutz und Grenzen
 
-SEO Copilot liefert Analysen und KI-gestützte Vorschläge. Die Erweiterung verändert Webseiten nicht automatisch, behebt nicht garantiert jedes SEO-Problem und verspricht keine besseren Rankings, keinen höheren Traffic und keine Google-Rankings. KI-Ausgaben sollten vor der Verwendung auf Richtigkeit, Relevanz und Markenstil geprüft werden.
+SEO Copilot bietet SEO-Analysen und KI-gestützte Empfehlungen.
+
+Die Erweiterung verändert Webseiten nicht automatisch und behebt nicht automatisch alle SEO-Probleme. Sie garantiert weder mehr organischen Traffic noch bessere Suchmaschinen-Rankings oder bessere Platzierungen bei Google.
+
+KI-generierte Vorschläge sollten vor der Verwendung auf Richtigkeit, Relevanz und Übereinstimmung mit dem Markenstil geprüft werden.
 
 # Keywords
 

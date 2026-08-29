@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=1280, initial-scale=1">
+  <title>SEO Copilot v1.1.0 Store Assets</title>
+  <style>
+    :root { --ink:#111a39; --muted:#526887; --purple:#4f46e5; --violet:#6d38ff; }
+    * { box-sizing:border-box; }
+    html, body { margin:0; width:1280px; height:800px; overflow:hidden; }
+    body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; color:var(--ink); background:#f5f3ff; }
+    .slide { position:relative; width:1280px; height:800px; overflow:hidden; padding:58px 60px; background:linear-gradient(118deg,#f8f7ff 0%,#f1efff 48%,#e8e6ff 100%); }
+    .slide:before { content:""; position:absolute; width:760px; height:760px; right:-280px; top:-340px; border-radius:50%; background:rgba(128,116,255,.10); }
+    .slide:after { content:""; position:absolute; width:440px; height:280px; right:360px; bottom:-200px; border-radius:50%; background:rgba(93,73,235,.08); }
+    .decor { position:absolute; left:28px; bottom:52px; width:88px; height:70px; opacity:.7; background-image:radial-gradient(#a99eff 2px,transparent 2px); background-size:16px 16px; }
+    .content { position:relative; z-index:2; width:490px; }
+    .brand { display:flex; align-items:center; gap:18px; }
+    .brand img { width:58px; height:58px; object-fit:contain; filter:drop-shadow(0 8px 10px rgba(51,37,166,.16)); }
+    .brand-name { font-size:29px; line-height:1; font-weight:800; letter-spacing:-.8px; }
+    .brand-subtitle { margin-top:9px; color:#5145e8; font-size:17px; font-weight:650; letter-spacing:.2px; }
+    h1 { margin:92px 0 24px; font-size:55px; line-height:1.07; letter-spacing:-2.4px; font-weight:800; max-width:490px; }
+    .description { margin:0 0 31px; color:#52627f; font-size:21px; line-height:1.52; max-width:470px; }
+    .bullets { display:grid; gap:18px; margin-top:8px; }
+    .bullet { display:flex; align-items:center; gap:14px; font-size:20px; line-height:1.25; }
+    .check { flex:none; display:grid; place-items:center; width:28px; height:28px; border-radius:50%; color:white; background:linear-gradient(135deg,#5c4af0,#4937dc); font-size:18px; font-weight:800; }
+    .mockup { position:absolute; z-index:2; right:60px; top:72px; width:650px; height:660px; border:1px solid rgba(47,43,119,.12); border-radius:18px; background:white; box-shadow:0 24px 50px rgba(45,36,120,.20), 0 4px 12px rgba(45,36,120,.09); overflow:hidden; }
+    .browser-bar { height:52px; display:flex; align-items:center; gap:9px; padding:0 18px; background:#f8f9fc; border-bottom:1px solid #e3e6ef; color:#8691a7; font-size:13px; }
+    .traffic { display:flex; gap:7px; margin-right:11px; }
+    .traffic i { display:block; width:11px; height:11px; border-radius:50%; background:#ff7169; }
+    .traffic i:nth-child(2){background:#ffc64c}.traffic i:nth-child(3){background:#49c66e}
+    .address { flex:1; height:28px; display:flex; align-items:center; padding:0 12px; border:1px solid #e3e6ef; border-radius:7px; background:white; color:#63728c; overflow:hidden; white-space:nowrap; }
+    .site { position:absolute; left:0; right:0; top:52px; bottom:0; background:linear-gradient(180deg,#fff 0%,#f8faff 100%); }
+    .site-head { height:54px; padding:18px 24px; color:#16213f; font-weight:750; font-size:17px; border-bottom:1px solid #edf0f5; }
+    .site-hero { margin:52px 26px 0; height:240px; border-radius:14px; background:linear-gradient(135deg,#e9edff,#fff); border:1px solid #eef0fb; position:relative; overflow:hidden; }
+    .site-hero:before { content:""; position:absolute; width:250px; height:250px; border-radius:50%; right:70px; top:24px; background:#dfe6ff; }
+    .site-lines { position:absolute; left:28px; top:55px; width:180px; display:grid; gap:13px; }
+    .site-lines b { width:160px; height:15px; border-radius:5px; background:#c5d0fa; }.site-lines i { width:120px; height:10px; border-radius:5px; background:#d7def8; }
+    .site-cards { display:flex; gap:14px; margin:20px 26px; }.site-card { flex:1; height:66px; border-radius:10px; background:#fff; border:1px solid #e9edf6; box-shadow:0 5px 12px rgba(62,75,133,.07); }
+    .panel { position:absolute; z-index:3; right:18px; top:71px; width:432px; height:566px; display:flex; justify-content:center; align-items:flex-start; overflow:hidden; filter:drop-shadow(0 10px 14px rgba(22,34,61,.2)); }
+    .panel img { display:block; width:100%; height:auto; max-height:none; object-fit:contain; object-position:top center; }
+    .slide.scan h1 { margin-top:92px; }
+    .slide.score h1, .slide.issues h1, .slide.ai h1, .slide.recs h1 { margin-top:92px; }
+    .slide.ai .panel, .slide.recs .panel { top:55px; height:590px; }
+    .slide.issues .panel { top:55px; height:590px; }
+    .slide.recs .panel { width:410px; right:28px; }
+    .slide.recs h1 { max-width:470px; }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    const items = [
+      { cls:'scan', title:'Scan any page instantly', desc:'Run a fast SEO audit on the page you’re viewing and see what needs attention.', bullets:['One-click page audit','On-page & technical SEO checks','Works directly in Chrome'], img:'source/01-analyze.png' },
+      { cls:'score', title:'See your SEO score', desc:'Get an instant SEO score, issue summary, and severity overview for the page you’re viewing.', bullets:['SEO score out of 100','Page health at a glance','Clear issue summary'], img:'source/02-score.png' },
+      { cls:'issues', title:'Find SEO issues that matter', desc:'Understand what’s affecting your page and get practical recommendations you can act on.', bullets:['Prioritized SEO issues','Clear impact explanations','Recommended next steps'], img:'source/03-report.png' },
+      { cls:'ai', title:'Improve SEO content with AI', desc:'Get page-aware AI suggestions for titles and meta descriptions without leaving your browser.', bullets:['AI title suggestions','AI meta description suggestions','Before & after comparison'], img:'source/04-ai-fix.png' },
+      { cls:'recs', title:'Compare, copy, and re-scan', desc:'Choose the best AI suggestion, copy it, update your page, and scan again.', bullets:['Compare multiple AI suggestions','Copy your preferred option','Re-scan after updates'], img:'source/05-recommendations.png' }
+    ];
+    const item = items[Number(new URLSearchParams(location.search).get('slide') || 0)];
+    document.title = item.title;
+    document.querySelector('#app').innerHTML = `<main class="slide ${item.cls}"><div class="decor"></div><section class="content"><div class="brand"><img src="source/logo.png" alt="SEO Copilot"><div><div class="brand-name">SEO Copilot</div><div class="brand-subtitle">AI SEO Checker</div></div></div><h1>${item.title}</h1><p class="description">${item.desc}</p><div class="bullets">${item.bullets.map(b=>`<div class="bullet"><span class="check">✓</span><span>${b}</span></div>`).join('')}</div></section><section class="mockup"><div class="browser-bar"><span class="traffic"><i></i><i></i><i></i></span><span class="address">https://www.tokentint.xyz/tailwind-color-generator</span><span>⋮</span></div><div class="site"><div class="site-head">TokenTint <span style="float:right;color:#8a94a7;font-weight:500">Tailwind Color Generator</span></div><div class="site-hero"><div class="site-lines"><b></b><i></i><i style="width:150px"></i></div></div><div class="site-cards"><div class="site-card"></div><div class="site-card"></div><div class="site-card"></div></div></div><div class="panel"><img src="${item.img}" alt="Real SEO Copilot extension UI"></div></section></main>`;
+  </script>
+</body>
+</html>
