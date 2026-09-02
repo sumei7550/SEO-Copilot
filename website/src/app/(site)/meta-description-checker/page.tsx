@@ -1,0 +1,5 @@
+import type { Metadata } from 'next';
+import { LandingPage } from '@/components/LandingPage';
+import { pageMetadata } from '@/lib/site';
+export const metadata: Metadata = pageMetadata('Meta Description Checker', 'Check your meta description and generate useful alternatives with SEO Copilot.', 'meta-description-checker');
+export default function MetaDescriptionChecker() { return <LandingPage path="meta-description-checker" eyebrow="Meta description checker" title="Give searchers a useful reason to click." intro="Check whether your meta description is missing, too short, or too long—and get concise alternatives based on the page." bullets={['Summarize the real value of the page.','Use a natural action phrase without making up facts.','Choose an option, update your CMS, and verify.']} />; }
