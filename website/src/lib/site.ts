@@ -20,6 +20,44 @@ export const LOCALES = ['zh-CN', 'zh-TW', 'ja', 'ko', 'de', 'fr', 'es', 'pt-BR']
 export type Locale = 'en' | (typeof LOCALES)[number];
 export const PATHS = ['', 'features', 'seo-checker', 'seo-audit', 'title-tag-checker', 'meta-description-checker', 'on-page-seo-checker', 'privacy', 'terms', 'support'];
 
+const homeMetadata: Record<Locale, { title: string; description: string }> = {
+  en: { title: 'AI SEO Checker for the Page You Are Viewing', description: 'Scan the page you are viewing, find SEO issues, and request grounded AI title and meta description suggestions when you need them.' },
+  'zh-CN': { title: 'AI SEO 检查器｜SEO Copilot', description: '在浏览器中检查当前页面的 SEO 问题，并在需要时请求有依据的标题和 Meta 描述建议。' },
+  'zh-TW': { title: 'AI SEO 檢查器｜SEO Copilot', description: '在瀏覽器中檢查目前頁面的 SEO 問題，並在需要時要求有依據的標題與 Meta 描述建議。' },
+  ja: { title: 'AI SEO チェッカー｜SEO Copilot', description: '閲覧中のページをブラウザで確認し、SEO の問題と必要なときのタイトル・メタディスクリプション提案を表示します。' },
+  ko: { title: 'AI SEO 검사 도구｜SEO Copilot', description: '브라우저에서 현재 페이지의 SEO 문제를 확인하고 필요할 때 제목과 메타 설명 제안을 요청하세요.' },
+  de: { title: 'KI-gestützter SEO-Checker｜SEO Copilot', description: 'Prüfe die geöffnete Seite im Browser auf SEO-Probleme und fordere bei Bedarf passende Titel- und Meta-Description-Vorschläge an.' },
+  fr: { title: 'Vérificateur SEO avec IA｜SEO Copilot', description: 'Analysez la page ouverte dans votre navigateur, repérez les problèmes SEO et demandez des suggestions de titre ou de méta-description si nécessaire.' },
+  es: { title: 'Comprobador SEO con IA｜SEO Copilot', description: 'Analiza la página abierta en el navegador, detecta problemas SEO y pide sugerencias de título o meta descripción cuando las necesites.' },
+  'pt-BR': { title: 'Verificador de SEO com IA｜SEO Copilot', description: 'Analise a página aberta no navegador, encontre problemas de SEO e peça sugestões de title ou meta description quando precisar.' },
+};
+
+export const uiLabels: Record<Locale, { product: string; resources: string; legal: string; seoChecker: string; privacy: string; terms: string; chromeStore: string }> = {
+  en: { product: 'Product', resources: 'Resources', legal: 'Legal', seoChecker: 'SEO Checker', privacy: 'Privacy', terms: 'Terms', chromeStore: 'Chrome Web Store' },
+  'zh-CN': { product: '产品', resources: '资源', legal: '法律', seoChecker: 'SEO 检查器', privacy: '隐私说明', terms: '使用条款', chromeStore: 'Chrome Web Store' },
+  'zh-TW': { product: '產品', resources: '資源', legal: '法律', seoChecker: 'SEO 檢查器', privacy: '隱私權說明', terms: '使用條款', chromeStore: 'Chrome Web Store' },
+  ja: { product: 'プロダクト', resources: 'リソース', legal: '法務', seoChecker: 'SEO チェッカー', privacy: 'プライバシー', terms: '利用規約', chromeStore: 'Chrome Web Store' },
+  ko: { product: '제품', resources: '리소스', legal: '법률', seoChecker: 'SEO 검사 도구', privacy: '개인정보 보호', terms: '이용 약관', chromeStore: 'Chrome Web Store' },
+  de: { product: 'Produkt', resources: 'Ressourcen', legal: 'Rechtliches', seoChecker: 'SEO-Checker', privacy: 'Datenschutz', terms: 'Nutzungsbedingungen', chromeStore: 'Chrome Web Store' },
+  fr: { product: 'Produit', resources: 'Ressources', legal: 'Informations légales', seoChecker: 'Vérificateur SEO', privacy: 'Confidentialité', terms: 'Conditions', chromeStore: 'Chrome Web Store' },
+  es: { product: 'Producto', resources: 'Recursos', legal: 'Legal', seoChecker: 'Comprobador SEO', privacy: 'Privacidad', terms: 'Términos', chromeStore: 'Chrome Web Store' },
+  'pt-BR': { product: 'Produto', resources: 'Recursos', legal: 'Informações legais', seoChecker: 'Verificador de SEO', privacy: 'Privacidade', terms: 'Termos', chromeStore: 'Chrome Web Store' },
+};
+
+export function getHomeMetadata(locale: Locale) { return homeMetadata[locale] ?? homeMetadata.en; }
+
+export const supportDescriptions: Record<Locale, string> = {
+  en: 'Get installation help, troubleshoot scanning, learn about AI Fix, or report a problem with SEO Copilot.',
+  'zh-CN': '了解 SEO Copilot 的安装、页面扫描、AI Fix 和问题反馈方式。',
+  'zh-TW': '了解 SEO Copilot 的安裝、頁面掃描、AI Fix 與問題回報方式。',
+  ja: 'SEO Copilot のインストール、ページスキャン、AI Fix、問題報告について確認できます。',
+  ko: 'SEO Copilot 설치, 페이지 스캔, AI Fix 및 문제 신고 방법을 확인하세요.',
+  de: 'Hilfe zur Installation, zum Seitenscan, zu AI Fix und zur Fehlerbehebung in SEO Copilot.',
+  fr: 'Obtenez de l’aide pour l’installation, l’analyse, AI Fix ou le signalement d’un problème avec SEO Copilot.',
+  es: 'Obtén ayuda con la instalación, el análisis, AI Fix o la comunicación de problemas en SEO Copilot.',
+  'pt-BR': 'Encontre ajuda para instalar, analisar páginas, usar o AI Fix ou relatar problemas no SEO Copilot.',
+};
+
 const copy: Record<Locale, { name: string; nav: { features: string; audit: string; support: string }; cta: string; eyebrow: string; homeTitle: string; homeIntro: string; homeSub: string; score: string; issues: string; suggestions: string; how: string; howIntro: string; checks: string; private: string; privateBody: string; footer: string; faq: [string, string][] }> = {
   en: { name: 'SEO Copilot', nav: { features: 'Features', audit: 'SEO audit', support: 'Support' }, cta: 'Install on Chrome', eyebrow: 'AI-assisted page SEO', homeTitle: 'Find the SEO issues holding your page back.', homeIntro: 'SEO Copilot checks the page you are viewing, explains what matters, and gives you grounded title and meta description suggestions when you ask for them.', homeSub: 'Local page scan · No account for the basic audit · You stay in control', score: 'SEO score', issues: 'Issue detection', suggestions: 'AI title & meta suggestions', how: 'From scan to a better page', howIntro: 'A focused workflow for the page already in front of you.', checks: 'The essentials of on-page SEO', private: 'Private by default', privateBody: 'Basic scanning runs locally. AI suggestions are optional and use only the page context needed for the request. You apply any changes yourself, then re-scan.', footer: 'Practical SEO, right where you browse.', faq: [['Does SEO Copilot edit my website?', 'No. It gives recommendations and copy candidates. You make changes in your CMS or code, then re-scan.'], ['What does the AI do?', 'When you request it, the current Alpha can suggest titles and meta descriptions. It does not rewrite pages automatically.']] },
   'zh-CN': { name: 'SEO Copilot', nav: { features: '功能', audit: 'SEO 审计', support: '支持' }, cta: '安装到 Chrome', eyebrow: 'AI 辅助页面 SEO', homeTitle: '找出拖慢页面 SEO 表现的问题。', homeIntro: 'SEO Copilot 检查你正在浏览的页面，解释关键问题，并在你主动请求时提供有依据的标题和 Meta 描述建议。', homeSub: '页面扫描在本地完成 · 基础审计无需账号 · 修改由你掌控', score: 'SEO 评分', issues: '问题检测', suggestions: 'AI 标题与 Meta 建议', how: '从扫描到更好的页面', howIntro: '围绕当前页面的专注工作流。', checks: '页面 SEO 的核心要素', private: '默认保护隐私', privateBody: '基础扫描在浏览器本地执行。AI 建议是可选操作，只使用完成请求所需的页面上下文。修改由你手动完成，再重新扫描验证。', footer: '在浏览页面的同时，做好实用 SEO。', faq: [['SEO Copilot 会自动修改网站吗？', '不会。它提供建议和文案候选，你在 CMS 或代码中手动修改后再重新扫描。'], ['AI 能做什么？', '你主动请求后，当前 Alpha 可生成标题和 Meta 描述建议，不会自动重写页面。']] },

@@ -71,3 +71,19 @@ This document freezes the initial website information architecture based on the 
 ## SEO landing-page gate
 
 No new SEO landing page is considered frozen until its primary keyword, search intent, unique value, internal links, canonical, locale variants, and evidence in `PRODUCT_FACTS.md` are recorded. Existing checker pages are therefore “conditional” rather than automatically required for launch.
+
+## Current audit follow-up (2026-09-04)
+
+The conditional checker pages were reviewed during the pre-launch Website Audit. The current implementation now records the following intent separation and internal-link model:
+
+| Page | Primary intent | Supporting path |
+|---|---|---|
+| `/seo-checker/` | Quick page-level SEO check | SEO Audit, On-page SEO Checker |
+| `/seo-audit/` | Structured audit of the active page | SEO Checker, On-page SEO Checker |
+| `/on-page-seo-checker/` | On-page signals across metadata, headings, images and related markup | SEO Audit, SEO Checker |
+| `/title-tag-checker/` | Title tag problems and improvement candidates | Meta Description Checker |
+| `/meta-description-checker/` | Meta description problems and improvement candidates | Title Tag Checker |
+
+Each page now has unique task-oriented detail content and related links. This satisfies the local implementation portion of the landing-page gate; it does not replace production crawl validation or post-launch search data. Keep the pages under review until the production URL is verified and real search intent confirms that the pages are not cannibalizing one another.
+
+The detailed findings, code-file mapping, validation evidence, and remaining work are recorded in [WEBSITE_AUDIT_2026-09-04.md](WEBSITE_AUDIT_2026-09-04.md).

@@ -165,3 +165,26 @@ Codex 最后正在处理：
 4. npm test
 5. npm build
 6. 打包 v1.0.0
+
+## 官网 Website Audit 状态（2026-09-04）
+
+官网本轮上线前审计与修复已完成，范围限定在 `website/`。已处理：
+
+- 首页和工具页的 UI/UX、Hero 信息密度、导航当前页状态、移动端菜单和响应式布局；
+- 首页到五个 SEO 工具页的内部链接；
+- SEO Checker、SEO Audit、Title Tag Checker、Meta Description Checker、On-page SEO Checker 的关键词/搜索意图区分和独立说明；
+- 八个 locale 的首页 metadata、Footer labels、Support metadata 和 Terms 本地化；
+- sitemap、robots、静态导出和页面结构的本地验证。
+
+验证结果：Next.js build 成功，静态页面 `95/95`，导出 `2/2`，HTML `91`，sitemap URL `90`，`git diff --check` 通过；1440、1280、1024、768、390、360 宽度预览均未发现横向溢出。
+
+重要边界：本轮保留真实第三方页面截图内容（包括 India Passport Photo），判断依据是截图中是否展示真实 SEO Copilot v1.1 的 issue、Improve with AI、Before/After 和 recommendations，不把第三方页面文案误判为官网能力，也没有新增自动发布或全站爬虫等产品承诺。
+
+官网下一步不是重新审计，而是：
+
+1. 使用已确认的生产域名 `https://seo-copilot-website.vercel.app/` 配置 `NEXT_PUBLIC_SITE_URL`，重建并验证 canonical、hreflang、Open Graph、sitemap、robots、JSON-LD；
+2. 在 Preview 和 Production URL 分别完成页面可访问性、语言切换、移动端和社交预览 smoke check；
+3. 完成八个 locale 的人工文案复核，以及 Chrome Web Store、Support、Privacy 的最终公开 URL 复核；
+4. 发布后观察 Search Console 和真实安装转化，再决定是否新增 blog、use-cases、platforms 或 pricing 页面。
+
+官网审计完整记录见：[docs/WEBSITE_AUDIT_2026-09-04.md](docs/WEBSITE_AUDIT_2026-09-04.md)。当前没有执行 commit、push 或 deploy。
