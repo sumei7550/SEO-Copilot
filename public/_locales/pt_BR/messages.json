@@ -257,7 +257,7 @@
     "message": "O SEO Copilot lerá a URL, metadados, títulos, imagens, dados estruturados e texto visível desta aba para produzir o relatório de SEO."
   },
   "scanPrivacyNote": {
-    "message": "A análise SEO básica é feita no seu dispositivo. Quando você solicita sugestões de IA, o contexto necessário da página é enviado ao back-end do SEO Copilot e ao serviço de IA."
+    "message": "A análise básica é local. O AI Fix envia o contexto necessário somente quando você solicita."
   },
   "scanPage": {
     "message": "Analisar esta página"

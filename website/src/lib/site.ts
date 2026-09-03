@@ -1,6 +1,15 @@
 import type { Metadata } from 'next';
 
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://seo-copilot-website.vercel.app').replace(/\/+$/, '');
+const configuredSiteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+if (process.env.NODE_ENV === 'production' && !configuredSiteUrl) {
+  throw new Error('NEXT_PUBLIC_SITE_URL must be set for a production website build.');
+}
+const parsedSiteUrl = new URL(configuredSiteUrl ?? 'http://localhost:3000');
+if (!['http:', 'https:'].includes(parsedSiteUrl.protocol) || parsedSiteUrl.pathname !== '/' || parsedSiteUrl.search || parsedSiteUrl.hash) {
+  throw new Error('NEXT_PUBLIC_SITE_URL must be an absolute HTTP(S) origin without a path, query, or hash.');
+}
+export const SITE_URL = parsedSiteUrl.toString().replace(/\/+$/, '');
+export const OG_IMAGE_PATH = '/images/og/seo-copilot-og.svg';
 export const STORE_URL = 'https://chromewebstore.google.com/detail/kjkjgpmhjilegalgphglnagjnfgnighb?utm_source=website';
 export const LOCALES = ['zh-CN', 'zh-TW', 'ja', 'ko', 'de', 'fr', 'es', 'pt-BR'] as const;
 export type Locale = 'en' | (typeof LOCALES)[number];
@@ -32,7 +41,8 @@ export function alternatesFor(path: string) {
   };
 }
 export function pageMetadata(title: string, description: string, path: string): Metadata {
-  return { title, description, alternates: alternatesFor(path), openGraph: { title: `${title} | SEO Copilot`, description, url: absoluteUrl('en', path), type: 'website' } };
+  const url = absoluteUrl('en', path);
+  return { title, description, alternates: alternatesFor(path), openGraph: { title: `${title} | SEO Copilot`, description, url, type: 'website', images: [{ url: OG_IMAGE_PATH, width: 1200, height: 630, alt: 'SEO Copilot page-level SEO checker' }] }, twitter: { card: 'summary_large_image', title: `${title} | SEO Copilot`, description, images: [OG_IMAGE_PATH] } };
 }
 export function jsonLdUrl(locale: Locale, path: string) { return absoluteUrl(locale, path); }
 

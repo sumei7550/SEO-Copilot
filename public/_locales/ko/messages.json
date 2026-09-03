@@ -257,7 +257,7 @@
     "message": "SEO Copilot은 SEO 보고서를 만들기 위해 이 탭의 URL, 메타데이터, 제목, 이미지, 구조화 데이터 및 표시 텍스트를 읽습니다."
   },
   "scanPrivacyNote": {
-    "message": "기본 SEO 스캔은 기기에서 수행됩니다. AI 제안을 요청하면 필요한 페이지 컨텍스트가 SEO Copilot 백엔드와 AI 서비스로 전송됩니다."
+    "message": "기본 스캔은 로컬에서 실행됩니다. AI Fix는 요청할 때만 필요한 페이지 컨텍스트를 전송합니다."
   },
   "scanPage": {
     "message": "이 페이지 분석"

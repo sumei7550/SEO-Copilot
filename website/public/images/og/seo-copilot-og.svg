@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">SEO Copilot — page-level SEO checker</title>
+  <desc id="desc">Scan the page you are viewing, understand what matters, and improve on-page SEO.</desc>
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f8fbff"/><stop offset="1" stop-color="#eaf3ff"/></linearGradient></defs>
+  <rect width="1200" height="630" rx="36" fill="url(#bg)"/>
+  <circle cx="1035" cy="90" r="220" fill="#dbeafe" opacity=".7"/><circle cx="1100" cy="530" r="180" fill="#bfdbfe" opacity=".45"/>
+  <rect x="84" y="76" width="54" height="54" rx="15" fill="#2563eb"/><path d="M111 90v26M98 103h26" stroke="white" stroke-width="7" stroke-linecap="round"/>
+  <text x="160" y="115" fill="#111b3a" font-family="Arial, sans-serif" font-size="30" font-weight="700">SEO Copilot</text>
+  <text x="84" y="264" fill="#111b3a" font-family="Arial, sans-serif" font-size="66" font-weight="700">Find the SEO issues</text>
+  <text x="84" y="338" fill="#111b3a" font-family="Arial, sans-serif" font-size="66" font-weight="700">holding your page back.</text>
+  <text x="88" y="405" fill="#536582" font-family="Arial, sans-serif" font-size="27">A focused page-level SEO checker for Chrome.</text>
+  <rect x="86" y="482" width="196" height="58" rx="12" fill="#2563eb"/><text x="117" y="519" fill="white" font-family="Arial, sans-serif" font-size="20" font-weight="700">Add to Chrome</text>
+  <rect x="758" y="150" width="300" height="330" rx="18" fill="white" stroke="#cbd9ec" stroke-width="3" transform="rotate(5 908 315)"/><rect x="790" y="190" width="170" height="18" rx="9" fill="#dbeafe" transform="rotate(5 908 315)"/><circle cx="850" cy="300" r="52" fill="#eff6ff" stroke="#2563eb" stroke-width="10"/><text x="819" y="316" fill="#2563eb" font-family="Arial, sans-serif" font-size="38" font-weight="700">78</text><rect x="800" y="385" width="218" height="16" rx="8" fill="#dbeafe" transform="rotate(5 908 315)"/><rect x="800" y="420" width="170" height="16" rx="8" fill="#e2e8f0" transform="rotate(5 908 315)"/>
+</svg>

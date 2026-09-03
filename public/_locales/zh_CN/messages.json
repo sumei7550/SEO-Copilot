@@ -1,11 +1,16 @@
 {
   "extensionName": { "message": "SEO Copilot – AI SEO 检查器" },
-  "extensionDescription": { "message": "AI 驱动的 SEO 检查器。审计页面、发现 SEO 问题，并生成优化后的标题和 Meta Description 建议。" },
+  "extensionDescription": {
+    "message": "AI 驱动的 SEO 检查器。审计页面、发现 SEO 问题，并生成优化后的标题和 Meta Description 建议。"
+  },
   "eyebrow": { "message": "页面审计" },
   "scoreLabel": { "message": "SEO 得分" },
   "gradeLabel": { "message": "等级" },
   "issuesLabel": { "message": "问题" },
-  "issuesFound": { "message": "发现 $COUNT$ 个问题", "placeholders": { "count": { "content": "$1" } } },
+  "issuesFound": {
+    "message": "发现 $COUNT$ 个问题",
+    "placeholders": { "count": { "content": "$1" } }
+  },
   "reportTitle": { "message": "SEO 报告" },
   "categoryScores": { "message": "分类得分" },
   "viewReport": { "message": "查看完整报告" },
@@ -16,10 +21,16 @@
   "noIssues": { "message": "未发现问题，做得不错！" },
   "scanning": { "message": "正在扫描页面…" },
   "scanConsentTitle": { "message": "分析当前页面" },
-  "scanConsentBody": { "message": "SEO Copilot 将读取当前标签页的 URL、元数据、标题层级、图片、结构化数据和可见文本，用于生成 SEO 报告。" },
-  "scanPrivacyNote": { "message": "基础 SEO 扫描在设备上完成。使用 AI 建议时，生成所需的页面上下文会发送到 SEO Copilot 后端及其 AI 服务，用于生成标题或 Meta Description 建议。" },
+  "scanConsentBody": {
+    "message": "SEO Copilot 将读取当前标签页的 URL、元数据、标题层级、图片、结构化数据和可见文本，用于生成 SEO 报告。"
+  },
+  "scanPrivacyNote": {
+    "message": "基础扫描在本地完成。AI Fix 仅在你主动请求时发送必要的页面上下文。"
+  },
   "scanPage": { "message": "分析此页面" },
-  "scanUnavailable": { "message": "无法扫描此页面，请打开普通 HTTP 或 HTTPS 页面后重试。" },
+  "scanUnavailable": {
+    "message": "无法扫描此页面，请打开普通 HTTP 或 HTTPS 页面后重试。"
+  },
   "retry": { "message": "重试" },
   "footer": { "message": "SEO Copilot V1.1.0" },
   "privacyPolicy": { "message": "隐私政策" },
@@ -41,10 +52,16 @@
   "impactTitle": { "message": "标题帮助搜索引擎和用户理解页面主题。" },
   "impactMeta": { "message": "清晰的描述有助于用户理解并点击搜索结果。" },
   "impactHeading": { "message": "合理的标题层级能提升可读性和主题清晰度。" },
-  "impactImages": { "message": "优化图片有助于无障碍访问、图片发现和页面性能。" },
+  "impactImages": {
+    "message": "优化图片有助于无障碍访问、图片发现和页面性能。"
+  },
   "impactUrl": { "message": "简短可读的 URL 更便于用户和爬虫理解。" },
-  "impactTechnical": { "message": "技术信号帮助爬虫理解页面并正确收录首选版本。" },
-  "impactContent": { "message": "充足的可见内容能让搜索引擎更准确地理解页面。" },
+  "impactTechnical": {
+    "message": "技术信号帮助爬虫理解页面并正确收录首选版本。"
+  },
+  "impactContent": {
+    "message": "充足的可见内容能让搜索引擎更准确地理解页面。"
+  },
   "issueTitleMissing": { "message": "页面缺少标题。" },
   "fixTitleMissing": { "message": "添加 30 到 60 个字符的独特描述性标题。" },
   "issueTitleShort": { "message": "标题短于建议长度。" },
@@ -61,13 +78,19 @@
   "issueH1Multiple": { "message": "页面存在多个 H1。" },
   "fixH1Multiple": { "message": "保留一个主 H1，其余分区使用 H2。" },
   "issueHeadingStructure": { "message": "标题结构存在跳级。" },
-  "fixHeadingStructure": { "message": "按顺序嵌套标题，避免从 H1 直接跳到 H3。" },
+  "fixHeadingStructure": {
+    "message": "按顺序嵌套标题，避免从 H1 直接跳到 H3。"
+  },
   "issueImageAlt": { "message": "部分有信息价值的图片缺少 alt 属性。" },
   "fixImageAlt": { "message": "为有信息价值的图片添加简洁 alt 文本。" },
   "issueImageAltRatio": { "message": "有信息价值图片的 alt 覆盖率低于 50%。" },
-  "fixImageAltRatio": { "message": "请检查有信息价值图片的 alt 覆盖情况；装饰图片无需描述性 alt 文本。" },
+  "fixImageAltRatio": {
+    "message": "请检查有信息价值图片的 alt 覆盖情况；装饰图片无需描述性 alt 文本。"
+  },
   "issueImageLarge": { "message": "图片可能存在性能优化机会。" },
-  "fixImageLarge": { "message": "先检查实际传输大小；如果源图片明显大于展示尺寸，可考虑使用更小的响应式变体或现代格式。" },
+  "fixImageLarge": {
+    "message": "先检查实际传输大小；如果源图片明显大于展示尺寸，可考虑使用更小的响应式变体或现代格式。"
+  },
   "issueUrlInvalid": { "message": "页面 URL 无效或协议不受支持。" },
   "fixUrlInvalid": { "message": "使用有效的 HTTP 或 HTTPS URL。" },
   "issueUrlLong": { "message": "页面 URL 超过 100 个字符。" },
@@ -77,13 +100,19 @@
   "issueCanonicalMissing": { "message": "缺少 Canonical 链接。" },
   "fixCanonicalMissing": { "message": "添加指向首选 URL 的 canonical 链接。" },
   "issueSchemaMissing": { "message": "未检测到有效的 JSON-LD 结构化数据。" },
-  "fixSchemaMissing": { "message": "按页面类型添加 Product、Article、FAQ 或 Review JSON-LD。" },
+  "fixSchemaMissing": {
+    "message": "按页面类型添加 Product、Article、FAQ 或 Review JSON-LD。"
+  },
   "issueSchemaInvalid": { "message": "一个或多个 JSON-LD 代码块格式无效。" },
   "fixSchemaInvalid": { "message": "校验 JSON-LD 语法并修复格式错误。" },
   "issueContentLowWords": { "message": "页面内容少于 300 词。" },
-  "fixContentLowWords": { "message": "补充有用、原创且完整满足访问意图的内容。" },
+  "fixContentLowWords": {
+    "message": "补充有用、原创且完整满足访问意图的内容。"
+  },
   "issueContentLowRatio": { "message": "页面可见文本占比较低。" },
-  "fixContentLowRatio": { "message": "减少不必要的标记，并突出清晰可访问的主体内容。" },
+  "fixContentLowRatio": {
+    "message": "减少不必要的标记，并突出清晰可访问的主体内容。"
+  },
   "issueRobotsMissing": { "message": "未检测到 robots meta 标签。" },
   "fixRobotsMissing": { "message": "需要明确抓取指引时添加 robots 指令。" }
 }

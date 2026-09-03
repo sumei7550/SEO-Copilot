@@ -73,9 +73,7 @@ npx vercel --prod
 
 部署后的生产 API 地址为 `https://<your-project>.vercel.app/api/v1/seo-fixes`。Extension 的 Real Provider 只需将 `VITE_SEO_COPILOT_BACKEND_URL` 配置为不带路径的项目地址（例如 `https://<your-project>.vercel.app`），再重新构建 Extension；不要把 `/api/v1/seo-fixes` 重复配置进去。
 
-基础 SEO 扫描在当前页面本地完成。可选的 Real AI Fix 流程会通过 HTTPS 将生成建议所需的页面上下文发送到部署在 Vercel 上的 SEO Copilot 后端；后端调用 DeepSeek 生成标题或 Meta Description 建议。扩展会将随机生成的 `deviceId` 保存在 `chrome.storage.local` 中，并在 AI Fix 请求中发送，用于额度、冷却和滥用防护。Upstash Redis 为后端提供 AI 使用额度和限流支持，不用于分析网页内容。上述服务提供方的数据处理和保留期限受其适用的服务条款和隐私政策约束。
-
-扩展申请 `activeTab`、`scripting` 和 `storage` 权限，并使用 `https://seo-copilot-seven.vercel.app/*` host permission 处理用户主动请求的 AI Fix。Popup 文案通过 Chrome i18n 资源提供：en、zh_CN、ja、ko、es、de、fr、pt_BR。
+基础 SEO 扫描在当前页面本地完成。AI Fix 仅在用户主动请求支持的标题或 Meta Description 建议时，通过 SEO Copilot backend 将必要页面上下文发送给 DeepSeek；扩展不自动修改网站，也不保证排名。AI 服务使用保存在 `chrome.storage.local` 的 deviceId，并由 Upstash 进行限流；IP 仅用于限流和滥用防护。我们不出售数据，也不将数据用于广告。扩展只申请 `activeTab` 和 `scripting` 权限，Popup 文案通过 Chrome i18n 资源提供：en、zh_CN、ja、ko、es、de、fr、pt_BR。
 
 ## 测试
 

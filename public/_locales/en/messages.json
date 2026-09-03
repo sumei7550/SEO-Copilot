@@ -1,11 +1,16 @@
 {
   "extensionName": { "message": "SEO Copilot – AI SEO Checker" },
-  "extensionDescription": { "message": "AI-powered SEO checker. Audit pages, find SEO issues, and generate optimized title and meta description suggestions." },
+  "extensionDescription": {
+    "message": "AI-powered SEO checker. Audit pages, find SEO issues, and generate optimized title and meta description suggestions."
+  },
   "eyebrow": { "message": "Page audit" },
   "scoreLabel": { "message": "SEO score" },
   "gradeLabel": { "message": "Grade" },
   "issuesLabel": { "message": "Issues" },
-  "issuesFound": { "message": "$COUNT$ issues found", "placeholders": { "count": { "content": "$1" } } },
+  "issuesFound": {
+    "message": "$COUNT$ issues found",
+    "placeholders": { "count": { "content": "$1" } }
+  },
   "reportTitle": { "message": "SEO report" },
   "categoryScores": { "message": "Category scores" },
   "viewReport": { "message": "View report" },
@@ -16,10 +21,16 @@
   "noIssues": { "message": "No issues found. Nice work!" },
   "scanning": { "message": "Scanning this page…" },
   "scanConsentTitle": { "message": "Analyze the current page" },
-  "scanConsentBody": { "message": "SEO Copilot will read this tab's URL, metadata, headings, images, structured data, and visible text to produce your SEO report." },
-  "scanPrivacyNote": { "message": "Basic SEO scanning runs on your device. When you request AI suggestions, the necessary page context is sent to the SEO Copilot backend and its AI provider to generate title or meta description suggestions." },
+  "scanConsentBody": {
+    "message": "SEO Copilot will read this tab's URL, metadata, headings, images, structured data, and visible text to produce your SEO report."
+  },
+  "scanPrivacyNote": {
+    "message": "Basic scanning runs locally. AI Fix sends necessary page context only when you request it."
+  },
   "scanPage": { "message": "Analyze this page" },
-  "scanUnavailable": { "message": "This page cannot be scanned. Open a regular HTTP or HTTPS page and try again." },
+  "scanUnavailable": {
+    "message": "This page cannot be scanned. Open a regular HTTP or HTTPS page and try again."
+  },
   "retry": { "message": "Try again" },
   "footer": { "message": "SEO Copilot V1.1.0" },
   "privacyPolicy": { "message": "Privacy" },
@@ -38,52 +49,124 @@
   "categoryContent": { "message": "Content" },
   "categoryTechnical": { "message": "Technical" },
   "categoryUrl": { "message": "URL" },
-  "impactTitle": { "message": "Titles help search engines and visitors understand the page topic." },
-  "impactMeta": { "message": "A useful description can improve how the result is understood and clicked." },
-  "impactHeading": { "message": "A logical heading outline improves readability and topic clarity." },
-  "impactImages": { "message": "Optimized images improve accessibility, discovery, and page performance." },
-  "impactUrl": { "message": "Readable, concise URLs are easier for users and crawlers to understand." },
-  "impactTechnical": { "message": "Technical signals help crawlers interpret and index the preferred page." },
-  "impactContent": { "message": "Substantial visible content gives search engines enough context to evaluate the page." },
+  "impactTitle": {
+    "message": "Titles help search engines and visitors understand the page topic."
+  },
+  "impactMeta": {
+    "message": "A useful description can improve how the result is understood and clicked."
+  },
+  "impactHeading": {
+    "message": "A logical heading outline improves readability and topic clarity."
+  },
+  "impactImages": {
+    "message": "Optimized images improve accessibility, discovery, and page performance."
+  },
+  "impactUrl": {
+    "message": "Readable, concise URLs are easier for users and crawlers to understand."
+  },
+  "impactTechnical": {
+    "message": "Technical signals help crawlers interpret and index the preferred page."
+  },
+  "impactContent": {
+    "message": "Substantial visible content gives search engines enough context to evaluate the page."
+  },
   "issueTitleMissing": { "message": "The page has no title." },
-  "fixTitleMissing": { "message": "Add a unique, descriptive title between 30 and 60 characters." },
+  "fixTitleMissing": {
+    "message": "Add a unique, descriptive title between 30 and 60 characters."
+  },
   "issueTitleShort": { "message": "The title is shorter than recommended." },
   "issueTitleLong": { "message": "The title is longer than recommended." },
-  "fixTitleLength": { "message": "Aim for a clear title between 30 and 60 characters." },
-  "issueTitleMultiple": { "message": "The document contains multiple title elements in the head." },
-  "fixTitleMultiple": { "message": "Keep a single title element directly in the document head." },
+  "fixTitleLength": {
+    "message": "Aim for a clear title between 30 and 60 characters."
+  },
+  "issueTitleMultiple": {
+    "message": "The document contains multiple title elements in the head."
+  },
+  "fixTitleMultiple": {
+    "message": "Keep a single title element directly in the document head."
+  },
   "issueMetaMissing": { "message": "The meta description is missing." },
-  "fixMetaMissing": { "message": "Add a useful meta description between 120 and 160 characters." },
-  "issueMetaLength": { "message": "The meta description length is outside the recommended range." },
-  "fixMetaLength": { "message": "Rewrite the description to be concise and no longer than 160 characters." },
+  "fixMetaMissing": {
+    "message": "Add a useful meta description between 120 and 160 characters."
+  },
+  "issueMetaLength": {
+    "message": "The meta description length is outside the recommended range."
+  },
+  "fixMetaLength": {
+    "message": "Rewrite the description to be concise and no longer than 160 characters."
+  },
   "issueH1Missing": { "message": "The page has no H1 heading." },
-  "fixH1Missing": { "message": "Add one clear H1 that describes the page topic." },
+  "fixH1Missing": {
+    "message": "Add one clear H1 that describes the page topic."
+  },
   "issueH1Multiple": { "message": "The page has multiple H1 headings." },
-  "fixH1Multiple": { "message": "Keep one primary H1 and use H2 headings for sections." },
+  "fixH1Multiple": {
+    "message": "Keep one primary H1 and use H2 headings for sections."
+  },
   "issueHeadingStructure": { "message": "The heading outline skips a level." },
-  "fixHeadingStructure": { "message": "Nest headings in order without jumping from H1 to H3." },
-  "issueImageAlt": { "message": "Some informative images are missing an alt attribute." },
-  "fixImageAlt": { "message": "Add concise, meaningful alt text to informative images." },
-  "issueImageAltRatio": { "message": "Alt coverage for informative images is below 50%." },
-  "fixImageAltRatio": { "message": "Review alt coverage for informative images; decorative images do not need descriptive alt text." },
-  "issueImageLarge": { "message": "An image may be a performance optimization opportunity." },
-  "fixImageLarge": { "message": "Review the transferred bytes first; if the source is much larger than its rendered size, consider a smaller responsive variant or modern format." },
-  "issueUrlInvalid": { "message": "The page URL is invalid or uses an unsupported protocol." },
+  "fixHeadingStructure": {
+    "message": "Nest headings in order without jumping from H1 to H3."
+  },
+  "issueImageAlt": {
+    "message": "Some informative images are missing an alt attribute."
+  },
+  "fixImageAlt": {
+    "message": "Add concise, meaningful alt text to informative images."
+  },
+  "issueImageAltRatio": {
+    "message": "Alt coverage for informative images is below 50%."
+  },
+  "fixImageAltRatio": {
+    "message": "Review alt coverage for informative images; decorative images do not need descriptive alt text."
+  },
+  "issueImageLarge": {
+    "message": "An image may be a performance optimization opportunity."
+  },
+  "fixImageLarge": {
+    "message": "Review the transferred bytes first; if the source is much larger than its rendered size, consider a smaller responsive variant or modern format."
+  },
+  "issueUrlInvalid": {
+    "message": "The page URL is invalid or uses an unsupported protocol."
+  },
   "fixUrlInvalid": { "message": "Use a valid HTTP or HTTPS page URL." },
   "issueUrlLong": { "message": "The page URL is longer than 100 characters." },
-  "fixUrlLong": { "message": "Shorten the path while retaining descriptive words." },
-  "issueUrlStructure": { "message": "The URL contains a complex query or unreadable identifier." },
-  "fixUrlStructure": { "message": "Use a stable, readable slug and remove unnecessary parameters." },
+  "fixUrlLong": {
+    "message": "Shorten the path while retaining descriptive words."
+  },
+  "issueUrlStructure": {
+    "message": "The URL contains a complex query or unreadable identifier."
+  },
+  "fixUrlStructure": {
+    "message": "Use a stable, readable slug and remove unnecessary parameters."
+  },
   "issueCanonicalMissing": { "message": "The page has no canonical link." },
-  "fixCanonicalMissing": { "message": "Add a canonical link that points to the preferred URL." },
-  "issueSchemaMissing": { "message": "No valid JSON-LD structured data was detected." },
-  "fixSchemaMissing": { "message": "Add relevant Product, Article, FAQ, or Review JSON-LD where appropriate." },
-  "issueSchemaInvalid": { "message": "One or more JSON-LD blocks contain invalid JSON." },
-  "fixSchemaInvalid": { "message": "Validate the JSON-LD syntax and correct malformed blocks." },
-  "issueContentLowWords": { "message": "The page contains fewer than 300 words." },
-  "fixContentLowWords": { "message": "Add useful, original content that fully answers the visitor's intent." },
+  "fixCanonicalMissing": {
+    "message": "Add a canonical link that points to the preferred URL."
+  },
+  "issueSchemaMissing": {
+    "message": "No valid JSON-LD structured data was detected."
+  },
+  "fixSchemaMissing": {
+    "message": "Add relevant Product, Article, FAQ, or Review JSON-LD where appropriate."
+  },
+  "issueSchemaInvalid": {
+    "message": "One or more JSON-LD blocks contain invalid JSON."
+  },
+  "fixSchemaInvalid": {
+    "message": "Validate the JSON-LD syntax and correct malformed blocks."
+  },
+  "issueContentLowWords": {
+    "message": "The page contains fewer than 300 words."
+  },
+  "fixContentLowWords": {
+    "message": "Add useful, original content that fully answers the visitor's intent."
+  },
   "issueContentLowRatio": { "message": "The visible-text ratio is low." },
-  "fixContentLowRatio": { "message": "Reduce unnecessary markup and make the main content clear and accessible." },
+  "fixContentLowRatio": {
+    "message": "Reduce unnecessary markup and make the main content clear and accessible."
+  },
   "issueRobotsMissing": { "message": "No robots meta tag was detected." },
-  "fixRobotsMissing": { "message": "Add a robots directive when the page needs explicit crawl guidance." }
+  "fixRobotsMissing": {
+    "message": "Add a robots directive when the page needs explicit crawl guidance."
+  }
 }

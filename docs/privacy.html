@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>SEO Copilot Privacy Policy</title>
-  <meta name="description" content="V1.1.0 Alpha privacy policy for the SEO Copilot Chrome extension.">
+  <meta name="description" content="Privacy policy for the SEO Copilot Chrome extension.">
   <style>
     :root { color-scheme: light; font-family: Inter, ui-sans-serif, system-ui, sans-serif; color: #0f172a; background: #f8fafc; }
     body { margin: 0; }
@@ -18,36 +18,24 @@
 <body>
 <main><article>
   <h1>SEO Copilot Privacy Policy</h1>
-  <p class="meta">Version: V1.1.0 Alpha · Effective date: August 30, 2026</p>
-  <p>SEO Copilot analyzes pages for on-page SEO issues and, when requested, generates title or meta description suggestions. This policy describes the current Alpha Real AI behavior.</p>
-  <h2>Local SEO scanning</h2>
-  <p>Only when the user actively starts an analysis, SEO Copilot reads the current active tab. The basic SEO scan runs primarily on the user's device and may inspect the URL, title, meta description, canonical URL, H1/H2/H3 headings, image URLs, alternative text and dimensions, structured data/JSON-LD, visible page text, and related SEO elements.</p>
-  <p>The extension does not automatically modify the website.</p>
-  <h2>AI Fix</h2>
-  <p>Only when the user actively requests an AI title or meta description suggestion, necessary page context is sent over HTTPS to the SEO Copilot backend. The request includes the issue type/current value, URL, title, meta description, H1, page language, page type, inferred brand, issue context/diagnosis, and a randomly generated device ID.</p>
-  <p>The backend sends the context needed to generate the result to the configured DeepSeek API. The extension does not call DeepSeek directly.</p>
-  <p>Do not use AI Fix on pages containing passwords, authentication information, payment information, health information, private communications, or other sensitive content. SEO Copilot does not actively read passwords, cookies, authentication credentials, payment form values, or private messages, but page fields can themselves contain sensitive information.</p>
-  <h2>Services and providers</h2>
+  <p class="meta">Effective date: August 8, 2026</p>
+  <p>SEO Copilot analyzes the active webpage for on-page SEO issues. Basic SEO scanning runs locally in the browser.</p>
+  <h2>Data processed</h2>
+  <p>Only after the user clicks <strong>Analyze this page</strong>, SEO Copilot temporarily reads the active tab's URL, metadata, headings, image SEO attributes and dimensions, JSON-LD structured data, and visible text required to calculate word count and text ratio.</p>
+  <p>SEO Copilot does not read cookies, passwords, form entries, authentication or payment information, browser history, or tabs the user has not chosen to analyze.</p>
+  <h2>Use, storage, and sharing</h2>
   <ul>
-    <li><strong>SEO Copilot backend:</strong> currently deployed on Vercel; receives AI Fix requests, calls the AI provider, and applies service limits.</li>
-    <li><strong>DeepSeek:</strong> generates AI title and meta description suggestions.</li>
-    <li><strong>Upstash Redis:</strong> supports AI quotas, IP rate limiting, device cooldowns, and the global limit; it is not used to analyze webpage content.</li>
+    <li>Basic SEO scanning is processed locally.</li>
+    <li>Only when you actively request AI Fix, necessary page context is sent through the SEO Copilot backend to DeepSeek.</li>
+    <li>A deviceId is kept in <code>chrome.storage.local</code>; Upstash rate limiting may process the IP address for rate limiting and abuse prevention.</li>
+    <li>Raw page content is not retained as an application record after the request.</li>
+    <li>No data is sold, rented, shared, used for advertising, or used to create profiles.</li>
+    <li>V1.0.0 contains no analytics trackers or remote code.</li>
   </ul>
-  <p>Retention and processing by third-party service providers are governed by their applicable service terms and privacy policies. This policy does not make an absolute retention-period promise for those providers.</p>
-  <h2>Storage, device ID, and IP rate limiting</h2>
-  <p>The extension uses <code>chrome.storage.local</code> to store a randomly generated <code>deviceId</code> for AI quota, cooldown, and abuse prevention. It does not contain a name or email address. The extension may also store <code>lastInstalled</code> and other operational data. The device ID is sent with AI Fix requests.</p>
-  <p>The backend uses the request IP for rate limiting and abuse prevention. The IP is hashed for the rate-limit key and the complete IP is not written to SEO Copilot business logs. It is not used for advertising, profiling, or marketing. Platform-level logs may still exist under applicable platform terms.</p>
-  <h2>What SEO Copilot does not do</h2>
-  <p>SEO Copilot does not sell user data, use data for advertising, build advertising profiles, use data for purposes unrelated to its single purpose, automatically modify websites, or guarantee ranking or traffic improvements.</p>
   <h2>Permissions</h2>
-  <ul>
-    <li><code>activeTab</code>: access to the current tab when the user actively analyzes it.</li>
-    <li><code>scripting</code>: inject the packaged local scanning script.</li>
-    <li><code>storage</code>: save the device ID, installation time, and other local extension data.</li>
-    <li><code>host_permissions: https://seo-copilot-seven.vercel.app/*</code>: connect to the SEO Copilot backend for user-requested AI Fix processing.</li>
-  </ul>
+  <p><code>activeTab</code> provides temporary access to the user-selected tab. <code>scripting</code> runs the packaged local scanner after the user confirms analysis. The extension requests no browsing-history or cookie permission; <code>chrome.storage.local</code> stores the deviceId used for optional AI request controls.</p>
   <h2>Limited Use</h2>
-  <p>Use of information received from Chrome APIs adheres to the Chrome Web Store User Data Policy, including its Limited Use requirements. Access is limited to local SEO auditing and explicitly requested AI title or meta description suggestions.</p>
+  <p>The use of information received from Chrome APIs adheres to the Chrome Web Store User Data Policy, including the Limited Use requirements. Access is limited to the extension's single purpose: a local SEO audit, plus an AI Fix only when you request it.</p>
   <h2>Changes</h2>
   <p>If a future release changes these practices, this policy and the in-product disclosure will be updated before the changed processing begins.</p>
   <h2>Contact</h2>

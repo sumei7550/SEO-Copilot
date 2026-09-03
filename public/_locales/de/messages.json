@@ -257,7 +257,7 @@
     "message": "SEO Copilot liest URL, Metadaten, Überschriften, Bilder, strukturierte Daten und sichtbaren Text dieses Tabs, um den SEO-Bericht zu erstellen."
   },
   "scanPrivacyNote": {
-    "message": "Der grundlegende SEO-Scan läuft auf Ihrem Gerät. Wenn Sie KI-Vorschläge anfordern, werden die erforderlichen Seiteninformationen an das SEO-Copilot-Backend und seinen KI-Dienst gesendet."
+    "message": "Die Basisprüfung läuft lokal. AI Fix sendet den nötigen Seitenkontext nur auf Ihre Anfrage."
   },
   "scanPage": {
     "message": "Diese Seite analysieren"
