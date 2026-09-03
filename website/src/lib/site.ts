@@ -1,10 +1,15 @@
 import type { Metadata } from 'next';
 
-const configuredSiteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+const configuredSiteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
 if (process.env.NODE_ENV === 'production' && !configuredSiteUrl) {
   throw new Error('NEXT_PUBLIC_SITE_URL must be set for a production website build.');
 }
-const parsedSiteUrl = new URL(configuredSiteUrl ?? 'http://localhost:3000');
+let parsedSiteUrl: URL;
+try {
+  parsedSiteUrl = new URL(configuredSiteUrl || 'http://localhost:3000');
+} catch {
+  throw new Error('NEXT_PUBLIC_SITE_URL must be a valid absolute URL such as https://example.com.');
+}
 if (!['http:', 'https:'].includes(parsedSiteUrl.protocol) || parsedSiteUrl.pathname !== '/' || parsedSiteUrl.search || parsedSiteUrl.hash) {
   throw new Error('NEXT_PUBLIC_SITE_URL must be an absolute HTTP(S) origin without a path, query, or hash.');
 }
@@ -13,7 +18,7 @@ export const OG_IMAGE_PATH = '/images/og/seo-copilot-og.svg';
 export const STORE_URL = 'https://chromewebstore.google.com/detail/kjkjgpmhjilegalgphglnagjnfgnighb?utm_source=website';
 export const LOCALES = ['zh-CN', 'zh-TW', 'ja', 'ko', 'de', 'fr', 'es', 'pt-BR'] as const;
 export type Locale = 'en' | (typeof LOCALES)[number];
-export const PATHS = ['', 'features', 'seo-checker', 'seo-audit', 'title-tag-checker', 'meta-description-checker', 'on-page-seo-checker', 'privacy', 'support'];
+export const PATHS = ['', 'features', 'seo-checker', 'seo-audit', 'title-tag-checker', 'meta-description-checker', 'on-page-seo-checker', 'privacy', 'terms', 'support'];
 
 const copy: Record<Locale, { name: string; nav: { features: string; audit: string; support: string }; cta: string; eyebrow: string; homeTitle: string; homeIntro: string; homeSub: string; score: string; issues: string; suggestions: string; how: string; howIntro: string; checks: string; private: string; privateBody: string; footer: string; faq: [string, string][] }> = {
   en: { name: 'SEO Copilot', nav: { features: 'Features', audit: 'SEO audit', support: 'Support' }, cta: 'Install on Chrome', eyebrow: 'AI-assisted page SEO', homeTitle: 'Find the SEO issues holding your page back.', homeIntro: 'SEO Copilot checks the page you are viewing, explains what matters, and gives you grounded title and meta description suggestions when you ask for them.', homeSub: 'Local page scan · No account for the basic audit · You stay in control', score: 'SEO score', issues: 'Issue detection', suggestions: 'AI title & meta suggestions', how: 'From scan to a better page', howIntro: 'A focused workflow for the page already in front of you.', checks: 'The essentials of on-page SEO', private: 'Private by default', privateBody: 'Basic scanning runs locally. AI suggestions are optional and use only the page context needed for the request. You apply any changes yourself, then re-scan.', footer: 'Practical SEO, right where you browse.', faq: [['Does SEO Copilot edit my website?', 'No. It gives recommendations and copy candidates. You make changes in your CMS or code, then re-scan.'], ['What does the AI do?', 'When you request it, the current Alpha can suggest titles and meta descriptions. It does not rewrite pages automatically.']] },

@@ -8,7 +8,8 @@
 .nav-disabled{font-size:14px}
 .nav>a:not(.button):hover,.footer-top a:hover{color:var(--primary)}
 .button{gap:8px}
-.chrome-icon{flex:none}
+.chrome-icon{flex:none;display:block}
+.globe-icon{flex:none;color:#334155}
 .install-button{white-space:nowrap}
 .site-footer{padding:56px 0 26px}
 .footer-top{display:flex;justify-content:space-between;gap:48px}
@@ -41,3 +42,7 @@
 /* Phase 4 content patterns. */
 .hero-copy-block{max-width:620px}.value-section{padding-bottom:76px}.value-cards .card{min-height:190px}.product-proof{overflow:hidden}.proof-grid{display:grid;grid-template-columns:minmax(250px,.7fr) minmax(0,1.3fr);gap:64px;align-items:center}.proof-copy h2,.trust-grid h2,.band h2{font-size:clamp(30px,4vw,48px);line-height:1.08;letter-spacing:-.05em;margin:12px 0 18px}.proof-copy>p:not(.eyebrow),.trust-grid p,.band p{color:var(--muted);line-height:1.75}.proof-shot{margin:0}.proof-shot img{display:block;width:100%;height:auto;border:1px solid #cbd9ec;border-radius:16px;box-shadow:0 20px 50px #193b7820}.proof-shot figcaption{margin-top:10px;color:#607493;font-size:12px}.text-link{color:var(--primary);font-weight:800;display:inline-flex;gap:7px;align-items:center;margin-top:22px}.text-link span{transition:transform .2s}.text-link:hover span{transform:translateX(3px)}.trust-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start}.trust-grid>div:last-child{padding-top:8px}.final-cta{padding-top:24px;padding-bottom:96px}.final-cta .band{align-items:flex-end}.final-cta .band h2{max-width:570px}.final-cta .band p{max-width:590px}.final-cta .actions{margin-top:0;flex-shrink:0}.landing-summary{margin:34px 0 28px;background:var(--soft)}.landing-summary h2{margin-top:0}.related{display:grid;gap:11px;margin-top:34px;padding-top:24px;border-top:1px solid var(--line)}.related strong{font-size:12px;text-transform:uppercase;letter-spacing:.1em}.related a{color:var(--primary);font-weight:700}
 @media(max-width:800px){.proof-grid,.trust-grid{grid-template-columns:1fr;gap:30px}.trust-grid>div:last-child{padding-top:0}.final-cta .band{align-items:stretch}.final-cta .actions{margin-top:24px}}
+
+/* Language control states: the chevron mirrors the open/closed menu state. */
+.language-button,.language-button[aria-expanded="true"]{color:#25314b}.language-button .globe-icon,.language-button .chevron{color:#34415c}.chevron{display:block;transition:transform .18s ease}.chevron.is-open{transform:rotate(180deg);color:#34415c}
+.install-button{color:#fff}
