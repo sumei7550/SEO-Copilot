@@ -1,6 +1,6 @@
 # Extension Name
 
-SEO Copilot – AI SEO 检查器
+SEO Copilot – AI 标题与元描述检查器
 
 # Short Description
 
