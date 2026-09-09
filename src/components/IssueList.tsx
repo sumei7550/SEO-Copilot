@@ -5,6 +5,7 @@ import { AiFixPanel, Sparkles } from './AiFixPanel';
 import { t } from '../utils/i18n';
 import { canUseAiFix } from '../utils/aiFix';
 import { buildAiFixContext } from '../services/buildAiFixContext';
+import { trackExtension } from '../analytics';
 
 function getAiFixType(issue: SeoIssue): AiFixType | undefined {
   if (!canUseAiFix(issue)) return undefined;
@@ -42,7 +43,7 @@ function IssueCard({ issue, page, metrics }: { issue: SeoIssue; page: PageData; 
     {fixType ? <>
       <p className="issue-context"><b>Current</b><span>{getCurrentValue(fixType, page) || 'Not found'}</span></p>
       <p className="issue-context"><b>Impact</b><span>{t(issue.impactKey)}</span></p>
-      <button type="button" onClick={() => setOpen((value) => !value)} className="ai-fix-button"><Sparkles />Improve with AI <span className={`chevron ${open ? 'is-open' : ''}`} aria-hidden="true" /></button>
+      <button type="button" onClick={() => { const nextOpen = !open; setOpen(nextOpen); if (nextOpen) trackExtension('ext_issue_expanded', { issue_type: issue.id, severity: issue.severity }); }} className="ai-fix-button"><Sparkles />Improve with AI <span className={`chevron ${open ? 'is-open' : ''}`} aria-hidden="true" /></button>
     </> : <>
       <p className="issue-context"><b>Impact</b><span>{t(issue.impactKey)}</span></p>
       <div className="recommended-action"><span>Recommended Action</span><strong>{t(issue.solutionKey)}</strong></div>

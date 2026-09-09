@@ -3,6 +3,7 @@ import type { AiFixRequest, AiFixResponse, Recommendation } from '../types/aiFix
 import { generateSeoFix } from '../services/generateSeoFix';
 import { AiServiceError } from '../services/generateSeoFix.real';
 import type { AiErrorCode } from '../services/generateSeoFix.real';
+import { trackExtension } from '../analytics';
 
 const labels = ['Recommended', 'Alternative 1', 'Alternative 2'];
 const RATE_LIMIT_FALLBACK_SECONDS = 10;
@@ -64,11 +65,14 @@ export function AiFixPanel({ request }: { request: AiFixRequest }) {
     setGenerating(true);
     setGenerationError(undefined);
     setCountdownSeconds(0);
+    trackExtension('ext_ai_fix_requested', { fix_type: request.type, issue_type: request.issueId });
     try {
       const result = await generateSeoFix(request);
       setResponse(result);
+      trackExtension('ext_ai_fix_succeeded', { fix_type: request.type, issue_type: request.issueId, recommendation_count: result.recommendations.length });
       setSelectedId((currentId) => result.recommendations.some((recommendation) => recommendation.id === currentId) ? currentId : result.recommendations[0]?.id ?? '');
     } catch (error) {
+      trackExtension('ext_ai_fix_failed', { fix_type: request.type, issue_type: request.issueId, error_code: error instanceof AiServiceError ? error.code : 'unknown' });
       setGenerationError(error instanceof AiServiceError ? error : new AiServiceError('AI suggestions unavailable.'));
     } finally {
       setGenerating(false);
@@ -120,6 +124,7 @@ export function AiFixPanel({ request }: { request: AiFixRequest }) {
       copiedSuccessfully = fallbackCopy(selected.content);
     }
     setCopyStatus(copiedSuccessfully ? 'success' : 'failed');
+    if (copiedSuccessfully) trackExtension('ext_recommendation_copied', { fix_type: request.type, recommendation_index: response?.recommendations.findIndex((item) => item.id === selected.id) ?? -1 });
     window.setTimeout(() => setCopyStatus('idle'), 2000);
   };
 
@@ -128,7 +133,7 @@ export function AiFixPanel({ request }: { request: AiFixRequest }) {
     <div className="fix-detail-grid"><div><span>Issue</span><strong>{request.issueLabel}</strong></div><div><span>Current</span><strong>{request.currentValue || 'Not found'}</strong></div></div>
     {response && !generationError ? <><div className="before-after"><div><span>Before</span><code>{beforeMarkup(request)}</code></div><div className="after-preview"><span>After · AI recommendation</span><p>{selected?.content}</p></div></div>
       <div className="suggestion-header"><h4>3 AI recommendations</h4><span>Select one to copy</span></div>
-      <div className="suggestion-list">{response.recommendations.map((recommendation, index) => <RecommendationCard key={recommendation.id} recommendation={recommendation} label={labels[index] ?? `Alternative ${index}`} selected={recommendation.id === selectedId} onSelect={() => setSelectedId(recommendation.id)} />)}</div>
+      <div className="suggestion-list">{response.recommendations.map((recommendation, index) => <RecommendationCard key={recommendation.id} recommendation={recommendation} label={labels[index] ?? `Alternative ${index}`} selected={recommendation.id === selectedId} onSelect={() => { setSelectedId(recommendation.id); trackExtension('ext_recommendation_selected', { fix_type: request.type, recommendation_index: index }); }} />)}</div>
       <div className="fix-actions"><button type="button" onClick={() => void refreshRecommendations()} className="secondary-button" disabled={generating}>↻ Generate another</button><button type="button" onClick={() => void copySelected()} className="primary-button">{copyStatus === 'success' ? '✓ Copied' : copyStatus === 'failed' ? 'Copy failed' : 'Copy selected'}</button></div>
       <p className="copy-feedback" aria-live="polite">{copyStatus === 'success' ? 'Copied — paste this into your page source or CMS.' : copyStatus === 'failed' ? 'Copy failed' : ''}</p>
     </> : generationError ? <ErrorState error={generationError} countdownSeconds={countdownSeconds} onRetry={() => void refreshRecommendations()} generating={generating} /> : <p className="generating">Generating AI recommendations…</p>}

@@ -29,7 +29,8 @@ SEO Copilot V1.1.0:
 - uses Upstash rate limiting. The backend may process the IP address for rate limiting and abuse prevention;
 - does not retain raw page content as an application record after the request;
 - does not sell, rent, or share user data;
-- does not use analytics, advertising trackers, or remote code;
+- uses Mixpanel for anonymous product analytics on the website and extension. Analytics events contain product actions and aggregate counts, not page URLs, page text, titles, meta descriptions, or AI request context;
+- does not use analytics for advertising or cross-site advertising;
 - does not create user profiles or use data for advertising or credit decisions.
 
 ## Permissions

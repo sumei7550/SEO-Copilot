@@ -30,7 +30,7 @@
     <li>A deviceId is kept in <code>chrome.storage.local</code>; Upstash rate limiting may process the IP address for rate limiting and abuse prevention.</li>
     <li>Raw page content is not retained as an application record after the request.</li>
     <li>No data is sold, rented, shared, used for advertising, or used to create profiles.</li>
-    <li>V1.0.0 contains no analytics trackers or remote code.</li>
+    <li>SEO Copilot uses Mixpanel for anonymous product analytics on the website and extension. Analytics events contain product actions and aggregate counts, not page URLs, page text, titles, meta descriptions, or AI request context. Analytics is not used for advertising.</li>
   </ul>
   <h2>Permissions</h2>
   <p><code>activeTab</code> provides temporary access to the user-selected tab. <code>scripting</code> runs the packaged local scanner after the user confirms analysis. The extension requests no browsing-history or cookie permission; <code>chrome.storage.local</code> stores the deviceId used for optional AI request controls.</p>
