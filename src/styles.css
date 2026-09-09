@@ -22,10 +22,10 @@ body { min-width: 400px; margin: 0; font-family: Inter, ui-sans-serif, system-ui
    these selectors mirror the compact extension layout from docs/prototype. */
 .extension { width: 400px; max-width: none; min-width: 400px; min-height: 0; background: #f8fafc; padding: 20px; border-radius: 24px; color: #172033; }
 .app-header, .section-heading, .issue-topline, .fix-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.app-header { margin-bottom: 18px; }
+.app-header { align-items: flex-start; margin-bottom: 18px; }
 .app-header > div { min-width: 0; flex: 1 1 auto; }
 .eyebrow, .label { margin: 0; font-size: 10px; letter-spacing: .16em; font-weight: 800; color: #6366f1; }
-.app-header h1 { margin: 3px 0 0; font-size: 21px; letter-spacing: -.04em; white-space: nowrap; }
+.app-header h1 { margin: 3px 0 0; font-size: 21px; line-height: 1.18; letter-spacing: -.04em; overflow-wrap: anywhere; }
 .scan-status { display: flex; align-items: center; gap: 5px; flex: 0 0 auto; white-space: nowrap; color: #64748b; font-size: 10px; }
 .scan-status span { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; }
 .score-card { display: grid; grid-template-columns: 1fr auto; gap: 14px; padding: 20px; border-radius: 17px; background: #172033; color: #fff; box-shadow: 0 10px 24px #17203325; }
