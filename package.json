@@ -10,7 +10,8 @@
     "backend:build": "tsc -p server/tsconfig.json",
     "backend:start": "node server-dist/index.js",
     "vercel:dev": "vercel dev",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "verify:production-seo": "node scripts/verify-production-seo.mjs"
   },
   "dependencies": {
     "@tailwindcss/postcss": "latest",
