@@ -15,5 +15,5 @@ function initAnalytics() {
 
 export function trackExtension(event: ExtensionEvent, properties: Record<string, unknown> = {}) {
   if (!initAnalytics()) return;
-  mixpanel.track(event, { product_surface: 'extension', environment: 'production', extension_version: chrome.runtime.getManifest().version, ...properties });
+  mixpanel.track(event, { product_surface: 'extension', environment: 'production', extension_version: chrome.runtime.getManifest().version, ...properties }, { send_immediately: true, transport: 'sendBeacon' });
 }
