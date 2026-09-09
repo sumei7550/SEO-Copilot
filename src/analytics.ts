@@ -16,5 +16,5 @@ function initAnalytics() {
 export function trackExtension(event: ExtensionEvent, properties: Record<string, unknown> = {}) {
   if (!initAnalytics()) return;
   const payload = { product_surface: 'extension', environment: 'production', extension_version: chrome.runtime.getManifest().version, ...properties };
-  void chrome.runtime.sendMessage({ type: 'TRACK_ANALYTICS', event, distinctId: mixpanel.get_distinct_id(), properties: payload }).catch(() => undefined);
+  mixpanel.track(event, payload, { send_immediately: true });
 }
