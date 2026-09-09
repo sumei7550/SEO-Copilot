@@ -1,6 +1,6 @@
 # Extension Name
 
-SEO Copilot – AI SEO Checker
+SEO Copilot – AI Title & Meta Checker
 
 # Short Description
 
