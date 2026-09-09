@@ -1,7 +1,7 @@
 {
   "extensionName": { "message": "SEO Copilot – AI SEO Checker" },
   "extensionDescription": {
-    "message": "AI-powered SEO checker. Audit pages, find SEO issues, and generate optimized title and meta description suggestions."
+    "message": "Audit webpages, find on-page SEO issues, and get AI-powered title and meta description suggestions directly in Chrome."
   },
   "eyebrow": { "message": "Page audit" },
   "scoreLabel": { "message": "SEO score" },
