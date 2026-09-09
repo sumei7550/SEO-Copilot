@@ -1,9 +1,9 @@
 {
   "extensionName": {
-    "message": "SEO Copilot – Verificador de SEO com IA"
+    "message": "SEO Copilot – Verificador de título e meta com IA"
   },
   "extensionDescription": {
-    "message": "Verificador de SEO com IA. Audite páginas, encontre problemas de SEO e gere sugestões otimizadas para o título e a meta descrição."
+    "message": "Verifique o SEO antes de publicar, priorize título e meta description, gere sugestões com IA e analise novamente após editar."
   },
   "eyebrow": {
     "message": "Auditoria da página"

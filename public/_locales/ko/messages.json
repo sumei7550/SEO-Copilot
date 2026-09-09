@@ -1,9 +1,9 @@
 {
   "extensionName": {
-    "message": "SEO Copilot – AI SEO 검사 도구"
+    "message": "SEO Copilot – AI 제목·메타 설명 검사기"
   },
   "extensionDescription": {
-    "message": "AI 기반 SEO 검사 도구입니다. 페이지를 SEO 감사하고, SEO 문제를 찾고, 최적화된 제목과 메타 설명 제안을 생성하세요."
+    "message": "게시 전에 페이지 SEO를 검사하고 제목과 메타 설명 문제를 우선 확인하세요. AI 제안을 생성하고 수정 후 다시 스캔합니다."
   },
   "eyebrow": {
     "message": "페이지 감사"

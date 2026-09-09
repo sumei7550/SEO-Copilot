@@ -1,9 +1,9 @@
 {
   "extensionName": {
-    "message": "SEO Copilot – KI-gestützter SEO-Checker"
+    "message": "SEO Copilot – KI-Checker für Titel & Meta"
   },
   "extensionDescription": {
-    "message": "KI-gestützter SEO-Checker. Führen Sie SEO-Audits durch, finden Sie SEO-Probleme und erstellen Sie optimierte Vorschläge für Titel und Meta-Beschreibung."
+    "message": "SEO vor der Veröffentlichung prüfen, Titel- und Meta-Probleme priorisieren, KI-Vorschläge erhalten und nach Änderungen neu scannen."
   },
   "eyebrow": {
     "message": "Seitenprüfung"

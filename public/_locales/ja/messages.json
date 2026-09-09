@@ -1,9 +1,9 @@
 {
   "extensionName": {
-    "message": "SEO Copilot – AI SEOチェッカー"
+    "message": "SEO Copilot – AIタイトル・メタ説明チェッカー"
   },
   "extensionDescription": {
-    "message": "AI搭載のSEOチェッカー。ページをSEO監査し、SEO上の問題を見つけ、最適化されたタイトルとメタディスクリプションの候補を生成します。"
+    "message": "公開前にページSEOを確認し、タイトルとメタ説明の問題を優先。AI提案を生成し、編集後に再スキャンできます。"
   },
   "eyebrow": {
     "message": "ページ監査"

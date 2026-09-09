@@ -1,7 +1,7 @@
 {
-  "extensionName": { "message": "SEO Copilot – AI SEO 檢查器" },
+  "extensionName": { "message": "SEO Copilot – AI 標題與中繼描述檢查器" },
   "extensionDescription": {
-    "message": "AI 驅動的 SEO 檢查器。稽核頁面、找出 SEO 問題，並產生最佳化的標題與 Meta Description 建議。"
+    "message": "發布前檢查單頁 SEO，優先找出標題與中繼描述問題，產生 AI 最佳化建議，並在修改後重新掃描。"
   },
   "eyebrow": { "message": "頁面稽核" },
   "scoreLabel": { "message": "SEO 分數" },

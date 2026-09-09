@@ -1,7 +1,7 @@
 {
   "extensionName": { "message": "SEO Copilot – AI 标题与元描述检查器" },
   "extensionDescription": {
-    "message": "使用 SEO 检查器审核网页，发现问题，获取 AI 标题和元描述建议，并在更新后重新扫描。"
+    "message": "发布前检查单页 SEO，优先定位标题与元描述问题，生成 AI 优化建议，并在修改后重新扫描。"
   },
   "eyebrow": { "message": "页面审计" },
   "scoreLabel": { "message": "SEO 得分" },
