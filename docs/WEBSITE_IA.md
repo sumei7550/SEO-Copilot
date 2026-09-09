@@ -86,4 +86,6 @@ The conditional checker pages were reviewed during the pre-launch Website Audit.
 
 Each page now has unique task-oriented detail content and related links. This satisfies the local implementation portion of the landing-page gate; it does not replace production crawl validation or post-launch search data. Keep the pages under review until the production URL is verified and real search intent confirms that the pages are not cannibalizing one another.
 
+The canonical keyword ownership, cannibalization rules, future-page gate, and 28-day measurement loop are maintained in [SEO_KEYWORD_MAP.md](SEO_KEYWORD_MAP.md). Treat its keyword choices as hypotheses until production Search Console and live SERP evidence validate them.
+
 The detailed findings, code-file mapping, validation evidence, and remaining work are recorded in [WEBSITE_AUDIT_2026-09-04.md](WEBSITE_AUDIT_2026-09-04.md).

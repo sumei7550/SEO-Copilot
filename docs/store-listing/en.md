@@ -8,94 +8,41 @@ Audit webpages, find on-page SEO issues, and get AI-powered title and meta descr
 
 # Detailed Description
 
-SEO Copilot is an AI-powered SEO checker for Chrome that helps you run a website SEO audit on the page you are viewing, identify on-page SEO issues through clear SEO issue detection, and generate practical optimization suggestions without leaving your browser.
+SEO Copilot helps you review the page currently open in Chrome, identify common optimization issues, and understand what may need attention before publishing.
 
-Use SEO Copilot to quickly review the SEO health of the page you are viewing, understand what may need improvement, and get AI-assisted recommendations for supported title and meta description issues.
+Run a page scan to see a 0–100 score, issue severity, and practical recommendations. The extension checks elements such as page titles, meta descriptions, headings, canonical tags, structured data, image alt text, URL structure, and other page-level signals.
 
-## Key features
+For supported title and meta description issues, you can request AI-assisted suggestions based on the current page context. SEO Copilot provides multiple options so you can compare them, choose the most suitable version, and copy it for use in your CMS or code.
 
-- Run an instant SEO audit on the current webpage
-- Detect common on-page SEO issues
-- Review title tag and meta description problems
-- Check headings, canonical tags, structured data/schema, image SEO, URLs, and other SEO elements
-- Get AI-powered title suggestions
-- Get AI-powered meta description suggestions
-- See issue severity and SEO score
-- Re-scan the page after making updates
-
-## AI-powered SEO suggestions
-
-For supported SEO issues, SEO Copilot can generate multiple AI recommendations based on the current page context.
-
-You can:
-
-- Compare the current title or meta description with AI suggestions
-- Review multiple optimization options
-- Choose the version that best fits your page
-- Use **Copy selected** to copy the chosen suggestion
-- Select **Generate another** when you want another recommendation
-
-AI suggestions are designed to support your SEO workflow, not replace your judgment.
-
-## On-page SEO analysis
-
-SEO Copilot helps you review common SEO elements such as:
-
-- Page title
-- Meta description
-- H1 and heading structure
-- Canonical tag
-- Structured data/schema
-- Image alt text
-- URL structure
-- Other technical and on-page SEO signals
-
-This makes it useful as a lightweight SEO analyzer for quick page reviews, QA checks, content optimization, technical SEO checks, and everyday website analysis. It supports title optimization and meta description improvements while leaving all website changes under your control.
+AI suggestions are optional and are intended to support your editing workflow. SEO Copilot does not automatically modify your website.
 
 ## How it works
 
-1. Open any webpage in Chrome
-2. Run SEO Copilot
-3. Review the SEO score and detected issues
-4. Use AI suggestions for supported title and meta description issues
-5. Apply any changes to your website yourself
-6. Select **Re-scan** to review the latest SEO state
+1. Open the page you want to review.
+2. Run SEO Copilot.
+3. Review the score and detected issues.
+4. Request AI suggestions where available.
+5. Make any changes yourself in your CMS or code.
+6. Re-scan the page to review the updated state.
 
-## Who is SEO Copilot for?
+## Main features
 
-SEO Copilot is useful for:
+- Page-level scan
+- 0–100 score and issue severity
+- Title and meta description checks
+- Heading structure review
+- Canonical and structured data checks
+- Image alt text and URL checks
+- Optional AI suggestions for supported title and meta description issues
+- Re-scan after making changes
 
-- Website owners
-- SEO specialists
-- SEO freelancers
-- Content marketers
-- Bloggers
-- SaaS teams
-- Ecommerce teams
-- Developers reviewing on-page SEO
-
-Whether you are checking a landing page, blog post, product page, pricing page, documentation page, or other website content, SEO Copilot helps you identify issues faster and make more informed optimization decisions.
+SEO Copilot is useful for quick page reviews before publishing or after making updates to landing pages, articles, product pages, pricing pages, documentation, and other web content.
 
 ## Privacy and limitations
 
-SEO Copilot provides SEO analysis and AI-assisted suggestions.
+Basic page scanning runs on your device. When you explicitly request an AI suggestion, the necessary page context is sent to the SEO Copilot backend and its AI provider to generate the recommendation.
 
-It does not:
-
-- Automatically modify your website
-- Automatically fix every SEO issue
-- Provide fully automated SEO
-- Guarantee higher search rankings
-- Guarantee Google rankings
-- Replace professional SEO review
-
-AI-generated recommendations should be reviewed before use.
-
-SEO Copilot is designed as a practical Chrome SEO checker and on-page SEO audit tool to help you find issues, understand what to improve, and optimize titles and meta descriptions more efficiently.
-
-# Keywords
-
-SEO checker, SEO audit, on-page SEO, SEO analyzer, website SEO audit, AI SEO, title tag, title optimization, meta description, SEO issues, technical SEO, website analysis
+SEO Copilot does not automatically edit websites, does not guarantee search ranking improvements, and does not replace professional review. AI-generated suggestions should be checked before use.
 
 # Notes
 
