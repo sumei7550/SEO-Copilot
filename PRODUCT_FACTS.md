@@ -6,7 +6,7 @@
 
 - Product name: SEO Copilot
 - Product type: Chrome Manifest V3 extension
-- Current product stage: 1.1.0 Alpha
+- Current product stage: 1.2.0 Alpha
 - Primary user: site owners, writers, marketers, and developers who need a quick page-level SEO check while viewing a page in Chrome.
 - Primary conversion: install the extension from the Chrome Web Store.
 - Chrome Web Store URL: `https://chromewebstore.google.com/detail/kjkjgpmhjilegalgphglnagjnfgnighb?utm_source=website` — configured in the extension and website code; verify that it is the final public listing before production deploy.

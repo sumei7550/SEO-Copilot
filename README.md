@@ -2,7 +2,7 @@
 
 SEO Copilot 是一个 React + TypeScript + Vite + Tailwind CSS 构建的 Chrome Manifest V3 SEO Audit Extension。当前版本在本地 SEO 扫描基础上提供 AI Fix MVP：针对可通过文案改写直接处理的问题生成候选内容，用户复制到页面或 CMS 后重新扫描验证。
 
-当前版本：`1.1.0`（Alpha）。生产扩展构建产物位于本地 `dist/` 目录，版本信息由 `package.json`、根目录 `manifest.json` 和 `public/manifest.json` 保持一致。
+当前版本：`1.2.0`（Alpha）。生产扩展构建产物位于本地 `dist/` 目录，版本信息由 `package.json`、根目录 `manifest.json` 和 `public/manifest.json` 保持一致。
 
 ## 安装与开发
 

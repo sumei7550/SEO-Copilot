@@ -22,7 +22,7 @@ The information is processed locally in the user's browser to generate the SEO s
 
 ## Storage, transmission, and sharing
 
-SEO Copilot V1.1.0:
+SEO Copilot V1.2.0:
 
 - sends necessary page context only for an actively requested AI Fix, through the SEO Copilot backend to DeepSeek;
 - uses a deviceId kept in `chrome.storage.local` for AI request controls;

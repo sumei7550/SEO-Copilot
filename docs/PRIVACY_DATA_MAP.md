@@ -1,4 +1,4 @@
-# SEO Copilot V1.1.0 Privacy Data Map
+# SEO Copilot V1.2.0 Privacy Data Map
 
 |Data|Source|Purpose|Persistence|Transmission|Sharing|
 |---|---|---|---|---|---|
