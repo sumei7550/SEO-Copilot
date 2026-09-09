@@ -16,6 +16,7 @@ if (!['http:', 'https:'].includes(parsedSiteUrl.protocol) || parsedSiteUrl.pathn
 export const SITE_URL = parsedSiteUrl.toString().replace(/\/+$/, '');
 export const OG_IMAGE_PATH = '/images/og/seo-copilot-og.svg';
 export const STORE_URL = 'https://chromewebstore.google.com/detail/kjkjgpmhjilegalgphglnagjnfgnighb?utm_source=website';
+export const GOOGLE_SITE_VERIFICATION = '-1t7qtzy1DcFD03YxrjvuYazuZgi0DpPgzqf24Fwlro';
 export const LOCALES = ['zh-CN', 'zh-TW', 'ja', 'ko', 'de', 'fr', 'es', 'pt-BR'] as const;
 export type Locale = 'en' | (typeof LOCALES)[number];
 export const PATHS = ['', 'features', 'seo-checker', 'seo-audit', 'title-tag-checker', 'meta-description-checker', 'on-page-seo-checker', 'privacy', 'terms', 'support'];
