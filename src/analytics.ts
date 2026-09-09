@@ -5,7 +5,8 @@ export type ExtensionEvent = 'ext_opened' | 'ext_scan_consent_viewed' | 'ext_sca
 let initialized = false;
 function initAnalytics() {
   const token = import.meta.env.VITE_MIXPANEL_TOKEN;
-  if (initialized || !import.meta.env.PROD || !token) return false;
+  if (!import.meta.env.PROD || !token) return false;
+  if (initialized) return true;
   // Popup pages can be destroyed immediately after a click. Do not queue
   // events for the SDK's default 5-second batch window in that environment.
   mixpanel.init(token, { autocapture: false, track_pageview: false, persistence: 'localStorage', batch_requests: false });
