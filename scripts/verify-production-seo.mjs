@@ -32,6 +32,34 @@ const pages = [
   },
 ];
 
+const localizedChecks = [
+  ['de', ''],
+  ['de', 'support'],
+  ['fr', ''],
+  ['fr', 'support'],
+  ['ja', ''],
+  ['ja', 'seo-checker'],
+  ['ja', 'support'],
+  ['ko', ''],
+  ['ko', 'privacy'],
+  ['ko', 'support'],
+  ['pt-BR', 'features'],
+  ['pt-BR', 'meta-description-checker'],
+  ['pt-BR', 'privacy'],
+  ['pt-BR', 'seo-checker'],
+  ['pt-BR', 'support'],
+  ['pt-BR', 'terms'],
+  ['pt-BR', 'title-tag-checker'],
+  ['zh-CN', ''],
+  ['zh-CN', 'support'],
+  ['zh-TW', ''],
+  ['zh-TW', 'on-page-seo-checker'],
+  ['zh-TW', 'privacy'],
+  ['zh-TW', 'seo-audit'],
+  ['zh-TW', 'seo-checker'],
+  ['zh-TW', 'support'],
+];
+
 function expectedHreflangs(path) {
   return new Map([
     ['en', `${site}/${path}/`],
@@ -102,6 +130,22 @@ async function main() {
   assert(sitemapUrls.every((url) => url.startsWith(`${site}/`)), 'sitemap uses production URLs', 'Found a URL outside the configured production origin.');
   for (const page of pages) {
     assert(sitemapUrls.includes(`${site}/${page.path}/`), `sitemap includes /${page.path}/`, 'The tool page is missing from sitemap.xml.');
+  }
+
+  for (const [locale, path] of localizedChecks) {
+    const localizedPath = `/${locale}/${path ? `${path}/` : ''}`;
+    const result = await get(localizedPath);
+    const html = result.body;
+    const titleTags = tags(html, 'title');
+    const h1Tags = tags(html, 'h1');
+    const descriptions = matchingTags(html, 'meta', (attributes) => attributes.name?.toLowerCase() === 'description');
+    const robots = matchingTags(html, 'meta', (attributes) => attributes.name?.toLowerCase() === 'robots');
+    const canonicals = matchingTags(html, 'link', (attributes) => attributes.rel?.toLowerCase() === 'canonical');
+    assert(titleTags.length === 1, `${localizedPath} has one title`, `Found ${titleTags.length}.`);
+    assert(h1Tags.length === 1, `${localizedPath} has one H1`, `Found ${h1Tags.length}.`);
+    assert(descriptions.length === 1 && descriptions[0].content?.trim(), `${localizedPath} has one meta description`, `Found ${descriptions.length}.`);
+    assert(robots.length === 1 && /index/i.test(robots[0].content) && /follow/i.test(robots[0].content), `${localizedPath} is indexable`, robots[0]?.content || 'Missing index/follow directive.');
+    assert(canonicals.length === 1 && canonicals[0].href === `${site}${localizedPath}`, `${localizedPath} canonical`, canonicals[0]?.href || 'Missing canonical.');
   }
 
   for (const page of pages) {

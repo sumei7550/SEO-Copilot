@@ -86,7 +86,7 @@ export function alternatesFor(path: string) {
 }
 export function pageMetadata(title: string, description: string, path: string): Metadata {
   const url = absoluteUrl('en', path);
-  return { title, description, alternates: alternatesFor(path), openGraph: { title: `${title} | SEO Copilot`, description, url, type: 'website', images: [{ url: OG_IMAGE_PATH, width: 1200, height: 630, alt: 'SEO Copilot page-level SEO checker' }] }, twitter: { card: 'summary_large_image', title: `${title} | SEO Copilot`, description, images: [OG_IMAGE_PATH] } };
+  return { title, description, robots: { index: true, follow: true }, alternates: alternatesFor(path), openGraph: { title, description, url, type: 'website', images: [{ url: OG_IMAGE_PATH, width: 1200, height: 630, alt: 'SEO Copilot page-level SEO checker' }] }, twitter: { card: 'summary_large_image', title, description, images: [OG_IMAGE_PATH] } };
 }
 export function jsonLdUrl(locale: Locale, path: string) { return absoluteUrl(locale, path); }
 
