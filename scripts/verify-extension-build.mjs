@@ -9,8 +9,21 @@ if (/^\s*(?:import|export)\s/m.test(contentScript)) {
   throw new Error('dist/content.js must be self-contained because Chrome content scripts are not ES modules.');
 }
 
-if (manifest.manifest_version !== 3 || !manifest.action?.default_popup) {
-  throw new Error('dist/manifest.json is not a valid Manifest V3 popup extension manifest.');
+if (manifest.manifest_version !== 3 || !manifest.side_panel?.default_path) {
+  throw new Error('dist/manifest.json must define a Manifest V3 Side Panel.');
+}
+
+if (manifest.side_panel?.default_path && (!manifest.permissions?.includes('sidePanel') || !existsSync(resolve(root, 'dist', manifest.side_panel.default_path)))) {
+  throw new Error('Side panel entry or permission is missing.');
+}
+if (manifest.side_panel?.default_path && (!manifest.background?.service_worker || !existsSync(resolve(root, 'dist', manifest.background.service_worker)))) {
+  throw new Error('Side panel service worker is missing.');
+}
+if (manifest.action?.default_popup) {
+  throw new Error('The action must open the Side Panel, not a popup.');
+}
+if (manifest.background?.service_worker && /^\s*(?:import|export)\s/m.test(readFileSync(resolve(root, 'dist', manifest.background.service_worker), 'utf8'))) {
+  throw new Error('The service worker must be self-contained.');
 }
 
 if (manifest.version !== '1.2.0') {
@@ -18,8 +31,19 @@ if (manifest.version !== '1.2.0') {
 }
 
 const permissions = [...(manifest.permissions ?? [])].sort().join(',');
-if (permissions !== 'activeTab,scripting,storage') {
+if (permissions !== 'activeTab,scripting,sidePanel,storage,tabs') {
   throw new Error(`Unexpected release permissions: ${permissions}.`);
+}
+
+if (manifest.minimum_chrome_version !== '116') {
+  throw new Error(`Expected minimum Chrome version 116 for Side Panel, received ${manifest.minimum_chrome_version}.`);
+}
+const optionalHostPermissions = [...(manifest.optional_host_permissions ?? [])].sort().join(',');
+if (optionalHostPermissions !== 'http://*/*,https://*/*') {
+  throw new Error(`Unexpected optional host permissions: ${optionalHostPermissions}.`);
+}
+if ((manifest.host_permissions ?? []).includes('<all_urls>')) {
+  throw new Error('The extension must not require all-sites host access.');
 }
 
 for (const size of [16, 32, 48, 128]) {
