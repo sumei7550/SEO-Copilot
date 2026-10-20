@@ -19,7 +19,7 @@ export const STORE_URL = 'https://chromewebstore.google.com/detail/kjkjgpmhjileg
 export const GOOGLE_SITE_VERIFICATION = '-1t7qtzy1DcFD03YxrjvuYazuZgi0DpPgzqf24Fwlro';
 export const LOCALES = ['zh-CN', 'zh-TW', 'ja', 'ko', 'de', 'fr', 'es', 'pt-BR'] as const;
 export type Locale = 'en' | (typeof LOCALES)[number];
-export const PATHS = ['', 'features', 'seo-checker', 'seo-audit', 'title-tag-checker', 'meta-description-checker', 'on-page-seo-checker', 'privacy', 'terms', 'support'];
+export const PATHS = ['', 'features', 'seo-checker', 'seo-audit', 'title-tag-checker', 'meta-description-checker', 'on-page-seo-checker', 'pricing', 'privacy', 'terms', 'support'];
 
 const homeMetadata: Record<Locale, { title: string; description: string }> = {
   en: { title: 'AI SEO Checker for the Page You Are Viewing', description: 'Scan the page you are viewing, find SEO issues, and request grounded AI title and meta description suggestions when you need them.' },
