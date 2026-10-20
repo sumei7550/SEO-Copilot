@@ -18,24 +18,24 @@
 <body>
 <main><article>
   <h1>SEO Copilot Privacy Policy</h1>
-  <p class="meta">Effective date: August 8, 2026</p>
+  <p class="meta">Last updated: October 20, 2026</p>
   <p>SEO Copilot analyzes the active webpage for on-page SEO issues. Basic SEO scanning runs locally in the browser.</p>
   <h2>Data processed</h2>
-  <p>Only after the user clicks <strong>Analyze this page</strong>, SEO Copilot temporarily reads the active tab's URL, metadata, headings, image SEO attributes and dimensions, JSON-LD structured data, and visible text required to calculate word count and text ratio.</p>
-  <p>SEO Copilot does not read cookies, passwords, form entries, authentication or payment information, browser history, or tabs the user has not chosen to analyze.</p>
+  <p>When you open the Side Panel, switch tabs, or navigate, SEO Copilot reads the active tab's ID and URL to identify the page and restore any report held in Side Panel memory. This does not read the page body or start a scan.</p>
+  <p>Only after you click <strong>Scan current page</strong> and grant site access if requested does the local scanner read the page URL, metadata, headings, image SEO attributes and dimensions, JSON-LD structured data, and visible text needed for word count and text density. The full visible text is not returned in the report.</p>
+  <p>The scanner does not use form-value, cookie, password, or browser-history APIs and does not scan the body of unrelated tabs. Its local visible-text calculation may include text nodes displayed within forms; only derived counts are returned.</p>
   <h2>Use, storage, and sharing</h2>
   <ul>
     <li>Basic SEO scanning is processed locally.</li>
-    <li>Only when you actively request AI Fix, necessary page context is sent through the SEO Copilot backend to DeepSeek.</li>
-    <li>A deviceId is kept in <code>chrome.storage.local</code>; Upstash rate limiting may process the IP address for rate limiting and abuse prevention.</li>
-    <li>Raw page content is not retained as an application record after the request.</li>
-    <li>No data is sold, rented, shared, used for advertising, or used to create profiles.</li>
-    <li>SEO Copilot uses Mixpanel for anonymous product analytics on the website and extension. Analytics events contain product actions and aggregate counts, not page URLs, page text, titles, meta descriptions, or AI request context. Analytics is not used for advertising.</li>
+    <li>Only when you request AI Fix, the page URL, title, meta description, H1 text, selected issue details, and related context are sent through the SEO Copilot backend to DeepSeek. The full page body is not sent.</li>
+    <li>A deviceId and installation, Welcome-view, and first-successful-scan timestamps are kept in <code>chrome.storage.local</code>. Reports are held only in Side Panel memory. The backend uses the IP and deviceId for Upstash rate limiting; the reviewed backend code does not store raw page context, but hosting and provider retention require separate confirmation.</li>
+    <li>SEO Copilot uses Mixpanel for usage analytics. Extension events include actions, score and issue counts/IDs, and SDK defaults such as the current internal extension-page URL and browser metadata—not the scanned site's URL in custom event fields. Website analytics includes this site's URL/path and referrer. Mixpanel uses a browser-local identifier.</li>
+    <li>The reviewed application code does not send data to advertising networks or use it for advertising. Mixpanel, DeepSeek, Upstash, and the backend host process data for the purposes above.</li>
   </ul>
   <h2>Permissions</h2>
-  <p><code>activeTab</code> provides temporary access to the user-selected tab. <code>scripting</code> runs the packaged local scanner after the user confirms analysis. The extension requests no browsing-history or cookie permission; <code>chrome.storage.local</code> stores the deviceId used for optional AI request controls.</p>
+  <p><code>tabs</code> provides the active tab ID and URL for page identification; <code>sidePanel</code> opens the panel; <code>activeTab</code> provides temporary user-invoked access; <code>scripting</code> injects the packaged scanner when needed; and <code>storage</code> holds the local identifier and activation timestamps. The <code>http://*/*</code> and <code>https://*/*</code> patterns are optional, not all-site access granted at installation: when you click Scan on a site without access, Chrome asks for that site's permission. Fixed host permissions allow the AI backend and Mixpanel endpoints. The extension requests no Chrome browsing-history or cookie permission.</p>
   <h2>Limited Use</h2>
-  <p>The use of information received from Chrome APIs adheres to the Chrome Web Store User Data Policy, including the Limited Use requirements. Access is limited to the extension's single purpose: a local SEO audit, plus an AI Fix only when you request it.</p>
+  <p>The use of information received from Chrome APIs adheres to the Chrome Web Store User Data Policy, including the Limited Use requirements. Access supports the user-facing local SEO audit, optional AI suggestions requested by the user, and related operational analytics.</p>
   <h2>Changes</h2>
   <p>If a future release changes these practices, this policy and the in-product disclosure will be updated before the changed processing begins.</p>
   <h2>Contact</h2>
