@@ -7,6 +7,7 @@ import { previewResult } from './previewResult';
 import { scanActiveTab } from './scanActiveTab';
 import { PerTabScanState, type ScanType, type TabScanState } from './perTabScanState';
 import { hasSiteAccess, permissionPattern, requestSiteAccess } from './sitePermission';
+import { loadActivationState, recordFirstScanCompletedAt, scanActivationProperties, type ActivationState } from '../onboarding/activation';
 
 type ActivePage = { tab: chrome.tabs.Tab; url: string; pattern?: string; hasPermission: boolean };
 const PERMISSION_MESSAGE = 'SEO Copilot needs access to this site to scan the page.';
@@ -44,6 +45,8 @@ export function App() {
   const pendingActivation = useRef<number | undefined>(undefined);
   const viewed = useRef(new Set<number>());
   const viewProps = useRef(new Map<number, Record<string, unknown>>());
+  const activation = useRef<ActivationState>({});
+  const [activationReady, setActivationReady] = useState<boolean>(isStorePreview);
   const [page, setPage] = useState<ActivePage | undefined>();
   const [ready, setReady] = useState(false);
   const [, setRevision] = useState(0);
@@ -85,6 +88,24 @@ export function App() {
 
   useEffect(() => {
     trackExtension('ext_sidepanel_opened');
+  }, []);
+
+  useEffect(() => {
+    if (!globalThis.chrome?.storage?.local) {
+      setActivationReady(true);
+      return;
+    }
+    let disposed = false;
+    void loadActivationState().then((state) => {
+      if (disposed) return;
+      activation.current = state;
+      setActivationReady(true);
+    }).catch((error) => {
+      if (disposed) return;
+      console.error('SEO Copilot: failed to load first-scan state', error);
+      setActivationReady(true);
+    });
+    return () => { disposed = true; };
   }, []);
 
   useEffect(() => {
@@ -141,7 +162,7 @@ export function App() {
   const runScan = useCallback((forcedType?: ScanType) => {
     // No await before requestSiteAccess: the permission dialog is tied to this click.
     const target = activePage.current;
-    if (!ready || pendingActivation.current !== undefined || !target?.tab.id) return;
+    if (!ready || !activationReady || pendingActivation.current !== undefined || !target?.tab.id) return;
     const tabId = target.tab.id;
     const url = target.url;
     const before = states.current.get(tabId, url);
@@ -151,10 +172,11 @@ export function App() {
     if (scanId === undefined) return;
     repaint();
 
+    const activationProps = scanActivationProperties(activation.current);
     let permissionGranted = target.hasPermission;
     const permissionRequired = !target.hasPermission && Boolean(target.pattern);
     const eventProps = () => ({
-      scan_type: scanType, entry_point: 'sidepanel', is_first_scan: scanType === 'first',
+      scan_type: scanType, entry_point: 'sidepanel', ...activationProps,
       site_permission_required: permissionRequired, site_permission_granted: permissionGranted
     });
     viewProps.current.set(scanId, eventProps());
@@ -178,6 +200,13 @@ export function App() {
         // itself rather than comparing with whichever tab is currently active.
         const owner = await chrome.tabs.get(tabId);
         if (owner.url !== url || !states.current.complete(tabId, url, scanId, response.result)) return;
+        if (!activation.current.firstScanCompletedAt) {
+          const completedAt = Date.now();
+          activation.current.firstScanCompletedAt = completedAt;
+          void recordFirstScanCompletedAt(completedAt).catch((error) => {
+            console.error('SEO Copilot: failed to record first scan', error);
+          });
+        }
         trackExtension('ext_scan_completed', {
           ...eventProps(), score: response.result.score, issue_count: response.result.issues.length,
           critical_count: response.result.issues.filter((issue) => issue.severity === 'critical').length,
@@ -194,15 +223,15 @@ export function App() {
         repaint();
       }
     })();
-  }, [ready, repaint]);
+  }, [ready, activationReady, repaint]);
 
   const status = currentState.status === 'scanning' ? t('scanning') : currentState.status === 'error' ? 'Scan failed' : currentState.status === 'report' ? 'Scan complete' : 'Ready to scan';
   return <main className="extension">
     <header className="app-header"><div><p className="eyebrow">{t('eyebrow')}</p><h1>{t('extensionName')}</h1></div><span className="scan-status"><span /> {status}</span></header>
     {currentState.status === 'scanning' ? <div className="rounded-xl border border-slate-200 bg-white p-5 text-center text-sm text-slate-500">{t('scanning')}</div> : null}
-    {currentState.status === 'error' ? <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700"><p className="font-semibold">{currentState.message === PERMISSION_MESSAGE ? 'Permission required' : 'Scan failed'}</p><p className="mt-1">{currentState.message}</p><button onClick={() => runScan(currentState.scanType)} disabled={!ready} className="mt-3 rounded-lg bg-rose-600 px-3 py-2 text-xs font-semibold text-white disabled:opacity-60">{t('retry')}</button></div> : null}
+    {currentState.status === 'error' ? <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700"><p className="font-semibold">{currentState.message === PERMISSION_MESSAGE ? 'Permission required' : 'Scan failed'}</p><p className="mt-1">{currentState.message}</p><button onClick={() => runScan(currentState.scanType)} disabled={!ready || !activationReady} className="mt-3 rounded-lg bg-rose-600 px-3 py-2 text-xs font-semibold text-white disabled:opacity-60">{t('retry')}</button></div> : null}
     {currentState.status === 'report' ? <><ScoreCard result={currentState.result} /><Report result={currentState.result} onRescan={() => runScan('rescan')} /></> : null}
-    {currentState.status === 'idle' ? <section className="rounded-2xl border border-indigo-100 bg-white p-5 shadow-sm"><h2 className="font-semibold text-slate-900">Scan this page</h2><p className="mt-2 text-sm leading-6 text-slate-600">Check the current page for SEO issues.</p><p className="mt-3 rounded-lg bg-emerald-50 p-3 text-xs leading-5 text-emerald-800">{t('scanPrivacyNote')}</p><button onClick={() => runScan()} disabled={!ready} className="mt-4 w-full rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white hover:bg-indigo-700 disabled:cursor-wait disabled:opacity-60">{ready ? 'Scan current page' : 'Checking page…'}</button></section> : null}
+    {currentState.status === 'idle' ? <section className="rounded-2xl border border-indigo-100 bg-white p-5 shadow-sm"><h2 className="font-semibold text-slate-900">Scan this page</h2><p className="mt-2 text-sm leading-6 text-slate-600">Check the current page for SEO issues.</p><p className="mt-3 rounded-lg bg-emerald-50 p-3 text-xs leading-5 text-emerald-800">{t('scanPrivacyNote')}</p><button onClick={() => runScan()} disabled={!ready || !activationReady} className="mt-4 w-full rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white hover:bg-indigo-700 disabled:cursor-wait disabled:opacity-60">{ready && activationReady ? 'Scan current page' : 'Checking page…'}</button></section> : null}
     <footer>{t('footer')} · <a className="text-indigo-600 hover:underline" href="https://sumei7550.github.io/SEO-Copilot/privacy.html" target="_blank" rel="noreferrer">{t('privacyPolicy')}</a></footer>
   </main>;
 }

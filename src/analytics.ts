@@ -1,6 +1,6 @@
 import mixpanel from 'mixpanel-browser';
 
-export type ExtensionEvent = 'ext_sidepanel_opened' | 'ext_scan_started' | 'ext_scan_completed' | 'ext_scan_failed' | 'ext_unsupported_page' | 'ext_report_viewed' | 'ext_issue_expanded' | 'ext_ai_fix_requested' | 'ext_ai_fix_succeeded' | 'ext_ai_fix_failed' | 'ext_recommendation_selected' | 'ext_recommendation_copied';
+export type ExtensionEvent = 'ext_onboarding_viewed' | 'ext_sidepanel_opened' | 'ext_scan_started' | 'ext_scan_completed' | 'ext_scan_failed' | 'ext_unsupported_page' | 'ext_report_viewed' | 'ext_issue_expanded' | 'ext_ai_fix_requested' | 'ext_ai_fix_succeeded' | 'ext_ai_fix_failed' | 'ext_recommendation_selected' | 'ext_recommendation_copied';
 
 let initialized = false;
 function initAnalytics() {

@@ -19,6 +19,9 @@ if (manifest.side_panel?.default_path && (!manifest.permissions?.includes('sideP
 if (manifest.side_panel?.default_path && (!manifest.background?.service_worker || !existsSync(resolve(root, 'dist', manifest.background.service_worker)))) {
   throw new Error('Side panel service worker is missing.');
 }
+if (!existsSync(resolve(root, 'dist/welcome.html'))) {
+  throw new Error('Welcome page is missing from the extension build.');
+}
 if (manifest.action?.default_popup) {
   throw new Error('The action must open the Side Panel, not a popup.');
 }
