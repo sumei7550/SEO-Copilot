@@ -12,7 +12,8 @@ function isCrawler() {
 
 function initAnalytics() {
   const token = process.env.NEXT_PUBLIC_MIXPANEL_TOKEN;
-  if (initialized || isCrawler() || process.env.NODE_ENV !== 'production' || !token) return false;
+  if (initialized) return true;
+  if (isCrawler() || process.env.NODE_ENV !== 'production' || !token) return false;
   try {
     mixpanel.init(token, { autocapture: false, track_pageview: false, persistence: 'localStorage' });
   } catch {
@@ -28,6 +29,22 @@ export function trackWebsite(event: WebsiteEvent, properties: Record<string, unk
     mixpanel.track(event, { product_surface: 'website', environment: process.env.NODE_ENV === 'production' ? 'production' : 'development', ...properties });
   } catch {
     // Analytics must never affect navigation or page rendering.
+  }
+}
+
+export function trackWebsiteInstallClick(location: string, buttonText: string) {
+  if (!initAnalytics()) return;
+  try {
+    mixpanel.track('web_extension_install_clicked', {
+      product_surface: 'website',
+      environment: 'production',
+      location,
+      page_path: window.location.pathname,
+      language: document.documentElement.lang || 'en',
+      button_text: buttonText,
+    }, { transport: 'sendBeacon', send_immediately: true });
+  } catch {
+    // Tracking must never prevent the Chrome Web Store link from opening.
   }
 }
 
