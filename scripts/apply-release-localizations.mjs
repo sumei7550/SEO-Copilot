@@ -48,7 +48,7 @@ for (const [locale, messages] of Object.entries(translations)) {
     catalog[key] ??= {};
     catalog[key].message = message;
   }
-  catalog.footer.message = 'SEO Copilot V1.3.0';
+  catalog.footer.message = 'SEO Copilot V1.3.1';
   writeFileSync(path, `${JSON.stringify(catalog, null, 2)}\n`, 'utf8');
 }
 

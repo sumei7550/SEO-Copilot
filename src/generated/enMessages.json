@@ -1,7 +1,7 @@
 {
-  "extensionName": { "message": "SEO Copilot – AI Title & Meta Checker" },
+  "extensionName": { "message": "SEO Copilot – Title & Meta Description Checker" },
   "extensionDescription": {
-    "message": "Check page SEO before publishing, prioritize title and meta issues, generate AI suggestions, and re-scan after edits."
+    "message": "Check title tags, meta descriptions and on-page SEO on the current tab. Get AI suggestions for supported title and meta issues."
   },
   "eyebrow": { "message": "Page audit" },
   "scoreLabel": { "message": "SEO score" },
@@ -32,7 +32,7 @@
     "message": "This page cannot be scanned. Open a regular HTTP or HTTPS page and try again."
   },
   "retry": { "message": "Try again" },
-  "footer": { "message": "SEO Copilot V1.3.0" },
+  "footer": { "message": "SEO Copilot V1.3.1" },
   "privacyPolicy": { "message": "Privacy" },
   "severityCritical": { "message": "Critical" },
   "severityError": { "message": "Critical" },
