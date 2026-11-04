@@ -26,8 +26,19 @@ export const seoToolsLabel: Record<Locale, string> = {
   en: 'SEO Tools', de: 'SEO-Tools', fr: 'Outils SEO', es: 'Herramientas SEO', 'pt-BR': 'Ferramentas de SEO',
   ja: 'SEO ツール', ko: 'SEO 도구', 'zh-CN': 'SEO 工具', 'zh-TW': 'SEO 工具',
 };
+const seoToolNavLabels: Record<Locale, Record<typeof SEO_TOOL_PATHS[number], string>> = {
+  en: { 'meta-description-checker': 'Meta Description Checker', 'title-tag-checker': 'Title Tag Checker', 'on-page-seo-checker': 'On-page SEO Checker', 'seo-checker': 'SEO Checker' },
+  de: { 'meta-description-checker': 'Meta-Description prüfen', 'title-tag-checker': 'Title-Tag prüfen', 'on-page-seo-checker': 'On-Page-SEO prüfen', 'seo-checker': 'SEO prüfen' },
+  fr: { 'meta-description-checker': 'Vérifier la méta-description', 'title-tag-checker': 'Vérifier la balise title', 'on-page-seo-checker': 'Vérifier le SEO on-page', 'seo-checker': 'Vérifier le SEO' },
+  es: { 'meta-description-checker': 'Revisar la meta descripción', 'title-tag-checker': 'Revisar la etiqueta title', 'on-page-seo-checker': 'Revisar el SEO on-page', 'seo-checker': 'Revisar el SEO' },
+  'pt-BR': { 'meta-description-checker': 'Verificar a meta descrição', 'title-tag-checker': 'Verificar a tag de título', 'on-page-seo-checker': 'Verificar o SEO da página', 'seo-checker': 'Verificar o SEO' },
+  ja: { 'meta-description-checker': 'メタディスクリプションを確認', 'title-tag-checker': 'タイトルタグを確認', 'on-page-seo-checker': 'ページ内 SEO を確認', 'seo-checker': 'SEO を確認' },
+  ko: { 'meta-description-checker': '메타 설명 검사', 'title-tag-checker': '제목 태그 검사', 'on-page-seo-checker': '페이지 SEO 검사', 'seo-checker': 'SEO 검사' },
+  'zh-CN': { 'meta-description-checker': 'Meta 描述检查', 'title-tag-checker': '页面标题检查', 'on-page-seo-checker': '页面 SEO 检查', 'seo-checker': 'SEO 检查' },
+  'zh-TW': { 'meta-description-checker': 'Meta 描述檢查', 'title-tag-checker': '頁面標題檢查', 'on-page-seo-checker': '頁面 SEO 檢查', 'seo-checker': 'SEO 檢查' },
+};
 export function seoToolLinks(locale: Locale) {
-  return SEO_TOOL_PATHS.map(path => ({ path, label: getPageCopy(locale, path).eyebrow }));
+  return SEO_TOOL_PATHS.map(path => ({ path, label: seoToolNavLabels[locale][path] }));
 }
 
 const homeMetadata: Record<Locale, { title: string; description: string }> = {
