@@ -27,7 +27,26 @@ const termsCopy: Record<Locale, [string, string, string, string, string, string,
   'pt-BR': ['Ao usar o SEO Copilot, você concorda com estes termos básicos de uso.', 'Uso aceitável', 'Use a extensão de forma legal e não interfira no serviço, abuse dos limites de solicitações nem tente acessar sistemas sem autorização.', 'Limites do serviço', 'O SEO Copilot oferece orientação de SEO por página, mas não garante posições, tráfego ou qualquer resultado específico.', 'Contato', 'Suporte no GitHub'],
 };
 const privacyHead: Record<Locale, [string, string, string]> = { en: ['Privacy', 'Basic SEO scanning', 'Optional AI Fix'], 'zh-CN': ['隐私', '基础 SEO 扫描', '可选的 AI Fix'], 'zh-TW': ['隱私權', '基礎 SEO 掃描', '可選的 AI Fix'], ja: ['プライバシー', '基本 SEO スキャン', '任意の AI Fix'], ko: ['개인정보 보호', '기본 SEO 스캔', '선택 사항인 AI Fix'], de: ['Datenschutz', 'Basisprüfung', 'Optionaler AI Fix'], fr: ['Confidentialité', 'Analyse SEO de base', 'AI Fix facultatif'], es: ['Privacidad', 'Análisis SEO básico', 'AI Fix opcional'], 'pt-BR': ['Privacidade', 'Análise básica de SEO', 'AI Fix opcional'] };
-export async function generateMetadata({ params }: { params: Promise<{ locale: string; slug?: string[] }> }): Promise<Metadata> { const { locale, slug = [] } = await params; const path = slug.join('/'); if (!(locale === 'en' || LOCALES.includes(locale as typeof LOCALES[number])) || !PATHS.includes(path)) return {}; const lang = locale as Locale; const c = getCopy(lang); const home = getHomeMetadata(lang); const p = !path ? home : path === 'pricing' ? getPricingCopy(lang) : path === 'privacy' ? { title: privacyTitle[lang], description: c.privateBody } : path === 'terms' ? { title: termsTitle[lang], description: lang === 'zh-CN' ? 'SEO Copilot 使用条款。' : 'Terms of use for SEO Copilot.' } : path === 'support' ? { title: supportTitle[lang], description: supportDescriptions[lang] } : getPageCopy(lang, path); const title = p.title; const description = 'description' in p ? p.description : p.intro; const alt = alternatesFor(path); return { title, description, robots: { index: true, follow: true }, alternates: { canonical: absoluteUrl(lang, path), languages: alt.languages }, openGraph: { title, description, url: absoluteUrl(lang, path), type: 'website' }, twitter: { card: 'summary_large_image', title, description } }; }
+const shortTitleOverrides: Partial<Record<Locale, Partial<Record<'support' | 'terms', string>>>> = {
+  ja: { support: 'SEO Copilot の使い方とサポート', terms: 'SEO Copilot の利用規約とサービスの制限' },
+  ko: { terms: 'SEO Copilot 이용 약관 및 서비스 안내' },
+  'zh-CN': { support: 'SEO Copilot 使用帮助与问题反馈', terms: 'SEO Copilot 使用条款与服务限制' },
+  'zh-TW': { support: 'SEO Copilot 使用說明與問題回報', terms: 'SEO Copilot 使用條款與服務限制' },
+};
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; slug?: string[] }> }): Promise<Metadata> {
+  const { locale, slug = [] } = await params;
+  const path = slug.join('/');
+  if (!(locale === 'en' || LOCALES.includes(locale as typeof LOCALES[number])) || !PATHS.includes(path)) return {};
+  const lang = locale as Locale;
+  const c = getCopy(lang);
+  const home = getHomeMetadata(lang);
+  const p = !path ? home : path === 'pricing' ? getPricingCopy(lang) : path === 'privacy' ? { title: privacyTitle[lang], description: c.privateBody } : path === 'terms' ? { title: termsTitle[lang], description: lang === 'zh-CN' ? 'SEO Copilot 使用条款。' : 'Terms of use for SEO Copilot.' } : path === 'support' ? { title: supportTitle[lang], description: supportDescriptions[lang] } : getPageCopy(lang, path);
+  const title = path === 'support' || path === 'terms' ? (shortTitleOverrides[lang]?.[path] ?? p.title) : p.title;
+  const description = 'description' in p ? p.description : p.intro;
+  const alt = alternatesFor(path);
+  return { title, description, robots: { index: true, follow: true }, alternates: { canonical: absoluteUrl(lang, path), languages: alt.languages }, openGraph: { title, description, url: absoluteUrl(lang, path), type: 'website' }, twitter: { card: 'summary_large_image', title, description } };
+}
 export default async function LocalizedPage({ params }: { params: Promise<{ locale: string; slug?: string[] }> }) { const { locale, slug = [] } = await params; if (!(locale === 'en' || LOCALES.includes(locale as typeof LOCALES[number]))) notFound(); const lang = locale as Locale; const path = slug.join('/'); if (!PATHS.includes(path)) notFound(); const c = getCopy(lang); if (!path) return <LocalizedHome locale={lang} />;
   if (path === 'pricing') return <PricingPage locale={lang} />;
   if (path === 'terms') { const t = termsCopy[lang]; return <main className="page"><div className="wrap prose"><p className="eyebrow">{termsTitle[lang]}</p><h1>{termsTitle[lang]}</h1><p>{t[0]}</p><h2>{t[1]}</h2><p>{t[2]}</p><h2>{t[3]}</h2><p>{t[4]}</p><h2>{t[5]}</h2><p><a href="https://github.com/sumei7550/SEO-Copilot/issues" target="_blank" rel="noopener noreferrer">{t[6]}</a></p></div></main>; }
