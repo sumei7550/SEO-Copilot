@@ -32,6 +32,9 @@ describe('SiteChrome route tracking', () => {
 
   it('tracks only once per route after acceptance across English and French pages', () => {
     act(() => root.render(<SiteChrome><main /></SiteChrome>));
+    expect(host.querySelectorAll('script[type="application/ld+json"]')).toHaveLength(1);
+    expect(JSON.parse(host.querySelector('script[type="application/ld+json"]')!.textContent!)['@graph'].map((node: { '@type': string }) => node['@type']))
+      .toEqual(['WebSite', 'WebPage', 'SoftwareApplication']);
     expect(trackWebsitePageView).not.toHaveBeenCalled();
     act(() => (host.querySelector('button') as HTMLButtonElement).click());
     expect(trackWebsitePageView).toHaveBeenCalledExactlyOnceWith('/', 'en');
@@ -39,6 +42,9 @@ describe('SiteChrome route tracking', () => {
     expect(trackWebsitePageView).toHaveBeenCalledTimes(1);
     pathname = '/fr/pricing/';
     act(() => root.render(<SiteChrome><main /></SiteChrome>));
+    expect(host.querySelectorAll('script[type="application/ld+json"]')).toHaveLength(1);
+    expect(JSON.parse(host.querySelector('script[type="application/ld+json"]')!.textContent!)['@graph'].map((node: { '@type': string }) => node['@type']))
+      .toEqual(['WebPage']);
     expect(trackWebsitePageView).toHaveBeenCalledTimes(2);
     expect(trackWebsitePageView).toHaveBeenLastCalledWith('/fr/pricing/', 'fr');
   });

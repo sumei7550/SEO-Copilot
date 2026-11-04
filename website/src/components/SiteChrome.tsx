@@ -5,9 +5,10 @@ import { useEffect, useRef, useState } from 'react';
 import { AnalyticsConsentManager } from '@/components/AnalyticsConsentManager';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
+import { PageJsonLd } from '@/components/PageJsonLd';
 import { trackWebsitePageView } from '@/lib/analytics';
 import type { AnalyticsConsent } from '@/lib/analytics-consent';
-import { LOCALES, jsonLdUrl, type Locale } from '@/lib/site';
+import { LOCALES, type Locale } from '@/lib/site';
 
 export function SiteChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -23,9 +24,8 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
     trackWebsitePageView(pathname, locale);
   }, [pathname, locale, consent]);
 
-  const jsonLd = { '@context': 'https://schema.org', '@type': 'SoftwareApplication', name: 'SEO Copilot', applicationCategory: 'BrowserApplication', operatingSystem: 'Chrome', url: jsonLdUrl(locale, currentPath), description: 'A page-level SEO audit assistant for Chrome with optional AI title and meta description suggestions.' };
   return <>
-    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+    <PageJsonLd locale={locale} path={currentPath} />
     <Header locale={locale} currentPath={currentPath} />
     {children}
     <Footer locale={locale} />
