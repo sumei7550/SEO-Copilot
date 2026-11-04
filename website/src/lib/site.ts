@@ -20,6 +20,15 @@ export const GOOGLE_SITE_VERIFICATION = '-1t7qtzy1DcFD03YxrjvuYazuZgi0DpPgzqf24F
 export const LOCALES = ['zh-CN', 'zh-TW', 'ja', 'ko', 'de', 'fr', 'es', 'pt-BR'] as const;
 export type Locale = 'en' | (typeof LOCALES)[number];
 export const PATHS = ['', 'features', 'seo-checker', 'seo-audit', 'title-tag-checker', 'meta-description-checker', 'on-page-seo-checker', 'pricing', 'privacy', 'terms', 'support'];
+export const SEO_TOOL_PATHS = ['meta-description-checker', 'title-tag-checker', 'on-page-seo-checker', 'seo-checker'] as const;
+export const FEATURE_CARD_PATHS: Partial<Record<number, typeof SEO_TOOL_PATHS[number]>> = { 0: 'seo-checker', 1: 'on-page-seo-checker', 3: 'title-tag-checker', 4: 'meta-description-checker' };
+export const seoToolsLabel: Record<Locale, string> = {
+  en: 'SEO Tools', de: 'SEO-Tools', fr: 'Outils SEO', es: 'Herramientas SEO', 'pt-BR': 'Ferramentas de SEO',
+  ja: 'SEO ツール', ko: 'SEO 도구', 'zh-CN': 'SEO 工具', 'zh-TW': 'SEO 工具',
+};
+export function seoToolLinks(locale: Locale) {
+  return SEO_TOOL_PATHS.map(path => ({ path, label: getPageCopy(locale, path).eyebrow }));
+}
 
 const homeMetadata: Record<Locale, { title: string; description: string }> = {
   en: { title: 'AI SEO Checker for the Page You Are Viewing', description: 'Scan the page you are viewing, find SEO issues, and request grounded AI title and meta description suggestions when you need them.' },

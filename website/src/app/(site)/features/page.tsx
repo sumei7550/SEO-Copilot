@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { StoreCta } from '@/components/StoreCta';
 import Link from 'next/link';
-import { localizedPath, pageMetadata } from '@/lib/site';
+import { FEATURE_CARD_PATHS, localizedPath, pageMetadata } from '@/lib/site';
 export const metadata: Metadata = pageMetadata('Features', 'Explore the practical SEO audit and AI-assisted improvement features in SEO Copilot.', 'features');
 export default function Features() {
   return <main className="page"><div className="wrap prose">
@@ -15,7 +15,7 @@ export default function Features() {
       ['AI title suggestions', 'Generate several title candidates when the current title needs work.'],
       ['AI meta descriptions', 'Create concise options grounded in the page context.'],
       ['Re-scan workflow', 'Update your page manually, then scan again to verify the result.'],
-    ].map(([title, body]) => <article className="card" key={title}><div className="icon">✓</div><h3>{title}</h3><p>{body}</p></article>)}</div>
+    ].map(([title, body], index) => <article className="card" key={title}><div className="icon">✓</div><h3>{FEATURE_CARD_PATHS[index] ? <Link href={localizedPath('en', FEATURE_CARD_PATHS[index])}>{title}</Link> : title}</h3><p>{body}</p></article>)}</div>
 
     <section aria-labelledby="scan-results">
       <h2 id="scan-results">What a page scan shows</h2>
