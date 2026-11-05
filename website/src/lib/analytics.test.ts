@@ -12,6 +12,10 @@ async function modules() {
   return { consent, analytics };
 }
 
+function queuedCommands() {
+  return window.dataLayer?.map(item => Array.from(item as ArrayLike<unknown>));
+}
+
 describe('website analytics consent and event delivery', () => {
   beforeEach(() => {
     vi.resetModules();
@@ -54,9 +58,10 @@ describe('website analytics consent and event delivery', () => {
     expect(mixpanel.init).toHaveBeenCalledWith('test-token', { autocapture: false, track_pageview: false, persistence: 'localStorage' });
     expect(mixpanel.track_pageview).toHaveBeenCalledOnce();
     expect(mixpanel.track_pageview).toHaveBeenCalledWith({ page_path: '/fr/pricing/', locale: 'fr' });
-    expect(window.dataLayer?.filter(item => Array.isArray(item) && item[0] === 'config')).toHaveLength(1);
-    expect(window.dataLayer?.filter(item => Array.isArray(item) && item[0] === 'event' && item[1] === 'page_view')).toHaveLength(0);
-    expect(window.dataLayer?.map(item => Array.isArray(item) && item[0])).toEqual(['js', 'config', 'event']);
+    expect(queuedCommands()?.filter(item => item[0] === 'config')).toHaveLength(1);
+    expect(queuedCommands()?.filter(item => item[0] === 'event' && item[1] === 'page_view')).toHaveLength(0);
+    expect(queuedCommands()?.map(item => item[0])).toEqual(['js', 'config', 'event']);
+    expect(window.dataLayer?.every(item => !Array.isArray(item))).toBe(true);
     expect(mixpanel.track).toHaveBeenCalledWith('pricing_page_view', expect.objectContaining({ page_path: '/fr/pricing/', locale: 'fr' }));
   });
 
@@ -70,17 +75,17 @@ describe('website analytics consent and event delivery', () => {
       location: 'store_cta', page_path: '/fr/pricing/', language: 'fr', button_text: 'Installer sur Chrome',
       product_surface: 'website', environment: 'production',
     }), { transport: 'sendBeacon', send_immediately: true });
-    expect(window.dataLayer).toContainEqual(['event', 'web_extension_install_clicked', expect.objectContaining({ location: 'store_cta', send_to: 'G-TQQPS72SVT' })]);
+    expect(queuedCommands()).toContainEqual(['event', 'web_extension_install_clicked', expect.objectContaining({ location: 'store_cta', send_to: 'G-TQQPS72SVT' })]);
   });
 
   it('queues config before the Google script is inserted and retains install clicks during loading', async () => {
     const { consent, analytics } = await modules();
     consent.saveAnalyticsConsent('accepted');
     analytics.initializeAcceptedAnalytics();
-    expect(window.dataLayer).toContainEqual(['config', 'G-TQQPS72SVT', expect.anything()]);
+    expect(queuedCommands()).toContainEqual(['config', 'G-TQQPS72SVT', expect.anything()]);
     analytics.trackWebsiteInstallClick('header', 'Installer sur Chrome');
-    expect(window.dataLayer).toContainEqual(['event', 'web_extension_install_clicked', expect.objectContaining({ location: 'header' })]);
-    expect(window.dataLayer?.filter(item => Array.isArray(item) && item[0] === 'config')).toHaveLength(1);
+    expect(queuedCommands()).toContainEqual(['event', 'web_extension_install_clicked', expect.objectContaining({ location: 'header' })]);
+    expect(queuedCommands()?.filter(item => item[0] === 'config')).toHaveLength(1);
   });
 
   it('stops future events and clears SDK persistence on withdrawal', async () => {
@@ -98,7 +103,7 @@ describe('website analytics consent and event delivery', () => {
     expect(mixpanel.opt_out_tracking).toHaveBeenCalledWith({ delete_user: false });
     expect(mixpanel.track_pageview).not.toHaveBeenCalled();
     expect(mixpanel.track).not.toHaveBeenCalled();
-    expect(window.dataLayer?.filter(item => Array.isArray(item) && item[0] === 'event')).toHaveLength(0);
+    expect(queuedCommands()?.filter(item => item[0] === 'event')).toHaveLength(0);
   });
 
   it('resumes without initializing Mixpanel a second time after a new acceptance', async () => {
@@ -127,7 +132,7 @@ describe('website analytics consent and event delivery', () => {
     restored.analytics.initializeGoogleTag();
     restored.analytics.trackWebsite('web_language_changed', { from_locale: 'fr', to_locale: 'de' });
     expect(mixpanel.track).toHaveBeenCalledWith('web_language_changed', expect.objectContaining({ from_locale: 'fr', to_locale: 'de' }));
-    expect(window.dataLayer).toContainEqual(['event', 'language_changed', expect.objectContaining({ from_locale: 'fr', to_locale: 'de' })]);
+    expect(queuedCommands()).toContainEqual(['event', 'language_changed', expect.objectContaining({ from_locale: 'fr', to_locale: 'de' })]);
   });
 
   it('keeps the store link event handler harmless if Mixpanel throws', async () => {

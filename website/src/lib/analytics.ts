@@ -51,7 +51,7 @@ export function initializeAcceptedAnalytics() {
 export function initializeGoogleTag() {
   if (!isAnalyticsAllowed() || gaInitialized || isCrawler()) return;
   window.dataLayer = window.dataLayer || [];
-  window.gtag = function gtag(...args: unknown[]) { window.dataLayer?.push(args); };
+  window.gtag = function gtag() { window.dataLayer?.push(arguments); };
   if (!gaJsInitialized) {
     window.gtag('js', new Date());
     gaJsInitialized = true;
