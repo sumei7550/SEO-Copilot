@@ -147,3 +147,21 @@
 .on-page-case-steps h3{margin:0 0 5px}
 .on-page-case-steps p{margin:0}
 @media(max-width:600px){.on-page-checklist article{padding:19px}.on-page-checklist dl>div{grid-template-columns:1fr;gap:2px}.on-page-case-steps article{padding-left:15px}}
+
+/* SEO checker: scan interpretation and example decisions stay readable at narrow widths. */
+.seo-checker-guide a:not(.button){color:var(--primary);text-decoration:underline;text-underline-offset:3px}
+.seo-checker-report-parts{display:grid;gap:14px;margin:23px 0}
+.seo-checker-report-parts article{padding:18px 21px;border-left:3px solid #a8c5f4;background:#f8fbff}
+.seo-checker-report-parts h3{margin:0 0 6px}
+.seo-checker-report-parts p{margin:0}
+.seo-checker-findings{display:grid;gap:14px;margin:24px 0}
+.seo-checker-findings article{min-width:0;padding:20px 23px;border:1px solid var(--line);border-radius:14px;background:#f8fbff}
+.seo-checker-finding-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:9px}
+.seo-checker-finding-head h3{margin:0}
+.seo-checker-findings p{margin:10px 0 0}
+.seo-checker-severity{display:inline-block;padding:4px 9px;border-radius:999px;font-size:12px;font-weight:800}
+.seo-checker-severity.high{background:#ffe4e6;color:#a81135}
+.seo-checker-severity.warning{background:#fef3c7;color:#865008}
+.seo-checker-steps{margin:20px 0;padding-left:27px}
+.seo-checker-steps li{padding-left:4px}
+@media(max-width:600px){.seo-checker-report-parts article{padding:17px}.seo-checker-findings article{padding:18px}}
