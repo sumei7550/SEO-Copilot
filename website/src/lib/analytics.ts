@@ -16,7 +16,7 @@ declare global {
 
 let mixpanelInitialized = false;
 let gaInitialized = false;
-let pendingGaEvents: { event: string; properties: Record<string, unknown> }[] = [];
+let gaJsInitialized = false;
 
 function isCrawler() {
   if (typeof navigator === 'undefined') return true;
@@ -39,6 +39,8 @@ function initMixpanel() {
 export function initializeAcceptedAnalytics() {
   if (!isAnalyticsAllowed() || isCrawler()) return;
   window[`ga-disable-${GA_MEASUREMENT_ID}`] = false;
+  // Queue config before Next.js inserts gtag.js. Google processes this on load.
+  initializeGoogleTag();
   if (mixpanelInitialized) {
     try { mixpanel.opt_in_tracking({ track: () => {} }); } catch { /* Keep the website usable. */ }
   } else {
@@ -46,23 +48,21 @@ export function initializeAcceptedAnalytics() {
   }
 }
 
-// Called only after the consent-gated next/script has loaded gtag.js.
 export function initializeGoogleTag() {
   if (!isAnalyticsAllowed() || gaInitialized || isCrawler()) return;
   window.dataLayer = window.dataLayer || [];
   window.gtag = function gtag(...args: unknown[]) { window.dataLayer?.push(args); };
-  window.gtag('js', new Date());
+  if (!gaJsInitialized) {
+    window.gtag('js', new Date());
+    gaJsInitialized = true;
+  }
   window.gtag('config', GA_MEASUREMENT_ID, { allow_google_signals: false, allow_ad_personalization_signals: false });
   gaInitialized = true;
-  const queued = pendingGaEvents;
-  pendingGaEvents = [];
-  for (const { event, properties } of queued) sendGaEvent(event, properties);
 }
 
 export function revokeAnalytics() {
   window[`ga-disable-${GA_MEASUREMENT_ID}`] = true;
   gaInitialized = false;
-  pendingGaEvents = [];
   if (mixpanelInitialized) {
     try { mixpanel.opt_out_tracking({ delete_user: false }); } catch { /* Continue clearing local identifiers. */ }
   }
@@ -81,7 +81,7 @@ export function revokeAnalytics() {
 
 function sendGaEvent(event: string, properties: Record<string, unknown>) {
   if (!isAnalyticsAllowed() || window[`ga-disable-${GA_MEASUREMENT_ID}`]) return;
-  if (!gaInitialized) { if (pendingGaEvents.length < 50) pendingGaEvents.push({ event, properties }); return; }
+  if (!gaInitialized) initializeGoogleTag();
   try { window.gtag?.('event', event, { ...properties, send_to: GA_MEASUREMENT_ID }); } catch { /* Keep navigation working. */ }
 }
 

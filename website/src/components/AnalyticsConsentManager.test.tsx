@@ -3,18 +3,14 @@ import React, { act } from 'react';
 import { createRoot } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { AnalyticsConsentManager } from './AnalyticsConsentManager';
-import { initializeAcceptedAnalytics, initializeGoogleTag, revokeAnalytics } from '@/lib/analytics';
+import { initializeAcceptedAnalytics, revokeAnalytics } from '@/lib/analytics';
 
 vi.mock('next/script', () => ({
-  default: ({ onReady }: { onReady: () => void }) => {
-    React.useEffect(() => { onReady(); }, [onReady]);
-    return <script data-testid="consent-gated-ga4" />;
-  },
+  default: () => <script data-testid="consent-gated-ga4" />,
 }));
 vi.mock('@/lib/analytics', () => ({
   GA_MEASUREMENT_ID: 'G-TQQPS72SVT',
   initializeAcceptedAnalytics: vi.fn(),
-  initializeGoogleTag: vi.fn(),
   revokeAnalytics: vi.fn(),
 }));
 
@@ -46,7 +42,7 @@ describe('AnalyticsConsentManager', () => {
     act(() => (Array.from(host.querySelectorAll('button')).find(b => b.textContent === 'Accept analytics') as HTMLButtonElement).click());
     expect(window.localStorage.getItem('seo_copilot_analytics_consent')).toBe('accepted');
     expect(host.querySelector('[data-testid="consent-gated-ga4"]')).not.toBeNull();
-    expect(initializeGoogleTag).toHaveBeenCalled();
+    expect(initializeAcceptedAnalytics).toHaveBeenCalledOnce();
 
     act(() => root.unmount());
     root = createRoot(host);

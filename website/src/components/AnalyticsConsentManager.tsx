@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Script from 'next/script';
 import { useEffect, useState } from 'react';
-import { GA_MEASUREMENT_ID, initializeAcceptedAnalytics, initializeGoogleTag, revokeAnalytics } from '@/lib/analytics';
+import { GA_MEASUREMENT_ID, initializeAcceptedAnalytics, revokeAnalytics } from '@/lib/analytics';
 import { restoreAnalyticsConsent, saveAnalyticsConsent, type AnalyticsConsent } from '@/lib/analytics-consent';
 import { localizedPath, type Locale } from '@/lib/site';
 
@@ -61,7 +61,7 @@ export function AnalyticsConsentManager({ locale, onConsentChange }: { locale: L
 
   if (!hydrated) return null;
   return <>
-    {consent === 'accepted' && <Script id="seo-copilot-ga4" src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`} strategy="afterInteractive" onReady={initializeGoogleTag} />}
+    {consent === 'accepted' && <Script id="seo-copilot-ga4" src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`} strategy="afterInteractive" />}
     {(consent === 'unset' || settingsOpen) && <section className="analytics-consent" aria-label={c.title}>
       <div className="analytics-consent-inner">
         <div><h2>{c.title}</h2><p>{c.description}</p>{settingsOpen && <p className="analytics-consent-status">{c.current} {c[consent]}</p>}<Link href={localizedPath(locale, 'privacy')}>{c.privacy}</Link></div>

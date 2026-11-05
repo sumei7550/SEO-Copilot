@@ -56,6 +56,7 @@ describe('website analytics consent and event delivery', () => {
     expect(mixpanel.track_pageview).toHaveBeenCalledWith({ page_path: '/fr/pricing/', locale: 'fr' });
     expect(window.dataLayer?.filter(item => Array.isArray(item) && item[0] === 'config')).toHaveLength(1);
     expect(window.dataLayer?.filter(item => Array.isArray(item) && item[0] === 'event' && item[1] === 'page_view')).toHaveLength(0);
+    expect(window.dataLayer?.map(item => Array.isArray(item) && item[0])).toEqual(['js', 'config', 'event']);
     expect(mixpanel.track).toHaveBeenCalledWith('pricing_page_view', expect.objectContaining({ page_path: '/fr/pricing/', locale: 'fr' }));
   });
 
@@ -72,14 +73,14 @@ describe('website analytics consent and event delivery', () => {
     expect(window.dataLayer).toContainEqual(['event', 'web_extension_install_clicked', expect.objectContaining({ location: 'store_cta', send_to: 'G-TQQPS72SVT' })]);
   });
 
-  it('delivers a consented install click made while the Google script is loading', async () => {
+  it('queues config before the Google script is inserted and retains install clicks during loading', async () => {
     const { consent, analytics } = await modules();
     consent.saveAnalyticsConsent('accepted');
     analytics.initializeAcceptedAnalytics();
+    expect(window.dataLayer).toContainEqual(['config', 'G-TQQPS72SVT', expect.anything()]);
     analytics.trackWebsiteInstallClick('header', 'Installer sur Chrome');
-    expect(window.dataLayer).toBeUndefined();
-    analytics.initializeGoogleTag();
     expect(window.dataLayer).toContainEqual(['event', 'web_extension_install_clicked', expect.objectContaining({ location: 'header' })]);
+    expect(window.dataLayer?.filter(item => Array.isArray(item) && item[0] === 'config')).toHaveLength(1);
   });
 
   it('stops future events and clears SDK persistence on withdrawal', async () => {
