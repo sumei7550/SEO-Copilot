@@ -4,6 +4,7 @@ import { generateSeoFix } from './seoFixService.js';
 import { SeoFixError } from './types.js';
 import { getClientIp, getRedisRateLimiter } from './rateLimiter.js';
 import { validateRequest } from './requestValidation.js';
+import { classifyDiagnosticError, createDiagnosticLogger, type DiagnosticLogger, type DiagnosticStage } from './diagnosticLogger.js';
 
 type VercelCompatibleRequest = IncomingMessage & {
   body?: unknown;
@@ -15,38 +16,83 @@ export async function handleSeoFixRequest(
   options: { checkPath?: boolean } = {},
 ) {
   const requestId = req.headers['x-request-id']?.toString() || randomUUID();
-  const startTime = new Date();
-  let issueType = 'unknown';
+  const started = Date.now();
+  const diagnostics = createDiagnosticLogger(requestId, req.headers['x-vercel-id']);
+  let stage: DiagnosticStage = 'request_entered';
+  let stageStarted = started;
   let httpStatus = 500;
-  let recommendationCount: number | null = null;
   let finalize: ((success?: boolean) => Promise<void>) | undefined;
 
   try {
+    diagnostics.emit('request_entered', 'started');
     const path = req.url?.split('?')[0];
     if (req.method === 'OPTIONS' && (!options.checkPath || path === '/api/v1/seo-fixes')) {
       httpStatus = 204;
+      diagnostics.emit('request_completed', 'succeeded', { httpStatus, durationMs: Date.now() - started });
       return writeCorsPreflight(res);
     }
     if (req.method !== 'POST' || (options.checkPath && path !== '/api/v1/seo-fixes')) {
       httpStatus = 404;
+      diagnostics.emit('request_rejected', 'failed', { httpStatus, errorCode: 'INVALID_REQUEST' });
       return writeError(res, requestId, httpStatus, 'INVALID_REQUEST', 'Not found.');
     }
 
+    stage = 'validation';
+    stageStarted = Date.now();
+    diagnostics.emit('validation', 'started');
     const body = await readJson(req);
-    issueType = getLoggableIssueType(body.value);
     const validated = validateRequest(body.value, body.bytes);
-    finalize = await getRedisRateLimiter().reserve({ deviceId: validated.deviceId, ip: getClientIp(req) });
-    const result = await generateSeoFix(validated, body.bytes);
-    await finalize(true);
+    diagnostics.emit('validation', 'succeeded', { durationMs: Date.now() - stageStarted });
+    stage = 'rate_limit_reserve';
+    const reserveStarted = Date.now();
+    diagnostics.emit('rate_limit_reserve', 'started');
+    try {
+      finalize = await getRedisRateLimiter().reserve({ deviceId: validated.deviceId, ip: getClientIp(req) });
+      diagnostics.emit('rate_limit_reserve', 'succeeded', { durationMs: Date.now() - reserveStarted });
+    } catch (error) {
+      diagnostics.emit('rate_limit_reserve', 'failed', { durationMs: Date.now() - reserveStarted, errorType: 'rate_limit_error' });
+      throw error;
+    }
+    stage = 'provider_request';
+    const providerDiagnostics: DiagnosticLogger = {
+      emit(providerStage, outcome, fields) {
+        stage = providerStage;
+        diagnostics.emit(providerStage, outcome, fields);
+      },
+    };
+    const result = await generateSeoFix(validated, body.bytes, { diagnostics: providerDiagnostics });
+    stage = 'rate_limit_finalize';
+    const finalizeStarted = Date.now();
+    diagnostics.emit('rate_limit_finalize', 'started', { finalizeAction: 'commit' });
+    try {
+      await finalize(true);
+      diagnostics.emit('rate_limit_finalize', 'succeeded', { finalizeAction: 'commit', durationMs: Date.now() - finalizeStarted });
+    } catch (error) {
+      diagnostics.emit('rate_limit_finalize', 'failed', { finalizeAction: 'commit', durationMs: Date.now() - finalizeStarted, errorType: 'rate_limit_error' });
+      throw error;
+    }
     httpStatus = 200;
-    recommendationCount = result.recommendations.length;
+    diagnostics.emit('request_completed', 'succeeded', { httpStatus, durationMs: Date.now() - started });
     return writeJson(res, httpStatus, {
       requestId,
       recommendations: result.recommendations,
       model: process.env.DEEPSEEK_MODEL ?? 'deepseek-chat',
     });
   } catch (error) {
-    if (finalize) await finalize(false).catch(() => undefined);
+    const failedStage = stage;
+    if (finalize) {
+      if (failedStage === 'rate_limit_finalize') {
+        // Keep the existing cleanup call, but do not claim a release: the limiter may have already marked it finalized.
+        await finalize(false).catch(() => undefined);
+      } else {
+        const finalizeStarted = Date.now();
+        diagnostics.emit('rate_limit_finalize', 'started', { finalizeAction: 'release' });
+        await finalize(false).then(
+          () => diagnostics.emit('rate_limit_finalize', 'succeeded', { finalizeAction: 'release', durationMs: Date.now() - finalizeStarted }),
+          () => diagnostics.emit('rate_limit_finalize', 'failed', { finalizeAction: 'release', durationMs: Date.now() - finalizeStarted, errorType: 'rate_limit_error' }),
+        );
+      }
+    }
     const normalized = error instanceof SeoFixError
       ? error
       : new SeoFixError('AI_PROVIDER_ERROR', 'AI provider request failed.', true);
@@ -55,20 +101,9 @@ export async function handleSeoFixRequest(
         : normalized.code === 'AI_TIMEOUT' ? 504
           : ['DAILY_QUOTA_EXCEEDED', 'RATE_LIMITED', 'SERVICE_LIMIT_REACHED'].includes(normalized.code) ? 429 : 502;
     httpStatus = status;
+    if (failedStage === 'validation') diagnostics.emit('validation', 'failed', { durationMs: Date.now() - stageStarted, errorType: classifyDiagnosticError(error), errorCode: normalized.code });
+    diagnostics.emit('request_failed', 'failed', { failedStage, httpStatus, durationMs: Date.now() - started, errorType: failedStage === 'rate_limit_reserve' || failedStage === 'rate_limit_finalize' ? 'rate_limit_error' : classifyDiagnosticError(error), errorCode: normalized.code });
     return writeError(res, requestId, httpStatus, normalized.code, normalized.message, normalized.retryable);
-  } finally {
-    if (process.env.NODE_ENV !== 'production') {
-      console.info('[backend-request]', JSON.stringify({
-        requestId,
-        issueType,
-        startTime: startTime.toISOString(),
-        endTime: new Date().toISOString(),
-        latencyMs: Date.now() - startTime.getTime(),
-        httpStatus,
-        model: process.env.DEEPSEEK_MODEL ?? 'deepseek-chat',
-        recommendationCount,
-      }));
-    }
   }
 }
 
@@ -96,12 +131,6 @@ async function readJson(req: VercelCompatibleRequest): Promise<{ value: unknown;
     });
     req.on('error', () => reject(new SeoFixError('INVALID_REQUEST', 'Unable to read request body.')));
   });
-}
-
-function getLoggableIssueType(value: unknown): string {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) return 'unknown';
-  const issueType = (value as Record<string, unknown>).issueType;
-  return issueType === 'title' || issueType === 'meta-description' ? issueType : 'unknown';
 }
 
 function writeError(res: ServerResponse, requestId: string, status: number, code: string, message: string, retryable = false) {
