@@ -132,3 +132,18 @@
 .tool-guide-next a:not(.button){color:var(--primary);text-decoration:underline;text-underline-offset:3px}
 .tool-guide-next .actions{margin-top:18px}
 @media(max-width:600px){.tool-guide section{margin-top:38px}.tool-guide-examples{grid-template-columns:1fr}.tool-guide-code{padding:15px;font-size:12px}.tool-guide-next{padding:22px 20px}}
+
+/* The on-page guide keeps each diagnostic and its independent verification together. */
+.on-page-guide a:not(.button){color:var(--primary);text-decoration:underline;text-underline-offset:3px}
+.on-page-checklist{display:grid;gap:14px;margin:24px 0}
+.on-page-checklist article{min-width:0;padding:22px 24px;border:1px solid var(--line);border-radius:14px;background:#f8fbff}
+.on-page-checklist h3{margin:0 0 14px}
+.on-page-checklist dl{display:grid;gap:12px;margin:0}
+.on-page-checklist dl>div{display:grid;grid-template-columns:125px minmax(0,1fr);gap:16px}
+.on-page-checklist dt{color:var(--ink);font-size:13px;font-weight:800}
+.on-page-checklist dd{margin:0;color:var(--muted);font-size:15px;line-height:1.6}
+.on-page-case-steps{display:grid;gap:16px;margin:25px 0}
+.on-page-case-steps article{padding:0 0 0 19px;border-left:3px solid #a8c5f4}
+.on-page-case-steps h3{margin:0 0 5px}
+.on-page-case-steps p{margin:0}
+@media(max-width:600px){.on-page-checklist article{padding:19px}.on-page-checklist dl>div{grid-template-columns:1fr;gap:2px}.on-page-case-steps article{padding-left:15px}}
