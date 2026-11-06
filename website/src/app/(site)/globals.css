@@ -178,3 +178,22 @@
 .seo-audit-case h3 span{padding:4px 9px;border-radius:999px;background:#fef3c7;color:#865008;font-size:12px}.seo-audit-case article:first-child h3 span{background:#ffe4e6;color:#a81135}
 .seo-audit-case p{margin:0}
 @media(max-width:600px){.seo-audit-steps li{gap:10px}.seo-audit-case article{padding:18px}}
+
+/* English Features overview keeps each check, result and use together. */
+.features-guide a:not(.button){color:var(--primary);text-decoration:underline;text-underline-offset:3px}
+.features-overview{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:23px 0}
+.features-overview article{min-width:0;padding:21px;border:1px solid var(--line);border-radius:14px;background:#f8fbff}
+.features-overview h3{margin:0 0 14px}.features-overview dl{display:grid;gap:10px;margin:0}
+.features-overview dt{font-size:12px;font-weight:800;color:var(--ink)}.features-overview dd{margin:2px 0 0;color:var(--muted);font-size:15px;line-height:1.55}
+.features-workflow{display:grid;gap:12px;margin:22px 0;padding-left:25px}
+.features-guides{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:20px 0}
+.features-guides a{display:block;min-width:0;padding:17px 19px;border:1px solid var(--line);border-radius:12px;background:#f8fbff;font-weight:800}
+.features-guides span{display:block;margin-top:3px;color:var(--muted);font-size:13px;font-weight:400}
+@media(max-width:640px){.features-overview,.features-guides{grid-template-columns:1fr}.features-overview article{padding:19px}}
+.features-screenshots figure{min-width:0;margin:22px 0 0}
+.features-screenshots figure a{display:block;max-width:100%;overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:#f8fbff}
+.features-screenshots img{display:block;width:100%;height:auto}
+.features-screenshots figcaption{margin-top:8px;color:var(--muted);font-size:13px;line-height:1.5}
+.features-detail-shots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
+.features-detail-shots figure{margin-top:16px}
+@media(max-width:640px){.features-scan-shot img{height:500px;object-fit:cover;object-position:right}.features-detail-shots{grid-template-columns:1fr}.features-detail-shots figure{max-width:480px}}
