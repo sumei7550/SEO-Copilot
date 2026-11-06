@@ -25,10 +25,14 @@ describe('English Features overview', () => {
       expect([...main.querySelectorAll<HTMLAnchorElement>('a[href]')].some(a => a.getAttribute('href')?.replace(/\/$/, '') === path.replace(/\/$/, ''))).toBe(true);
     }
     expect(main.querySelectorAll('a[href*="chromewebstore.google.com"]')).toHaveLength(1);
-    expect(main.querySelectorAll('.features-screenshots img')).toHaveLength(3);
-    for (const name of ['features-scan-v1.3.2.png', 'features-issue-v1.3.2.png', 'features-ai-v1.3.2.png']) {
-      expect([...main.querySelectorAll('.features-screenshots a')].some(a => a.getAttribute('href')?.endsWith(name))).toBe(true);
-    }
-    expect(main.textContent).toContain('AI request that was unavailable');
+    const images = [...main.querySelectorAll<HTMLImageElement>('.features-screenshots img')];
+    expect(images.map(image => [image.closest('a')?.getAttribute('href'), image.width, image.height])).toEqual([
+      ['/screenshots/features-scan-support-v1.3.2.png', 1836, 905],
+      ['/screenshots/features-issues-support-v1.3.2.png', 646, 912],
+      ['/screenshots/features-ai-support-v1.3.2.png', 611, 893],
+    ]);
+    expect(images.every(image => Boolean(image.alt))).toBe(true);
+    expect(main.textContent).toContain('Scores and findings change with the page');
+    expect(main.textContent).toContain('A warning does not always require a change');
   });
 });

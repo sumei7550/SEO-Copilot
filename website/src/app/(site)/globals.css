@@ -196,4 +196,4 @@
 .features-screenshots figcaption{margin-top:8px;color:var(--muted);font-size:13px;line-height:1.5}
 .features-detail-shots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
 .features-detail-shots figure{margin-top:16px}
-@media(max-width:640px){.features-scan-shot img{height:500px;object-fit:cover;object-position:right}.features-detail-shots{grid-template-columns:1fr}.features-detail-shots figure{max-width:480px}}
+@media(max-width:640px){.features-scan-shot a{direction:rtl}.features-scan-shot img{width:900px;max-width:none;height:auto}.features-detail-shots{grid-template-columns:1fr}.features-detail-shots figure{max-width:480px}}
