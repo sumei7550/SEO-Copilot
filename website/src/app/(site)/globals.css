@@ -14,6 +14,8 @@
 .site-footer{padding:56px 0 26px}
 .footer-top{display:flex;justify-content:space-between;gap:48px}
 .footer-brand{display:flex;gap:12px;align-items:flex-start;min-width:250px}
+.brand-mark{background:url('/icon128.png') center/contain no-repeat;flex:none}
+.footer-brand .brand-mark{width:28px;height:28px}
 .footer-brand strong{display:block;color:var(--ink);font-size:15px;margin:2px 0 6px}
 .footer-brand p{margin:0;line-height:1.6}
 .footer-columns{display:grid;grid-template-columns:repeat(3,minmax(110px,1fr));gap:56px;min-width:min(520px,100%)}
