@@ -118,5 +118,25 @@
   "issueRobotsMissing": { "message": "未偵測到 robots meta 標籤。" },
   "fixRobotsMissing": {
     "message": "頁面需要明確的爬蟲指引時，新增 robots 指令。"
+  },
+  "issueImageEmptyAlt": {
+    "message": "檢查空白的圖片替代文字"
+  },
+  "impactImageEmptyAlt": {
+    "message": "空白替代文字可能適用於裝飾圖片；傳達資訊的圖片需要描述性替代文字。此檢查項目不會降低 SEO 評分。"
+  },
+  "fixImageEmptyAlt": {
+    "message": "檢查受影響的圖片。裝飾圖片可保留 alt=\"\"；為傳達資訊的圖片新增描述性替代文字。"
+  },
+  "imageEmptyAltCount": {
+    "message": "$COUNT$ 張圖片的替代文字為空白，請確認它們是否為裝飾圖片。",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "affectedImages": {
+    "message": "受影響的圖片"
   }
 }

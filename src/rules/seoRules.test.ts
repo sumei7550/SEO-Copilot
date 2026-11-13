@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { analyzePage } from '../analyzer/pageAnalyzer';
 import type { PageData } from '../types/seo';
 import { evaluateRules, seoRules } from './seoRules';
+import { calculateScore } from '../scoring/score';
 
 function validPage(overrides: Partial<PageData> = {}): PageData {
   const base: PageData = {
@@ -25,9 +26,20 @@ function issuesFor(page: PageData) {
 }
 
 describe('evaluateRules', () => {
-  it('defines the 20 rules required by the engine specification', () => {
-    expect(seoRules).toHaveLength(20);
-    expect(new Set(seoRules.map((rule) => rule.id)).size).toBe(20);
+  it('defines 20 existing rules and the zero-impact empty-alt review rule', () => {
+    expect(seoRules).toHaveLength(21);
+    expect(new Set(seoRules.map((rule) => rule.id)).size).toBe(21);
+  });
+
+  it('reports five empty-alt images as one Info issue without changing any score or weight', () => {
+    const page = validPage({ images: Array.from({ length: 5 }, (_, index) => ({ src: `${index}.svg`, alt: '', auditable: index < 3, naturalWidth: 150, naturalHeight: 150, transferSize: 0 })) });
+    const issues = issuesFor(page);
+    expect(issues).toHaveLength(1);
+    expect(issues[0]).toMatchObject({ id: 'IMAGE_004', severity: 'info', category: 'images', impact: 0 });
+    expect(calculateScore(issues)).toEqual(calculateScore([]));
+    expect(issuesFor(validPage({ images: [{ ...page.images[0], alt: null }] })).map((issue) => issue.id)).not.toContain('IMAGE_004');
+    expect(issuesFor(validPage({ images: [{ ...page.images[0], alt: '  ' }] })).map((issue) => issue.id)).toContain('IMAGE_004');
+    expect(issuesFor(validPage({ images: [] }))).toEqual([]);
   });
 
   it('returns no issues for a page that meets all MVP rules', () => {

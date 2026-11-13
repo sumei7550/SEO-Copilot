@@ -264,5 +264,25 @@
   },
   "privacyPolicy": {
     "message": "개인정보 보호"
+  },
+  "issueImageEmptyAlt": {
+    "message": "Review empty alt text"
+  },
+  "impactImageEmptyAlt": {
+    "message": "Empty alt text may be correct for decorative images. Informative images need descriptive alt text. This review item does not reduce the SEO Score."
+  },
+  "fixImageEmptyAlt": {
+    "message": "Review the affected images. Keep alt=\"\" for decorative images; add descriptive alt text to images that convey information."
+  },
+  "imageEmptyAltCount": {
+    "message": "$COUNT$ images have empty alt text. Review whether they are decorative.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "affectedImages": {
+    "message": "Affected images"
   }
 }

@@ -1,4 +1,28 @@
-## 当前交接状态（2026-10-19）
+## 当前交接状态（2026-11-13，1.4 开发快照）
+
+仓库配置版本仍为 `1.3.1`；以下是 1.4 候选功能的开发快照，**不是已发布版本**。本节优先于下方 2026-10-19 的历史记录，以及 `docs/planning/SEO_COPILOT_1.4.0_IMPLEMENTATION_PLAN.md` 中后来已被用户逐项调整的旧范围描述。
+
+提交前验证：`npm test` 为 **32 个测试文件、206 项测试通过**；`npm run build`（TypeScript、Vite、MV3 构建校验）通过；`git diff --check` 无空白错误。此前 `docs/testing/` 的较早测试数字不代表当前代码。
+
+### 当前已实现
+
+- **Popup Page Inspector：**六个入口。Content 展示 Meta、字数和 H1–H3，并支持复制标题；Indexability 展示 Rendered/Raw Canonical、Robots、Sitemaps、Hreflangs；Images 有 Alt 筛选、图片状态刷新、CSV 导出、How to fix 提示及 Audit 入口。Social tags 与 Outgoing links 明确标为 Coming soon。
+- **Structured data：**从当前页面 DOM 采集 JSON-LD（含多个块、数组、`@graph`、嵌套字段）、常见 Microdata 和 RDFa 标记。一级、二级节点默认收起；单一格式在模块标题后显示，混合格式在列表中分组。只展示已采集标记和 JSON-LD 解析错误，不声称 Google 富媒体结果资格已验证。复杂 RDFa 语义与 Google 各结果类型的验证尚未覆盖。
+- **Side Panel Audit：**保留评分、问题分类和现有 AI Fix；Popup 与 Side Panel 使用按 Tab、URL、generation 隔离的 `chrome.storage.session` 快照。单条快照上限 1 MB，过大时可重新扫描但不会写入会话缓存。
+- **扫描与规则：**图片清单区分可报告与可审查子集，状态刷新与 SEO 评分分离；可见文本字数、Title/Description 长度提示及部分规则口径已调整。Manifest 使用工具栏 Popup 入口，并分别构建自包含的内容脚本。
+
+### 继续开发与验收
+
+1. 在新电脑执行 `npm ci`、`npm test`、`npm run build`，到 `chrome://extensions/` 加载 `dist`。正式 Chrome 原生 Popup、权限拒绝/允许、同 URL 刷新、跨 Tab 快照、Extension Reload 和 AI 后端仍需按 [人工验收清单](docs/testing/SEO_COPILOT_1.4.0_MANUAL_CHROME_ACCEPTANCE.md) 复核。清单是早期基线；其中“Copy schema types”、旧宽度与旧截图/哈希应以当前构建为准。
+2. 用 Backlinko 等页面复核结构化数据树，特别是混合格式、深层属性和大数据量。Microdata/RDFa 目前是常见标记采集，不等同完整规范解析；Google 富媒体资格校验尚未实现。
+3. 检查 Images 的状态请求在不同站点和权限条件下是否完成，复核 CSV、筛选与长 URL。Social tags 和 Outgoing links 仍是后续功能。
+4. 通过手工验收后，再统一确定 1.4 版本号、更新商店文案和发布产物。不要把当前 `1.3.1` Manifest 的开发构建当作 1.4 正式版。
+
+相关设计、研究、原型和早期验证记录位于 `docs/planning/`、`docs/prototypes/`、`docs/research/`、`docs/testing/`。这些文件记录不同阶段的决定；以上当前代码状态及最新用户反馈优先。
+
+---
+
+## 历史交接状态（2026-10-19）
 
 SEO Copilot 扩展的 v1.3.0 主界面方案已确定为 Side Panel；当前代码和 Manifest 仍保持正式版本 `1.2.0`，本阶段仅作开发提交，不发布。最终方案使用 `tabs` 读取当前页面 URL、`permissions.request()` 按 origin 请求可选站点权限，并按 Tab 保存扫描状态。用户已报告主要 Chrome 手工流程通过；扫描中切换 Tab 尚未手工验证，已有自动化状态测试覆盖。下一阶段是 Welcome / Onboarding，不属于本轮范围。
 

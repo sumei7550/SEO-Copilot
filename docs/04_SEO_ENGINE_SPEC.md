@@ -184,7 +184,7 @@ Critical
 
 检测：
 
-length \< 70
+length \< 110
 
 ## META_003
 

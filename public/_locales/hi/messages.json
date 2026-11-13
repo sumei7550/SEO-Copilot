@@ -6,5 +6,25 @@
   "issueTitleMissing": { "message": "पेज पर कोई शीर्षक नहीं है।" }, "fixTitleMissing": { "message": "30 से 60 अक्षरों का एक अनोखा और स्पष्ट शीर्षक जोड़ें।" }, "issueTitleShort": { "message": "शीर्षक सुझाई गई लंबाई से छोटा है।" }, "issueTitleLong": { "message": "शीर्षक सुझाई गई लंबाई से लंबा है।" }, "fixTitleLength": { "message": "30 से 60 अक्षरों के बीच स्पष्ट शीर्षक रखें।" }, "issueTitleMultiple": { "message": "दस्तावेज़ के head में कई title एलिमेंट हैं।" }, "fixTitleMultiple": { "message": "दस्तावेज़ के head में सीधे केवल एक title एलिमेंट रखें।" }, "issueMetaMissing": { "message": "मेटा विवरण मौजूद नहीं है।" }, "fixMetaMissing": { "message": "120 से 160 अक्षरों का उपयोगी मेटा विवरण जोड़ें।" }, "issueMetaLength": { "message": "मेटा विवरण की लंबाई सुझाई गई सीमा से बाहर है।" }, "fixMetaLength": { "message": "विवरण को संक्षिप्त रूप से फिर लिखें और 160 अक्षरों से अधिक न रखें।" },
   "issueH1Missing": { "message": "पेज पर कोई H1 हेडिंग नहीं है।" }, "fixH1Missing": { "message": "पेज के विषय का वर्णन करने वाली एक स्पष्ट H1 जोड़ें।" }, "issueH1Multiple": { "message": "पेज पर कई H1 हेडिंग हैं।" }, "fixH1Multiple": { "message": "एक मुख्य H1 रखें और सेक्शन के लिए H2 हेडिंग इस्तेमाल करें।" }, "issueHeadingStructure": { "message": "हेडिंग संरचना में एक स्तर छूटा हुआ है।" }, "fixHeadingStructure": { "message": "H1 से H3 पर सीधे जाने के बजाय हेडिंग को क्रम से रखें।" }, "issueImageAlt": { "message": "कुछ जानकारी देने वाली इमेज में alt एट्रिब्यूट नहीं है।" }, "fixImageAlt": { "message": "जानकारी देने वाली इमेज में संक्षिप्त और अर्थपूर्ण alt टेक्स्ट जोड़ें।" }, "issueImageAltRatio": { "message": "जानकारी देने वाली इमेज के लिए alt कवरेज 50% से कम है।" }, "fixImageAltRatio": { "message": "जानकारी देने वाली इमेज की alt कवरेज देखें; सजावटी इमेज को वर्णनात्मक alt टेक्स्ट की आवश्यकता नहीं होती।" },
   "issueImageLarge": { "message": "इमेज प्रदर्शन को बेहतर बनाने का अवसर हो सकती है।" }, "fixImageLarge": { "message": "पहले ट्रांसफ़र किए गए बाइट देखें; यदि स्रोत दिखाई देने वाले आकार से बहुत बड़ा है, तो छोटा responsive संस्करण या आधुनिक फ़ॉर्मैट इस्तेमाल करने पर विचार करें।" }, "issueUrlInvalid": { "message": "पेज का URL अमान्य है या ऐसा प्रोटोकॉल इस्तेमाल करता है जो समर्थित नहीं है।" }, "fixUrlInvalid": { "message": "मान्य HTTP या HTTPS पेज URL का इस्तेमाल करें।" }, "issueUrlLong": { "message": "पेज का URL 100 अक्षरों से लंबा है।" }, "fixUrlLong": { "message": "वर्णनात्मक शब्दों को बनाए रखते हुए पाथ छोटा करें।" }, "issueUrlStructure": { "message": "URL में जटिल क्वेरी या पढ़ने में कठिन पहचानकर्ता है।" }, "fixUrlStructure": { "message": "स्थिर और पढ़ने में आसान slug इस्तेमाल करें और अनावश्यक पैरामीटर हटाएँ।" }, "issueCanonicalMissing": { "message": "पेज पर canonical लिंक नहीं है।" }, "fixCanonicalMissing": { "message": "पसंदीदा URL की ओर संकेत करने वाला canonical लिंक जोड़ें।" },
-  "issueSchemaMissing": { "message": "मान्य JSON-LD संरचित डेटा नहीं मिला।" }, "fixSchemaMissing": { "message": "जहाँ उचित हो वहाँ संबंधित Product, Article, FAQ या Review JSON-LD जोड़ें।" }, "issueSchemaInvalid": { "message": "एक या अधिक JSON-LD ब्लॉक में अमान्य JSON है।" }, "fixSchemaInvalid": { "message": "JSON-LD सिंटैक्स को मान्य करें और गलत ब्लॉक ठीक करें।" }, "issueContentLowWords": { "message": "पेज पर 300 से कम शब्द हैं।" }, "fixContentLowWords": { "message": "ऐसा उपयोगी और मौलिक कंटेंट जोड़ें जो विज़िटर के उद्देश्य का पूरा उत्तर दे।" }, "issueContentLowRatio": { "message": "दिखाई देने वाले टेक्स्ट का अनुपात कम है।" }, "fixContentLowRatio": { "message": "अनावश्यक markup कम करें और मुख्य कंटेंट को स्पष्ट व सुलभ बनाएँ।" }, "issueRobotsMissing": { "message": "robots meta टैग नहीं मिला।" }, "fixRobotsMissing": { "message": "जब पेज को स्पष्ट crawl निर्देशों की आवश्यकता हो, तब robots निर्देश जोड़ें।" }
+  "issueSchemaMissing": { "message": "मान्य JSON-LD संरचित डेटा नहीं मिला।" }, "fixSchemaMissing": { "message": "जहाँ उचित हो वहाँ संबंधित Product, Article, FAQ या Review JSON-LD जोड़ें।" }, "issueSchemaInvalid": { "message": "एक या अधिक JSON-LD ब्लॉक में अमान्य JSON है।" }, "fixSchemaInvalid": { "message": "JSON-LD सिंटैक्स को मान्य करें और गलत ब्लॉक ठीक करें।" }, "issueContentLowWords": { "message": "पेज पर 300 से कम शब्द हैं।" }, "fixContentLowWords": { "message": "ऐसा उपयोगी और मौलिक कंटेंट जोड़ें जो विज़िटर के उद्देश्य का पूरा उत्तर दे।" }, "issueContentLowRatio": { "message": "दिखाई देने वाले टेक्स्ट का अनुपात कम है।" }, "fixContentLowRatio": { "message": "अनावश्यक markup कम करें और मुख्य कंटेंट को स्पष्ट व सुलभ बनाएँ।" }, "issueRobotsMissing": { "message": "robots meta टैग नहीं मिला।" }, "fixRobotsMissing": { "message": "जब पेज को स्पष्ट crawl निर्देशों की आवश्यकता हो, तब robots निर्देश जोड़ें।" },
+  "issueImageEmptyAlt": {
+    "message": "Review empty alt text"
+  },
+  "impactImageEmptyAlt": {
+    "message": "Empty alt text may be correct for decorative images. Informative images need descriptive alt text. This review item does not reduce the SEO Score."
+  },
+  "fixImageEmptyAlt": {
+    "message": "Review the affected images. Keep alt=\"\" for decorative images; add descriptive alt text to images that convey information."
+  },
+  "imageEmptyAltCount": {
+    "message": "$COUNT$ images have empty alt text. Review whether they are decorative.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "affectedImages": {
+    "message": "Affected images"
+  }
 }

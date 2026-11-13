@@ -114,5 +114,25 @@
     "message": "减少不必要的标记，并突出清晰可访问的主体内容。"
   },
   "issueRobotsMissing": { "message": "未检测到 robots meta 标签。" },
-  "fixRobotsMissing": { "message": "需要明确抓取指引时添加 robots 指令。" }
+  "fixRobotsMissing": { "message": "需要明确抓取指引时添加 robots 指令。" },
+  "issueImageEmptyAlt": {
+    "message": "检查空的图片替代文本"
+  },
+  "impactImageEmptyAlt": {
+    "message": "空的替代文本可能适用于装饰图片；传达信息的图片需要描述性替代文本。此检查项不会降低 SEO 评分。"
+  },
+  "fixImageEmptyAlt": {
+    "message": "检查受影响的图片。装饰图片可保留 alt=\"\"；为传达信息的图片添加描述性替代文本。"
+  },
+  "imageEmptyAltCount": {
+    "message": "$COUNT$ 张图片的替代文本为空，请确认它们是否为装饰图片。",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "affectedImages": {
+    "message": "受影响的图片"
+  }
 }

@@ -1,4 +1,5 @@
-import type { HeadingData, ImageData, PageData, SchemaData } from '../types/seo';
+import type { HeadingData, ImageData, PageData } from '../types/seo';
+import { collectStructuredData } from './structuredData';
 
 const MAX_TEXT_LENGTH = 500_000;
 const MAX_IMAGES = 1_000;
@@ -12,34 +13,12 @@ function countWords(text: string): number {
   return cjkCharacters + nonCjkWords;
 }
 
-function schemaType(value: unknown): string {
-  if (!value || typeof value !== 'object') return '';
-  const type = (value as { '@type'?: unknown })['@type'];
-  return Array.isArray(type) ? type.filter((item): item is string => typeof item === 'string').join(', ') : typeof type === 'string' ? type : '';
-}
-
-function parseSchemas(doc: Document): { schemas: SchemaData[]; invalidSchemaCount: number } {
-  const schemas: SchemaData[] = [];
-  let invalidSchemaCount = 0;
-
-  doc.querySelectorAll<HTMLScriptElement>('script[type="application/ld+json"]').forEach((script) => {
-    try {
-      const parsed: unknown = JSON.parse(script.textContent ?? '');
-      const values = Array.isArray(parsed) ? parsed : [parsed];
-      values.forEach((value) => schemas.push({ type: schemaType(value) }));
-    } catch {
-      invalidSchemaCount += 1;
-    }
-  });
-
-  return { schemas, invalidSchemaCount };
-}
-
-function resourceSizes(performanceValue?: Performance): Map<string, number> {
-  const sizes = new Map<string, number>();
+function resourceSizes(performanceValue?: Performance): Map<string, { transferSize: number; fileSize?: number }> {
+  const sizes = new Map<string, { transferSize: number; fileSize?: number }>();
   performanceValue?.getEntriesByType('resource').forEach((entry) => {
     const resource = entry as PerformanceResourceTiming;
-    sizes.set(resource.name, resource.transferSize || resource.encodedBodySize || 0);
+    const bodySize = resource.decodedBodySize || resource.encodedBodySize;
+    sizes.set(resource.name, { transferSize: resource.transferSize || resource.encodedBodySize || 0, fileSize: Number.isFinite(bodySize) && bodySize > 0 ? bodySize : undefined });
   });
   return sizes;
 }
@@ -48,8 +27,14 @@ function visibleTextData(doc: Document): { text: string; elementCount: number } 
   const body = doc.body;
   if (!body) return { text: '', elementCount: 0 };
 
-  // Use a detached copy so scripts, styles, JSON-LD, hydration payloads,
-  // templates, and explicitly hidden content do not affect content signals.
+  // In the live browser, innerText follows CSS visibility. A detached clone's
+  // textContent also includes large hidden SPA panels and result payloads.
+  if (typeof body.innerText === 'string') return {
+    text: body.innerText.replace(/\s+/g, ' ').trim().slice(0, MAX_TEXT_LENGTH),
+    elementCount: body.querySelectorAll('*').length
+  };
+
+  // Fallback for DOM implementations without innerText, such as jsdom.
   if (typeof body.cloneNode === 'function') {
     const bodyCopy = body.cloneNode(true) as HTMLElement;
     bodyCopy.querySelectorAll(NON_CONTENT_SELECTOR).forEach((element) => element.remove());
@@ -111,21 +96,34 @@ export function scanPage(
     level: Number(heading.tagName.slice(1)) as HeadingData['level'],
     text: (heading.textContent ?? '').trim()
   }));
-  const images = Array.from(doc.images).slice(0, MAX_IMAGES).map<ImageData>((image) => {
+  const images: ImageData[] = [];
+  let excludedImageCount = 0;
+  let imageLimitReached = false;
+  for (const image of Array.from(doc.images)) {
+    const src = image.currentSrc || image.src;
+    // Inline artwork and unloaded/tracking-sized elements are not useful in
+    // the network image inventory. Keep duplicates and original DOM order.
+    if (!/^https?:\/\//i.test(src) || !Number.isFinite(image.naturalWidth) || !Number.isFinite(image.naturalHeight)
+      || image.naturalWidth <= 1 || image.naturalHeight <= 1) {
+      excludedImageCount++;
+      continue;
+    }
+    if (images.length >= MAX_IMAGES) { imageLimitReached = true; continue; }
     const rendered = renderedImageSize(image);
-    return {
-      src: image.currentSrc || image.src,
+    images.push({
+      src,
       alt: image.hasAttribute('alt') ? image.alt : null,
       auditable: isAuditableImage(image),
       naturalWidth: image.naturalWidth,
       naturalHeight: image.naturalHeight,
       renderedWidth: rendered.width,
       renderedHeight: rendered.height,
-      transferSize: sizes.get(image.currentSrc || image.src) ?? 0
-    };
-  });
+      transferSize: sizes.get(src)?.transferSize ?? 0,
+      fileSize: sizes.get(src)?.fileSize
+    });
+  }
   const { text: visibleText, elementCount } = visibleTextData(doc);
-  const { schemas, invalidSchemaCount } = parseSchemas(doc);
+  const { schemas, invalidSchemaCount, jsonLdBlockCount } = collectStructuredData(doc);
 
   return {
     url: locationValue.href,
@@ -134,8 +132,11 @@ export function scanPage(
     metaDescription: doc.querySelector<HTMLMetaElement>('meta[name="description" i]')?.content.trim() ?? '',
     headings,
     images,
+    excludedImageCount,
+    imageLimitReached,
     canonical: doc.querySelector<HTMLLinkElement>('link[rel="canonical" i]')?.href ?? '',
     schemas,
+    jsonLdBlockCount,
     invalidSchemaCount,
     wordCount: countWords(visibleText),
     // Advisory visible-content density; this intentionally does not use total HTML size.

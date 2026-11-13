@@ -18,11 +18,20 @@ export interface ImageData {
   renderedWidth?: number;
   renderedHeight?: number;
   transferSize: number;
+  /** Resource body bytes, excluding HTTP headers; absent when unavailable. */
+  fileSize?: number;
 }
 
 export interface SchemaData {
   type: string;
+  /** Source markup format; absent on scans saved by older versions. */
+  format?: 'JSON-LD' | 'Microdata' | 'RDFa';
+  id?: string;
+  /** Complete, serializable properties for the structured-data inspector. */
+  properties?: Record<string, SchemaValue>;
 }
+
+export type SchemaValue = string | number | boolean | null | SchemaValue[] | { [key: string]: SchemaValue };
 
 export interface PageData {
   url: string;
@@ -31,8 +40,14 @@ export interface PageData {
   metaDescription: string;
   headings: HeadingData[];
   images: ImageData[];
+  /** DOM images omitted from the report (embedded, unloaded, or tracking-sized). */
+  excludedImageCount?: number;
+  /** More reportable images existed beyond the scanner limit. */
+  imageLimitReached?: boolean;
   canonical: string;
   schemas: SchemaData[];
+  /** Number of matching JSON-LD script elements, independent of parsed values. */
+  jsonLdBlockCount?: number;
   invalidSchemaCount: number;
   wordCount: number;
   textRatio: number;
@@ -84,6 +99,7 @@ export interface ScoreResult {
 }
 
 export interface SeoResult extends ScoreResult {
+  imageStatuses?: Record<string, { kind: 'ok' | 'broken' | 'unchecked'; code?: number; fileSize?: number }>;
   page: PageData;
   metrics: PageMetrics;
   issues: SeoIssue[];

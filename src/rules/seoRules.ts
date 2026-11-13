@@ -1,4 +1,5 @@
 import type { PageData, PageMetrics, SeoIssue, SeoRule } from '../types/seo';
+import { METADATA_LENGTH_LIMITS } from './metadataLength';
 
 function hasHeadingJump(page: PageData): boolean {
   let previousLevel = 0;
@@ -44,13 +45,13 @@ function isImagePerformanceOpportunity(image: PageData['images'][number]): boole
 
 export const seoRules: readonly SeoRule[] = [
   rule({ id: 'TITLE_001', category: 'title', severity: 'critical', impact: -10, messageKey: 'issueTitleMissing', impactKey: 'impactTitle', solutionKey: 'fixTitleMissing', check: (page) => !page.title }),
-  rule({ id: 'TITLE_002', category: 'title', severity: 'warning', impact: -5, messageKey: 'issueTitleShort', impactKey: 'impactTitle', solutionKey: 'fixTitleLength', check: (page) => Boolean(page.title) && page.title.length < 30 }),
-  rule({ id: 'TITLE_003', category: 'title', severity: 'warning', impact: -3, messageKey: 'issueTitleLong', impactKey: 'impactTitle', solutionKey: 'fixTitleLength', check: (page) => page.title.length > 60 }),
+  rule({ id: 'TITLE_002', category: 'title', severity: 'warning', impact: -5, messageKey: 'issueTitleShort', impactKey: 'impactTitle', solutionKey: 'fixTitleLength', check: (page) => Boolean(page.title) && page.title.length < METADATA_LENGTH_LIMITS.title.min }),
+  rule({ id: 'TITLE_003', category: 'title', severity: 'warning', impact: -3, messageKey: 'issueTitleLong', impactKey: 'impactTitle', solutionKey: 'fixTitleLength', check: (page) => page.title.length > METADATA_LENGTH_LIMITS.title.max }),
   rule({ id: 'TITLE_004', category: 'title', severity: 'info', impact: -1, messageKey: 'issueTitleMultiple', impactKey: 'impactTitle', solutionKey: 'fixTitleMultiple', check: (page) => page.titleTagCount > 1 }),
 
   rule({ id: 'META_001', category: 'meta', severity: 'critical', impact: -10, messageKey: 'issueMetaMissing', impactKey: 'impactMeta', solutionKey: 'fixMetaMissing', check: (page) => !page.metaDescription }),
-  rule({ id: 'META_002', category: 'meta', severity: 'warning', impact: -5, messageKey: 'issueMetaLength', impactKey: 'impactMeta', solutionKey: 'fixMetaLength', check: (page) => Boolean(page.metaDescription) && page.metaDescription.length < 70 }),
-  rule({ id: 'META_003', category: 'meta', severity: 'warning', impact: -3, messageKey: 'issueMetaLength', impactKey: 'impactMeta', solutionKey: 'fixMetaLength', check: (page) => page.metaDescription.length > 160 }),
+  rule({ id: 'META_002', category: 'meta', severity: 'warning', impact: -5, messageKey: 'issueMetaLength', impactKey: 'impactMeta', solutionKey: 'fixMetaLength', check: (page) => Boolean(page.metaDescription) && page.metaDescription.length < METADATA_LENGTH_LIMITS.metaDescription.min }),
+  rule({ id: 'META_003', category: 'meta', severity: 'warning', impact: -3, messageKey: 'issueMetaLength', impactKey: 'impactMeta', solutionKey: 'fixMetaLength', check: (page) => page.metaDescription.length > METADATA_LENGTH_LIMITS.metaDescription.max }),
 
   rule({ id: 'HEADING_001', category: 'heading', severity: 'critical', impact: -8, messageKey: 'issueH1Missing', impactKey: 'impactHeading', solutionKey: 'fixH1Missing', check: (_page, metrics) => metrics.h1Count === 0 }),
   rule({ id: 'HEADING_002', category: 'heading', severity: 'warning', impact: -4, messageKey: 'issueH1Multiple', impactKey: 'impactHeading', solutionKey: 'fixH1Multiple', check: (_page, metrics) => metrics.h1Count > 1 }),
@@ -59,6 +60,7 @@ export const seoRules: readonly SeoRule[] = [
   rule({ id: 'IMAGE_001', category: 'images', severity: 'warning', impact: -5, messageKey: 'issueImageAlt', impactKey: 'impactImages', solutionKey: 'fixImageAlt', check: (_page, metrics) => metrics.imagesWithoutAlt > 0 }),
   rule({ id: 'IMAGE_002', category: 'images', severity: 'warning', impact: -5, messageKey: 'issueImageAltRatio', impactKey: 'impactImages', solutionKey: 'fixImageAltRatio', check: (_page, metrics) => metrics.auditableImageCount > 0 && metrics.altCoverage < 50 }),
   rule({ id: 'IMAGE_003', category: 'images', severity: 'info', impact: -3, messageKey: 'issueImageLarge', impactKey: 'impactImages', solutionKey: 'fixImageLarge', check: (page) => page.images.some(isImagePerformanceOpportunity) }),
+  rule({ id: 'IMAGE_004', category: 'images', severity: 'info', impact: 0, messageKey: 'issueImageEmptyAlt', impactKey: 'impactImageEmptyAlt', solutionKey: 'fixImageEmptyAlt', check: (page) => page.images.some((image) => image.alt !== null && image.alt.trim() === '') }),
 
   rule({ id: 'URL_001', category: 'url', severity: 'warning', impact: -2, messageKey: 'issueUrlLong', impactKey: 'impactUrl', solutionKey: 'fixUrlLong', check: (page) => page.url.length > 100 }),
   rule({ id: 'URL_002', category: 'url', severity: 'warning', impact: -3, messageKey: 'issueUrlStructure', impactKey: 'impactUrl', solutionKey: 'fixUrlStructure', check: (page) => hasPoorUrlStructure(page.url) }),

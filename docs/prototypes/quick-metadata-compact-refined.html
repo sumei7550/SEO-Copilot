@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SEO Copilot — Quick Metadata compact card prototype</title>
+  <style>
+    :root { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #172033; background: #e9edfa; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    button, select { font: inherit; }
+    button { cursor: pointer; }
+    button:disabled { cursor: default; }
+    button:focus-visible, select:focus-visible { outline: 2px solid #4f46e5; outline-offset: 2px; }
+    .workbench { min-height: 100vh; display: grid; grid-template-columns: minmax(240px, 1fr) minmax(320px, 400px) minmax(16px, 1fr); gap: 24px; padding: 24px; }
+    .demo-controls { width: min(100%, 380px); justify-self: end; padding: 14px 0; }
+    .demo-kicker { color: #4f46e5; font-size: 11px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
+    .demo-controls h1 { max-width: 290px; margin: 8px 0; font-size: 26px; line-height: 1.14; letter-spacing: -.04em; }
+    .demo-controls p, .demo-controls li { color: #526176; font-size: 12px; line-height: 1.5; }
+    .demo-controls label { display: block; margin: 22px 0 7px; font-size: 12px; font-weight: 800; }
+    .demo-controls select { width: 100%; padding: 10px 11px; border: 1px solid #cbd5e1; border-radius: 9px; background: #fff; color: #172033; font-size: 12px; }
+    .demo-controls ul { padding-left: 18px; }
+    .demo-note { padding: 10px 11px; border: 1px solid #cbd5e1; border-radius: 10px; background: #fff; }
+    .side-panel { width: 100%; height: min(780px, calc(100vh - 48px)); min-height: 540px; overflow-y: auto; overflow-x: hidden; padding: 18px; border: 1px solid #dfe5ee; border-radius: 18px; background: #f8fafc; box-shadow: 0 24px 70px #1720332a; scrollbar-color: #cbd5e1 transparent; }
+    .app-header { display: flex; align-items: start; justify-content: space-between; gap: 8px; margin-bottom: 14px; }
+    .eyebrow, .label { margin: 0; color: #6366f1; font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+    .app-header h2 { margin: 3px 0 0; font-size: 20px; line-height: 1.2; letter-spacing: -.04em; }
+    .app-status { display: flex; align-items: center; gap: 5px; flex: none; margin-top: 5px; color: #64748b; font-size: 10px; white-space: nowrap; }
+    .app-status:before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #22c55e; }
+    .app-status.busy:before { background: #818cf8; }
+    .app-status.unavailable:before { background: #f59e0b; }
+    .card { min-width: 0; border: 1px solid #dfe5ee; border-radius: 14px; background: #fff; box-shadow: 0 2px 5px #17203308; }
+    .metadata-card { padding: 13px 14px 8px; }
+    .card-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+    .card-heading h3 { margin: 0; font-size: 15px; letter-spacing: -.02em; }
+    .card-heading span { color: #64748b; font-size: 10px; white-space: nowrap; }
+    .metadata-hint { margin: 3px 0 9px; color: #64748b; font-size: 10px; line-height: 1.4; }
+    .meta-field { padding: 8px 0 9px; border-top: 1px solid #edf0f5; }
+    .meta-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; margin-bottom: 3px; }
+    .meta-head label { color: #475569; font-size: 11px; font-weight: 800; }
+    .meta-actions { display: flex; align-items: center; gap: 6px; flex: none; }
+    .char-count { color: #64748b; font-size: 10px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .copy-button, .expand-button { border: 1px solid #d6deea; border-radius: 7px; background: #fff; color: #4338ca; font-size: 10px; font-weight: 800; }
+    .copy-button { min-width: 45px; padding: 5px 7px; }
+    .copy-button:hover, .expand-button:hover { background: #eef2ff; }
+    .copy-button:disabled { color: #94a3b8; background: #f8fafc; }
+    .meta-value { margin: 0; overflow: hidden; color: #172033; font-size: 11.5px; line-height: 1.42; overflow-wrap: anywhere; white-space: pre-wrap; }
+    .meta-value.url { color: #475569; word-break: break-all; }
+    .meta-value.collapsed { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; }
+    .meta-value.empty { color: #94a3b8; font-style: italic; }
+    .expand-button { margin: 5px 0 0; padding: 4px 7px; }
+    .field-note { margin: 3px 0 0; color: #64748b; font-size: 10px; line-height: 1.35; }
+    .feedback { min-height: 15px; margin: 2px 0 0; color: #15803d; font-size: 10px; font-weight: 800; }
+    .feedback.failure { color: #be123c; }
+    .message { margin: 9px 0 5px; padding: 10px 11px; border: 1px solid #dfe5ee; border-radius: 9px; background: #f8fafc; }
+    .message strong { color: #475569; font-size: 11px; }
+    .message p { margin: 4px 0 0; color: #64748b; font-size: 10.5px; line-height: 1.45; }
+    .message.warning { border-color: #fde68a; background: #fffbeb; }
+    .message.warning strong { color: #92400e; }
+    .message.error { border-color: #fecdd3; background: #fff1f2; }
+    .message.error strong { color: #be123c; }
+    .skeleton { height: 11px; margin: 7px 0; border-radius: 4px; background: linear-gradient(90deg, #e5eaf2, #f5f7fb, #e5eaf2); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; }
+    .skeleton.short { width: 56%; }
+    @keyframes shimmer { to { background-position: -200% 0; } }
+    .audit-entry { margin-top: 12px; padding: 13px 14px 14px; }
+    .audit-entry h3 { margin: 0; font-size: 14px; }
+    .audit-entry p { margin: 4px 0 10px; color: #64748b; font-size: 10.5px; line-height: 1.4; }
+    .primary-button, .rescan-button { width: 100%; padding: 10px 11px; border: 1px solid #4f46e5; border-radius: 9px; background: #4f46e5; color: #fff; font-size: 11px; font-weight: 800; }
+    .primary-button:hover, .rescan-button:hover { background: #4338ca; }
+    .primary-button:disabled { opacity: .6; }
+    .audit-note { margin: 7px 0 0!important; color: #64748b!important; font-size: 10px!important; }
+    .scanning { display: flex; align-items: center; gap: 9px; margin-top: 12px; padding: 14px; color: #526176; font-size: 11px; }
+    .spinner { width: 14px; height: 14px; flex: none; border: 2px solid #c7d2fe; border-top-color: #4f46e5; border-radius: 50%; animation: spin .7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .score-card { display: grid; grid-template-columns: 1fr auto; gap: 12px; margin-top: 14px; padding: 18px; border-radius: 17px; background: #172033; color: #fff; box-shadow: 0 10px 24px #17203325; }
+    .score-card .label { color: #9aa7be; }
+    .score { margin: 2px 0 0; color: #a3e635; font-size: 46px; font-weight: 800; line-height: 1; letter-spacing: -.06em; }
+    .score small { color: #71809a; font-size: 17px; letter-spacing: 0; }
+    .score-side { text-align: right; }
+    .score-side strong { display: block; margin-top: 4px; font-size: 14px; }
+    .score-side p:last-child { margin: 7px 0 0; color: #aeb8ca; font-size: 10px; }
+    .report-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 18px 0 9px; }
+    .report-heading h3 { margin: 0; font-size: 17px; letter-spacing: -.025em; }
+    .report-heading p { margin: 3px 0 0; color: #64748b; font-size: 10.5px; }
+    .issue-count { display: grid; place-items: center; min-width: 27px; height: 27px; padding: 0 6px; border-radius: 9px; background: #e0e7ff; color: #4338ca; font-size: 12px; font-weight: 800; }
+    .severity-summary { display: grid; grid-template-columns: repeat(3, 1fr); padding: 9px 6px; text-align: center; }
+    .severity-summary span { color: #64748b; font-size: 10px; }
+    .severity-summary span+span { border-left: 1px solid #e2e8f0; }
+    .severity-summary b { display: block; margin-bottom: 2px; color: #172033; font-size: 15px; }
+    .issue-list { display: grid; gap: 9px; margin-top: 10px; }
+    .issue-card { min-width: 0; padding: 13px; }
+    .issue-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: #94a3b8; font-size: 10px; }
+    .severity { padding: 4px 8px; border-radius: 99px; font-size: 10px; font-weight: 800; }
+    .severity.warning { background: #fef3c7; color: #a16207; }
+    .severity.info { background: #e0f2fe; color: #0369a1; }
+    .issue-card h4 { margin: 9px 0 10px; font-size: 13px; line-height: 1.35; }
+    .issue-context { display: grid; grid-template-columns: 55px minmax(0, 1fr); gap: 7px; margin: 7px 0; color: #526176; font-size: 11px; line-height: 1.42; }
+    .issue-context b { color: #94a3b8; font-size: 9px; letter-spacing: .06em; text-transform: uppercase; }
+    .issue-context span { overflow-wrap: anywhere; }
+    .recommended-action { margin-top: 10px; padding: 9px 10px; border-radius: 9px; background: #f8fafc; color: #475569; font-size: 10.5px; line-height: 1.4; }
+    .recommended-action b, .mini-label { display: block; margin-bottom: 4px; color: #64748b; font-size: 9px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; }
+    .ai-button { margin-top: 10px; padding: 8px 10px; border: 0; border-radius: 9px; background: #eef2ff; color: #4338ca; font-size: 11px; font-weight: 800; }
+    .fix-panel { margin: 13px -13px -13px; padding: 13px; border-top: 1px solid #dfe5ee; border-radius: 0 0 13px 13px; background: #fbfbff; }
+    .fix-panel h5 { margin: 0; font-size: 13px; }
+    .fix-panel>p { margin: 3px 0 11px; color: #64748b; font-size: 10px; line-height: 1.4; }
+    .fix-detail-grid, .before-after { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 9px; }
+    .fix-detail-grid>div, .before-after>div { min-width: 0; padding: 8px; border-radius: 8px; background: #f1f5f9; font-size: 10px; line-height: 1.35; overflow-wrap: anywhere; }
+    .before-after .after { background: #ecfdf5; color: #166534; }
+    .suggestion-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 7px; margin: 11px 0 7px; }
+    .suggestion-heading b { font-size: 11px; }
+    .suggestion-heading span { color: #94a3b8; font-size: 9px; }
+    .suggestion { width: 100%; margin-bottom: 6px; padding: 9px; border: 1px solid #e2e8f0; border-radius: 9px; background: #fff; color: #475569; text-align: left; }
+    .suggestion.selected { border-color: #818cf8; background: #f5f3ff; }
+    .suggestion b { display: block; margin-bottom: 4px; color: #4338ca; font-size: 9px; text-transform: uppercase; }
+    .suggestion span { font-size: 10px; line-height: 1.4; }
+    .suggestion small { display: block; margin-top: 6px; color: #15803d; font-size: 9px; line-height: 1.35; }
+    .suggestion em { display: block; margin-top: 4px; color: #64748b; font-size: 9px; font-style: normal; line-height: 1.35; }
+    .fix-actions { display: flex; gap: 7px; margin-top: 9px; }
+    .fix-actions button { flex: 1; padding: 8px; border-radius: 8px; font-size: 10px; font-weight: 800; }
+    .secondary-button { border: 1px solid #d6deea; background: #fff; color: #475569; }
+    .fix-actions .primary-button { flex: 1; }
+    .rescan-button { margin-top: 14px; }
+    .footer { margin: 15px 0 0; color: #94a3b8; font-size: 10px; text-align: center; }
+    .footer a { color: #4f46e5; }
+    .hidden { display: none!important; }
+    @media (max-width: 850px) { .workbench { display: block; padding: 0; } .demo-controls { width: 100%; max-width: none; padding: 15px 18px; background: #e9edfa; } .demo-controls h1 { max-width: none; font-size: 21px; } .demo-controls ul { display: none; } .side-panel { width: min(100%, 400px); height: 780px; max-height: calc(100vh - 165px); min-height: 420px; margin: 0 auto; border-radius: 0; } }
+    @media (prefers-reduced-motion: reduce) { .skeleton, .spinner { animation: none; } }
+  </style>
+</head>
+<body>
+  <div class="workbench">
+    <aside class="demo-controls">
+      <div class="demo-kicker">Refined prototype · Compact Card</div>
+      <h1>Quick Metadata, then SEO Audit</h1>
+      <p class="demo-note">Simulation only: this HTML does not read the current tab, request Chrome access, scan a page, or call AI.</p>
+      <label for="state-picker">Preview state</label>
+      <select id="state-picker" aria-label="Preview state">
+        <option value="A1">A1 · Metadata ready, before Scan</option>
+        <option value="A2">A2 · Scanning</option>
+        <option value="A3">A3 · Audit complete</option>
+        <option value="A4">A4 · Issue and AI Fix open</option>
+        <option value="A5">A5 · Reading Metadata</option>
+        <option value="A6">A6 · No page access</option>
+        <option value="A7-restricted">A7 · Restricted Chrome page</option>
+        <option value="A7-failed">A7 · Metadata read failed</option>
+        <option value="A8-title">A8 · Title missing</option>
+        <option value="A8-description">A8 · Description missing</option>
+        <option value="A9">A9 · Long fields</option>
+        <option value="A10-success">A10 · Copy success</option>
+        <option value="A10-failure">A10 · Copy failure</option>
+      </select>
+      <ul><li>The panel is shown at its existing 400 px design width.</li><li>Scroll inside the panel to inspect the full report and Rescan.</li><li>Use Show more on a long field; Copy remains beside its label.</li></ul>
+    </aside>
+    <main class="side-panel" aria-label="SEO Copilot Side Panel prototype">
+      <header class="app-header"><div><p class="eyebrow">Page audit</p><h2>SEO Copilot</h2></div><span class="app-status" id="app-status">Ready to scan</span></header>
+      <section class="metadata-card card" aria-labelledby="metadata-heading">
+        <div class="card-heading"><h3 id="metadata-heading">Page metadata</h3><span id="metadata-status">Current page</span></div>
+        <p class="metadata-hint">Read and copy before running an audit.</p>
+        <div id="metadata-fields"></div>
+        <div id="metadata-message"></div>
+        <p class="feedback" id="copy-feedback" role="status" aria-live="polite"></p>
+      </section>
+      <section class="audit-entry card" id="audit-entry" aria-labelledby="audit-heading"><h3 id="audit-heading">SEO Audit</h3><p>Get a score, issues, and recommended actions for this page.</p><button class="primary-button" type="button" id="scan-button">Scan current page</button><p class="audit-note">Analysis runs locally. AI suggestions are requested only if you choose them.</p></section>
+      <div class="scanning card hidden" id="scanning" role="status"><span class="spinner" aria-hidden="true"></span><span>Scanning this page for SEO issues…</span></div>
+      <div class="message error hidden" id="restricted-audit"><strong>SEO Audit unavailable here</strong><p>Open a regular website, then try again.</p></div>
+      <section id="audit-result" class="hidden" aria-label="SEO Audit report">
+        <div class="score-card"><div><p class="label">SEO score</p><p class="score">88<small>/100</small></p></div><div class="score-side"><p class="label">Grade</p><strong>Good</strong><p>3 issues found</p></div></div>
+        <div class="report-heading"><div><h3>SEO report</h3><p>Issues found on this page</p></div><span class="issue-count">3</span></div>
+        <div class="severity-summary card"><span><b>0</b>Critical</span><span><b>2</b>Warning</span><span><b>1</b>Info</span></div>
+        <div class="issue-list">
+          <article class="issue-card card"><div class="issue-top"><span class="severity warning">Warning</span><span>−5 points</span></div><h4>The page has no canonical link.</h4><p class="issue-context"><b>Impact</b><span>Technical signals help search engines identify the preferred page.</span></p><div class="recommended-action"><b>Recommended Action</b>Add a canonical link that points to the preferred URL.</div></article>
+          <article class="issue-card card"><div class="issue-top"><span class="severity warning">Warning</span><span>−5 points</span></div><h4>The meta description is shorter than recommended.</h4><p class="issue-context"><b>Current</b><span>Run a clear on-page SEO audit and understand exactly what to fix next.</span></p><p class="issue-context"><b>Impact</b><span>A clearer description helps people decide whether to visit.</span></p><div class="recommended-action"><b>Recommended Action</b>Add a useful meta description between 120 and 160 characters.</div><button type="button" class="ai-button" id="ai-button" aria-expanded="false">✦ Improve with AI</button><div class="fix-panel hidden" id="fix-panel"><h5>AI SEO Fix</h5><p>Generate a better meta description for this page.</p><div class="fix-detail-grid"><div><b class="mini-label">Issue</b>Meta description is short</div><div><b class="mini-label">Current</b>Run a clear on-page SEO audit and understand exactly what to fix next.</div></div><div class="before-after"><div><b class="mini-label">Before</b>&lt;meta name="description" content="Run a clear on-page SEO audit…"&gt;</div><div class="after"><b class="mini-label">After · AI recommendation</b>Check your page’s SEO score, understand issues, and get clear actions to improve its title, description, and content.</div></div><div class="suggestion-heading"><b>3 AI recommendations</b><span>Select one to copy</span></div><button class="suggestion selected" type="button"><b>Recommended · Selected</b><span>Check your page’s SEO score, understand issues, and get clear actions to improve its title, description, and content.</span><small>✓ Clear page benefit</small><em>Why this works: names the audit and the action users receive.</em></button><button class="suggestion" type="button"><b>Alternative 1</b><span>Review on-page SEO issues and take practical steps to improve your page’s search appearance.</span><small>✓ Direct and concise</small><em>Why this works: focuses on the outcome after review.</em></button><button class="suggestion" type="button"><b>Alternative 2</b><span>Find title, metadata, and content issues with a clear page audit and actionable recommendations.</span><small>✓ Specific checks</small><em>Why this works: identifies the main areas covered by the audit.</em></button><div class="fix-actions"><button type="button" class="secondary-button" id="generate-again">↻ Generate another</button><button type="button" class="primary-button" id="copy-ai">Copy selected</button></div><p class="field-note" id="ai-demo-note">AI results shown here are sample text.</p></div></article>
+          <article class="issue-card card"><div class="issue-top"><span class="severity info">Info</span><span>−2 points</span></div><h4>No structured data was found.</h4><p class="issue-context"><b>Impact</b><span>Structured data can help search engines understand eligible content.</span></p><div class="recommended-action"><b>Recommended Action</b>Add valid structured data when it fits this page.</div></article>
+        </div>
+        <button type="button" class="rescan-button" id="rescan-button">Done editing? Re-scan page →</button>
+      </section>
+      <p class="footer">SEO Copilot · <a href="#" onclick="return false">Privacy</a></p>
+    </main><div></div>
+  </div>
+  <script>
+    const samples = {
+      normal: { title: 'SEO Copilot — Actionable On-Page SEO Audit', description: 'Run a clear on-page SEO audit and understand exactly what to fix next.', url: 'https://example.com/products/seo-copilot' },
+      long: { title: 'A comprehensive and unusually long guide to planning, writing, measuring, and improving page metadata for international commerce teams — autumn edition', description: 'Explore a practical framework for writing page titles and descriptions across multiple regions, improving consistency, reviewing search snippets, and coordinating updates with editors, analysts, and product teams without losing track of the original page intent.', url: 'https://example.com/resources/2026/11/a-very-long-and-detailed-path-for-international-product-metadata-review?region=apac&campaign=autumn-editorial&source=sidebar' },
+      missingTitle: { title: '', description: 'Run a clear on-page SEO audit and understand exactly what to fix next.', url: 'https://example.com/untitled-page' },
+      missingDescription: { title: 'SEO Copilot — Actionable On-Page SEO Audit', description: '', url: 'https://example.com/products/seo-copilot' }
+    };
+    const picker = document.querySelector('#state-picker');
+    const fields = document.querySelector('#metadata-fields');
+    const metadataMessage = document.querySelector('#metadata-message');
+    const feedback = document.querySelector('#copy-feedback');
+    const metadataStatus = document.querySelector('#metadata-status');
+    const appStatus = document.querySelector('#app-status');
+    const auditEntry = document.querySelector('#audit-entry');
+    const scanButton = document.querySelector('#scan-button');
+    const scanning = document.querySelector('#scanning');
+    const result = document.querySelector('#audit-result');
+    const restrictedAudit = document.querySelector('#restricted-audit');
+    const fixPanel = document.querySelector('#fix-panel');
+    const aiButton = document.querySelector('#ai-button');
+    let state = 'A1';
+    let values = samples.normal;
+    let expanded = new Set();
+    const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+    const fieldNames = { title: 'Title', description: 'Meta description', url: 'URL' };
+    function field(key, value, unavailable = false) {
+      const missing = !value && !unavailable;
+      const canCopy = Boolean(value) && !unavailable;
+      const long = value.length > (key === 'url' ? 62 : 90);
+      const isExpanded = expanded.has(key);
+      return `<div class="meta-field" data-field="${key}"><div class="meta-head"><label>${fieldNames[key]}</label><div class="meta-actions"><span class="char-count">${unavailable ? '—' : `${value.length} chars`}</span><button class="copy-button" type="button" data-copy="${key}" aria-label="Copy ${fieldNames[key]}" ${canCopy ? '' : 'disabled'}>Copy</button></div></div><p class="meta-value ${key === 'url' ? 'url' : ''} ${long && !isExpanded ? 'collapsed' : ''} ${missing || unavailable ? 'empty' : ''}" id="value-${key}">${unavailable ? 'Unavailable' : missing ? 'Not found' : escapeHtml(value)}</p>${long ? `<button class="expand-button" type="button" data-expand="${key}" aria-expanded="${isExpanded}" aria-controls="value-${key}">${isExpanded ? 'Show less' : 'Show more'}</button>` : ''}</div>`;
+    }
+    function showMessage(kind, title, text) { metadataMessage.innerHTML = `<div class="message ${kind}"><strong>${title}</strong><p>${text}</p></div>`; }
+    function render() {
+      state = picker.value;
+      expanded = new Set();
+      values = state === 'A9' ? samples.long : state === 'A8-title' ? samples.missingTitle : state === 'A8-description' ? samples.missingDescription : samples.normal;
+      const loading = state === 'A5', denied = state === 'A6', restricted = state === 'A7-restricted', failed = state === 'A7-failed';
+      const audited = state === 'A3' || state === 'A4', isScanning = state === 'A2';
+      metadataMessage.innerHTML = '';
+      feedback.textContent = '';
+      feedback.className = 'feedback';
+      fields.innerHTML = loading ? '<div class="meta-field"><div class="skeleton short"></div><div class="skeleton"></div></div><div class="meta-field"><div class="skeleton short"></div><div class="skeleton"></div></div><div class="meta-field"><div class="skeleton short"></div><div class="skeleton"></div></div>' : denied ? field('title', '', true) + field('description', '', true) + field('url', values.url) : restricted ? field('title', '', true) + field('description', '', true) + field('url', 'chrome://extensions') : failed ? field('title', '', true) + field('description', '', true) + field('url', values.url) : field('title', values.title) + field('description', values.description) + field('url', values.url);
+      metadataStatus.textContent = loading ? 'Reading…' : denied ? 'Access needed' : restricted ? 'Unavailable' : failed ? 'Read failed' : 'Current page';
+      appStatus.textContent = audited ? 'Scan complete' : isScanning ? 'Scanning' : 'Ready to scan';
+      appStatus.className = `app-status ${loading || isScanning ? 'busy' : denied || restricted || failed ? 'unavailable' : ''}`;
+      auditEntry.classList.toggle('hidden', audited || isScanning || restricted);
+      scanning.classList.toggle('hidden', !isScanning);
+      result.classList.toggle('hidden', !audited);
+      restrictedAudit.classList.toggle('hidden', !restricted);
+      fixPanel.classList.toggle('hidden', state !== 'A4');
+      aiButton.setAttribute('aria-expanded', String(state === 'A4'));
+      scanButton.disabled = false;
+      if (loading) showMessage('', 'Reading this page…', 'Metadata will appear here when the page is ready. SEO Audit remains a separate action.');
+      if (denied) showMessage('warning', 'Page access needed', 'Open SEO Copilot from the toolbar on this tab to try again. Scan current page can request site access through Chrome.');
+      if (restricted) showMessage('error', 'This Chrome page cannot be read', 'Open a regular website to view its metadata or run an SEO Audit.');
+      if (failed) showMessage('error', 'Could not read this page', 'Reload the page or open SEO Copilot again. The URL is still available above.');
+      if (state === 'A8-title') showMessage('', 'Title not found', 'Run an SEO Audit for a recommended action.');
+      if (state === 'A8-description') showMessage('', 'Meta description not found', 'Run an SEO Audit for a recommended action.');
+      if (state === 'A10-success') feedback.textContent = 'Title copied';
+      if (state === 'A10-failure') { feedback.textContent = 'Copy failed. Select the text and copy it manually.'; feedback.classList.add('failure'); }
+    }
+    picker.addEventListener('change', render);
+    fields.addEventListener('click', async event => {
+      const expandButton = event.target.closest('[data-expand]');
+      if (expandButton) { const key = expandButton.dataset.expand; expanded.has(key) ? expanded.delete(key) : expanded.add(key); const item = fields.querySelector(`[data-field="${key}"]`); item.querySelector('.meta-value').classList.toggle('collapsed', !expanded.has(key)); expandButton.textContent = expanded.has(key) ? 'Show less' : 'Show more'; expandButton.setAttribute('aria-expanded', String(expanded.has(key))); return; }
+      const copyButton = event.target.closest('[data-copy]');
+      if (!copyButton) return;
+      const key = copyButton.dataset.copy;
+      const value = state === 'A7-restricted' ? 'chrome://extensions' : values[key];
+      if (state === 'A10-failure') { feedback.textContent = 'Copy failed. Select the text and copy it manually.'; feedback.className = 'feedback failure'; return; }
+      try { await navigator.clipboard.writeText(value); feedback.textContent = `${fieldNames[key]} copied`; feedback.className = 'feedback'; }
+      catch { feedback.textContent = 'Copy failed. Select the text and copy it manually.'; feedback.className = 'feedback failure'; }
+    });
+    scanButton.addEventListener('click', () => { if (state === 'A6') { showMessage('warning', 'Page access needed', 'In the product, Scan current page can request site access through Chrome. This static prototype cannot grant access.'); return; } picker.value = 'A2'; render(); });
+    aiButton.addEventListener('click', () => { picker.value = state === 'A4' ? 'A3' : 'A4'; render(); });
+    document.querySelector('#rescan-button').addEventListener('click', () => { picker.value = 'A2'; render(); });
+    document.querySelectorAll('.suggestion').forEach(button => button.addEventListener('click', () => { document.querySelectorAll('.suggestion').forEach(item => { item.classList.remove('selected'); item.querySelector('b').textContent = item.querySelector('b').textContent.replace(' · Selected', ''); }); button.classList.add('selected'); button.querySelector('b').textContent += ' · Selected'; }));
+    document.querySelector('#generate-again').addEventListener('click', () => { document.querySelector('#ai-demo-note').textContent = 'In the product, this is a separate user-initiated AI request. No request was sent by this prototype.'; });
+    document.querySelector('#copy-ai').addEventListener('click', () => { document.querySelector('#ai-demo-note').textContent = 'Sample AI suggestion selected for copying. This prototype does not call AI.'; });
+    render();
+  </script>
+</body>
+</html>

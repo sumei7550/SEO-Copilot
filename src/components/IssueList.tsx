@@ -30,24 +30,23 @@ function IssueCard({ issue, page, metrics }: { issue: SeoIssue; page: PageData; 
   const fixType = getAiFixType(issue);
   const issueLabel = t(issue.messageKey);
   const request: AiFixRequest | undefined = fixType ? { type: fixType, issueId: issue.id, issueLabel, currentValue: getCurrentValue(fixType, page), page: { title: page.title, metaDescription: page.metaDescription, h1: getCurrentValue('h1', page) }, context: buildAiFixContext(page, issue, fixType, issueLabel) } : undefined;
+  const action = issue.solutionKey ? t(issue.solutionKey) : '';
+  const hasAction = Boolean(action && action !== issue.solutionKey);
   const severityClass = issue.severity === 'critical' ? 'high' : issue.severity;
-  const severityLabel = issue.severity === 'critical' ? 'High' : t(`severity${issue.severity[0].toUpperCase()}${issue.severity.slice(1)}`);
+  const severityLabel = t(`severity${issue.severity[0].toUpperCase()}${issue.severity.slice(1)}`);
   return <article className={`issue-card ${fixType ? '' : 'compact'} ${open ? 'is-open' : ''}`}>
     <div className="issue-topline"><span className={`severity ${severityClass}`}>{severityLabel}</span><span className="impact">{issue.impact} {t('points')}</span></div>
     <h3>{t(issue.messageKey)}</h3>
+    {issue.id === 'IMAGE_004' ? <p className="issue-context"><b>{t('affectedImages')}</b><span>{page.images.filter((image) => image.alt !== null && image.alt.trim() === '').length}</span></p> : null}
     {issue.id === 'IMAGE_002' ? <div className="image-alt-summary">
       <p className="issue-context"><b>Auditable</b><span>{metrics.auditableImageCount}</span></p>
       <p className="issue-context"><b>Missing alt</b><span>{metrics.imagesWithoutAlt}</span></p>
       <p className="issue-context"><b>Coverage</b><span>{metrics.altCoverage}%</span></p>
     </div> : null}
-    {fixType ? <>
-      <p className="issue-context"><b>Current</b><span>{getCurrentValue(fixType, page) || 'Not found'}</span></p>
-      <p className="issue-context"><b>Impact</b><span>{t(issue.impactKey)}</span></p>
-      <button type="button" onClick={() => { const nextOpen = !open; setOpen(nextOpen); if (nextOpen) trackExtension('ext_issue_expanded', { issue_type: issue.id, severity: issue.severity }); }} className="ai-fix-button"><Sparkles />Improve with AI <span className={`chevron ${open ? 'is-open' : ''}`} aria-hidden="true" /></button>
-    </> : <>
-      <p className="issue-context"><b>Impact</b><span>{t(issue.impactKey)}</span></p>
-      <div className="recommended-action"><span>Recommended Action</span><strong>{t(issue.solutionKey)}</strong></div>
-    </>}
+    {fixType ? <p className="issue-context"><b>Current</b><span>{getCurrentValue(fixType, page) || 'Not found'}</span></p> : null}
+    <p className="issue-context"><b>Impact</b><span>{t(issue.impactKey)}</span></p>
+    {hasAction ? <div className="recommended-action"><span>Recommended Action</span><strong>{action}</strong></div> : null}
+    {fixType ? <button type="button" onClick={() => { const nextOpen = !open; setOpen(nextOpen); if (nextOpen) trackExtension('ext_issue_expanded', { issue_type: issue.id, severity: issue.severity }); }} className="ai-fix-button" aria-expanded={open}><Sparkles />Improve with AI <span className={`chevron ${open ? 'is-open' : ''}`} aria-hidden="true" /></button> : null}
     {open && request ? <AiFixPanel request={request} /> : null}
   </article>;
 }

@@ -6,5 +6,25 @@
   "issueTitleMissing": { "message": "หน้านี้ไม่มีชื่อเรื่อง" }, "fixTitleMissing": { "message": "เพิ่มชื่อเรื่องที่ไม่ซ้ำและสื่อความหมาย ความยาว 30–60 อักขระ" }, "issueTitleShort": { "message": "ชื่อเรื่องสั้นกว่าที่แนะนำ" }, "issueTitleLong": { "message": "ชื่อเรื่องยาวกว่าที่แนะนำ" }, "fixTitleLength": { "message": "ใช้ชื่อเรื่องที่ชัดเจน ความยาว 30–60 อักขระ" }, "issueTitleMultiple": { "message": "เอกสารมีองค์ประกอบ title หลายรายการใน head" }, "fixTitleMultiple": { "message": "เก็บองค์ประกอบ title ไว้เพียงรายการเดียวโดยตรงใน head ของเอกสาร" }, "issueMetaMissing": { "message": "ไม่มีคำอธิบายเมตา" }, "fixMetaMissing": { "message": "เพิ่มคำอธิบายเมตาที่เป็นประโยชน์ ความยาว 120–160 อักขระ" }, "issueMetaLength": { "message": "ความยาวคำอธิบายเมตาอยู่นอกช่วงที่แนะนำ" }, "fixMetaLength": { "message": "เขียนคำอธิบายใหม่ให้กระชับและไม่เกิน 160 อักขระ" },
   "issueH1Missing": { "message": "หน้านี้ไม่มีหัวข้อ H1" }, "fixH1Missing": { "message": "เพิ่ม H1 ที่ชัดเจนเพื่ออธิบายหัวข้อของหน้า" }, "issueH1Multiple": { "message": "หน้านี้มีหัวข้อ H1 หลายรายการ" }, "fixH1Multiple": { "message": "เก็บ H1 หลักไว้หนึ่งรายการและใช้ H2 สำหรับส่วนต่าง ๆ" }, "issueHeadingStructure": { "message": "โครงสร้างหัวข้อข้ามระดับหนึ่งระดับ" }, "fixHeadingStructure": { "message": "จัดหัวข้อซ้อนกันตามลำดับโดยไม่ข้ามจาก H1 ไป H3" }, "issueImageAlt": { "message": "รูปภาพที่ให้ข้อมูลบางรูปไม่มีแอตทริบิวต์ alt" }, "fixImageAlt": { "message": "เพิ่มข้อความ alt ที่กระชับและมีความหมายให้รูปภาพที่ให้ข้อมูล" }, "issueImageAltRatio": { "message": "รูปภาพที่ให้ข้อมูลมี alt ครอบคลุมน้อยกว่า 50%" }, "fixImageAltRatio": { "message": "ตรวจสอบ alt ของรูปภาพที่ให้ข้อมูล รูปภาพตกแต่งไม่จำเป็นต้องมีข้อความ alt เชิงบรรยาย" },
   "issueImageLarge": { "message": "รูปภาพอาจมีโอกาสปรับปรุงประสิทธิภาพ" }, "fixImageLarge": { "message": "ตรวจสอบไบต์ที่ถ่ายโอนก่อน หากแหล่งที่มามีขนาดใหญ่กว่าขนาดที่แสดงมาก ให้พิจารณาเวอร์ชัน responsive ที่เล็กลงหรือรูปแบบสมัยใหม่" }, "issueUrlInvalid": { "message": "URL ของหน้าไม่ถูกต้องหรือใช้โปรโตคอลที่ไม่รองรับ" }, "fixUrlInvalid": { "message": "ใช้ URL ของหน้าที่เป็น HTTP หรือ HTTPS ที่ถูกต้อง" }, "issueUrlLong": { "message": "URL ของหน้ายาวเกิน 100 อักขระ" }, "fixUrlLong": { "message": "ย่อเส้นทางโดยคงคำที่สื่อความหมายไว้" }, "issueUrlStructure": { "message": "URL มีคำค้นหาที่ซับซ้อนหรือตัวระบุที่อ่านไม่ออก" }, "fixUrlStructure": { "message": "ใช้ slug ที่มั่นคงและอ่านง่าย แล้วลบพารามิเตอร์ที่ไม่จำเป็น" }, "issueCanonicalMissing": { "message": "หน้าไม่มีลิงก์ canonical" }, "fixCanonicalMissing": { "message": "เพิ่มลิงก์ canonical ที่ชี้ไปยัง URL ที่ต้องการ" },
-  "issueSchemaMissing": { "message": "ไม่พบข้อมูลที่มีโครงสร้าง JSON-LD ที่ถูกต้อง" }, "fixSchemaMissing": { "message": "เพิ่ม JSON-LD ประเภท Product, Article, FAQ หรือ Review ที่เกี่ยวข้องตามความเหมาะสม" }, "issueSchemaInvalid": { "message": "บล็อก JSON-LD อย่างน้อยหนึ่งบล็อกมี JSON ที่ไม่ถูกต้อง" }, "fixSchemaInvalid": { "message": "ตรวจสอบไวยากรณ์ JSON-LD และแก้ไขบล็อกที่มีรูปแบบผิด" }, "issueContentLowWords": { "message": "หน้าเว็บมีน้อยกว่า 300 คำ" }, "fixContentLowWords": { "message": "เพิ่มเนื้อหาที่มีประโยชน์และเป็นต้นฉบับซึ่งตอบเจตนาของผู้เยี่ยมชมได้ครบถ้วน" }, "issueContentLowRatio": { "message": "สัดส่วนข้อความที่มองเห็นได้ต่ำ" }, "fixContentLowRatio": { "message": "ลดมาร์กอัปที่ไม่จำเป็นและทำให้เนื้อหาหลักชัดเจนและเข้าถึงได้" }, "issueRobotsMissing": { "message": "ไม่พบเมตาแท็ก robots" }, "fixRobotsMissing": { "message": "เพิ่มคำสั่ง robots เมื่อหน้าต้องการคำแนะนำการรวบรวมข้อมูลอย่างชัดเจน" }
+  "issueSchemaMissing": { "message": "ไม่พบข้อมูลที่มีโครงสร้าง JSON-LD ที่ถูกต้อง" }, "fixSchemaMissing": { "message": "เพิ่ม JSON-LD ประเภท Product, Article, FAQ หรือ Review ที่เกี่ยวข้องตามความเหมาะสม" }, "issueSchemaInvalid": { "message": "บล็อก JSON-LD อย่างน้อยหนึ่งบล็อกมี JSON ที่ไม่ถูกต้อง" }, "fixSchemaInvalid": { "message": "ตรวจสอบไวยากรณ์ JSON-LD และแก้ไขบล็อกที่มีรูปแบบผิด" }, "issueContentLowWords": { "message": "หน้าเว็บมีน้อยกว่า 300 คำ" }, "fixContentLowWords": { "message": "เพิ่มเนื้อหาที่มีประโยชน์และเป็นต้นฉบับซึ่งตอบเจตนาของผู้เยี่ยมชมได้ครบถ้วน" }, "issueContentLowRatio": { "message": "สัดส่วนข้อความที่มองเห็นได้ต่ำ" }, "fixContentLowRatio": { "message": "ลดมาร์กอัปที่ไม่จำเป็นและทำให้เนื้อหาหลักชัดเจนและเข้าถึงได้" }, "issueRobotsMissing": { "message": "ไม่พบเมตาแท็ก robots" }, "fixRobotsMissing": { "message": "เพิ่มคำสั่ง robots เมื่อหน้าต้องการคำแนะนำการรวบรวมข้อมูลอย่างชัดเจน" },
+  "issueImageEmptyAlt": {
+    "message": "Review empty alt text"
+  },
+  "impactImageEmptyAlt": {
+    "message": "Empty alt text may be correct for decorative images. Informative images need descriptive alt text. This review item does not reduce the SEO Score."
+  },
+  "fixImageEmptyAlt": {
+    "message": "Review the affected images. Keep alt=\"\" for decorative images; add descriptive alt text to images that convey information."
+  },
+  "imageEmptyAltCount": {
+    "message": "$COUNT$ images have empty alt text. Review whether they are decorative.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "affectedImages": {
+    "message": "Affected images"
+  }
 }

@@ -1,12 +1,15 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { Script } from 'node:vm';
 
 const root = resolve(import.meta.dirname, '..');
 const contentScript = readFileSync(resolve(root, 'dist/content.js'), 'utf8');
 const manifest = JSON.parse(readFileSync(resolve(root, 'dist/manifest.json'), 'utf8'));
 
-if (/^\s*(?:import|export)\s/m.test(contentScript)) {
-  throw new Error('dist/content.js must be self-contained because Chrome content scripts are not ES modules.');
+try {
+  new Script(contentScript, { filename: resolve(root, 'dist/content.js') });
+} catch (error) {
+  throw new Error('dist/content.js must parse as a self-contained classic script because Chrome content scripts are not ES modules.', { cause: error });
 }
 
 if (manifest.manifest_version !== 3 || !manifest.side_panel?.default_path) {
@@ -22,11 +25,16 @@ if (manifest.side_panel?.default_path && (!manifest.background?.service_worker |
 if (!existsSync(resolve(root, 'dist/welcome.html'))) {
   throw new Error('Welcome page is missing from the extension build.');
 }
-if (manifest.action?.default_popup) {
-  throw new Error('The action must open the Side Panel, not a popup.');
+if (manifest.action?.default_popup !== 'index.html' || !existsSync(resolve(root, 'dist/index.html'))) {
+  throw new Error('The action popup entry is missing.');
 }
-if (manifest.background?.service_worker && /^\s*(?:import|export)\s/m.test(readFileSync(resolve(root, 'dist', manifest.background.service_worker), 'utf8'))) {
-  throw new Error('The service worker must be self-contained.');
+if (manifest.background?.service_worker && manifest.background.type !== 'module') {
+  const workerPath = resolve(root, 'dist', manifest.background.service_worker);
+  try {
+    new Script(readFileSync(workerPath, 'utf8'), { filename: workerPath });
+  } catch (error) {
+    throw new Error('Classic service worker background.js must parse without ESM imports or exports.', { cause: error });
+  }
 }
 
 if (manifest.version !== '1.3.1') {

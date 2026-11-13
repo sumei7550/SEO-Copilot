@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>SEO Copilot 1.4.0 · Popup tools prototype</title>
+  <style>
+    :root { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color:#172033; background:#e9edfa; }
+    * { box-sizing:border-box; }
+    body { margin:0; }
+    button,select { font:inherit; }
+    button { cursor:pointer; }
+    button:focus-visible,select:focus-visible,a:focus-visible { outline:2px solid #4f46e5; outline-offset:2px; }
+    .workbench { min-height:100vh; display:grid; grid-template-columns:minmax(200px,1fr) auto minmax(24px,1fr); align-items:start; gap:24px; padding:24px; }
+    .controls { justify-self:end; width:min(100%,340px); padding-top:7px; }
+    .controls .kicker { color:#4f46e5; font-size:11px; font-weight:800; letter-spacing:.13em; text-transform:uppercase; }
+    .controls h1 { max-width:320px; margin:8px 0 10px; font-size:26px; line-height:1.15; letter-spacing:-.04em; }
+    .controls p { color:#526176; font-size:12px; line-height:1.55; }
+    .control-row { display:grid; grid-template-columns:1fr 1fr; gap:9px; margin:18px 0 12px; }
+    .controls label { display:block; margin-bottom:6px; color:#334155; font-size:11px; font-weight:800; }
+    .controls select { width:100%; padding:9px 8px; border:1px solid #cbd5e1; border-radius:8px; background:#fff; color:#172033; font-size:11px; }
+    .demo-note { padding:10px 11px; border:1px solid #cbd5e1; border-radius:10px; background:#fff; }
+    .popup { --nav-width:126px; display:grid; grid-template-rows:minmax(0,1fr) auto; width:520px; height:630px; min-width:0; overflow:hidden; border:1px solid #dfe5ee; border-radius:16px; background:#f8fafc; box-shadow:0 22px 64px #17203326; container-type:inline-size; }
+    .popup[data-width="340"] { --nav-width:104px; }
+    .popup[data-width="400"] { --nav-width:112px; }
+    .workspace { display:grid; grid-template-columns:var(--nav-width) minmax(0,1fr); min-height:0; overflow:hidden; }
+    .sidebar { display:flex; flex-direction:column; min-width:0; min-height:0; border-right:1px solid #e2e8f0; background:#fff; }
+    .popup-header { position:relative; display:flex; align-items:center; justify-content:space-between; gap:3px; min-width:0; min-height:49px; padding:8px 6px 8px 8px; border-bottom:1px solid #e2e8f0; background:#fff; }
+    .brand { display:flex; align-items:center; gap:4px; min-width:0; }
+    .brand-logo { width:20px; height:20px; flex:none; object-fit:contain; }
+    .brand h2 { min-width:0; margin:0; color:#172033; font-size:11px; line-height:1.08; letter-spacing:-.025em; }
+    .help-button { display:grid; place-items:center; width:20px; height:20px; flex:none; padding:0; border:0; border-radius:50%; background:#eef2f7; color:#64748b; font-size:12px; font-weight:850; line-height:1; }
+    .help-button:hover,.help-button[aria-expanded="true"] { background:#e0e7ff; color:#4338ca; }
+    .help-popover { position:absolute; z-index:5; top:calc(100% + 5px); left:6px; width:215px; padding:10px; border:1px solid #cbd5e1; border-radius:9px; background:#fff; box-shadow:0 9px 28px #17203326; color:#475569; font-size:10px; line-height:1.45; }
+    .help-popover strong { display:block; margin-bottom:4px; color:#172033; font-size:11px; }
+    .help-popover p { margin:0 0 7px; }
+    .help-popover a { color:#4338ca; font-size:10px; font-weight:800; text-decoration:none; }
+    .help-popover a:hover { text-decoration:underline; }
+    .right-column { display:grid; grid-template-rows:auto minmax(0,1fr); min-width:0; min-height:0; background:#f8fafc; }
+    .right-header { display:flex; align-items:center; justify-content:space-between; gap:8px; min-width:0; min-height:49px; padding:8px 12px; border-bottom:1px solid #e2e8f0; background:#fff; }
+    .right-header h3 { min-width:0; margin:0; color:#172033; font-size:15px; line-height:1.2; letter-spacing:-.02em; overflow-wrap:anywhere; }
+    .header-actions { display:flex; align-items:center; justify-content:flex-end; gap:6px; min-width:112px; flex:none; }
+    .page-state { display:flex; align-items:center; gap:5px; flex:none; color:#64748b; font-size:10px; white-space:nowrap; }
+    .page-state::before { content:""; width:6px; height:6px; border-radius:50%; background:#22c55e; }
+    .page-state.is-busy::before { background:#818cf8; }
+    .page-state.is-error::before { background:#f59e0b; }
+    .page-state.is-review::before { background:#f59e0b; }
+    .tool-nav { display:flex; flex:1; flex-direction:column; gap:2px; min-width:0; min-height:0; overflow-y:auto; padding:10px 6px; background:#fff; scrollbar-width:thin; }
+    .tool-nav button { width:100%; min-width:0; min-height:33px; padding:8px 8px; border:0; border-radius:7px; background:transparent; color:#475569; text-align:left; font-size:11px; line-height:1.28; font-weight:650; overflow-wrap:anywhere; }
+    .tool-nav button:hover { background:#f1f5f9; }
+    .tool-nav button[aria-selected="true"] { background:#eef2ff; color:#312e81; font-weight:800; box-shadow:inset 3px 0 #4f46e5; }
+    .tool-panel { min-width:0; overflow-y:auto; overflow-x:hidden; padding:12px; scrollbar-width:thin; scrollbar-color:#cbd5e1 transparent; }
+    .panel-lead { margin:0 0 11px; color:#64748b; font-size:10px; line-height:1.4; }
+    .card { min-width:0; padding:10px; border:1px solid #dfe5ee; border-radius:10px; background:#fff; box-shadow:0 1px 3px #17203308; }
+    .card + .card { margin-top:9px; }
+    .card-head { display:flex; align-items:center; justify-content:space-between; gap:5px; min-width:0; margin-bottom:5px; }
+    .card-head h4 { min-width:0; margin:0; font-size:11px; line-height:1.3; font-weight:800; }
+    .card-head small { color:#64748b; font-size:9px; white-space:nowrap; }
+    .field + .field { margin-top:10px; padding-top:10px; border-top:1px solid #edf0f5; }
+    .field-head { display:flex; align-items:center; justify-content:space-between; gap:5px; min-width:0; margin-bottom:4px; }
+    .field-label { min-width:0; color:#475569; font-size:10px; font-weight:800; line-height:1.3; }
+    .field-tools { display:flex; align-items:center; gap:4px; flex:none; }
+    .length { padding:2px 4px; border-radius:5px; font-size:9px; font-weight:800; white-space:nowrap; }
+    .length.good { background:#dcfce7; color:#166534; }
+    .length.warn { background:#fef3c7; color:#92400e; }
+    .length.missing { background:#f1f5f9; color:#475569; }
+    .copy-icon { display:grid; place-items:center; width:23px; height:23px; padding:0; border:0; border-radius:5px; background:transparent; color:#64748b; }
+    .copy-icon:hover { background:#f1f5f9; color:#4338ca; }
+    .copy-icon:disabled { color:#cbd5e1; cursor:default; }
+    .copy-icon svg { width:15px; height:15px; }
+    .field-value,.data-value { margin:0; color:#172033; font-size:11px; line-height:1.44; overflow-wrap:anywhere; white-space:pre-wrap; user-select:text; }
+    .field-value.collapsed { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; line-clamp:3; overflow:hidden; }
+    .field-value.empty,.data-value.empty { color:#94a3b8; font-style:italic; }
+    .text-button { padding:3px 0; border:0; background:transparent; color:#4338ca; font-size:10px; font-weight:800; }
+    .field .text-button { margin-top:4px; }
+    .feedback { min-height:14px; margin:7px 0 0; color:#15803d; font-size:9px; font-weight:750; }
+    .feedback.error { color:#be123c; }
+    .fallback { width:100%; min-height:75px; margin-top:5px; padding:6px; border:1px solid #dfe5ee; border-radius:7px; color:#334155; font:10px/1.4 ui-monospace,monospace; resize:vertical; }
+    .metric { display:flex; align-items:baseline; gap:5px; margin:2px 0; font-size:23px; line-height:1.15; font-weight:800; }
+    .metric small { color:#64748b; font-size:10px; font-weight:600; }
+    .fine-print { margin:5px 0 0; color:#64748b; font-size:10px; line-height:1.4; }
+    .heading-row { display:grid; grid-template-columns:22px minmax(0,1fr); gap:7px; min-width:0; padding:7px 0; border-top:1px solid #edf0f5; }
+    .heading-row[data-level="2"] { padding-left:10px; }
+    .heading-row[data-level="3"] { padding-left:20px; }
+    .heading-row b { display:grid; place-items:center; width:22px; height:20px; border-radius:5px; background:#eef2ff; color:#4338ca; font-size:9px; }
+    .heading-row span { min-width:0; color:#334155; font-size:10px; line-height:1.42; overflow-wrap:anywhere; }
+    .heading-actions { display:flex; align-items:center; justify-content:space-between; gap:5px; margin-top:7px; }
+    .outline-button { padding:6px 7px; border:1px solid #d6deea; border-radius:7px; background:#fff; color:#4338ca; font-size:10px; font-weight:800; }
+    .outline-button:disabled { color:#94a3b8; cursor:default; }
+    .heading-actions small { color:#64748b; font-size:9px; text-align:right; }
+    .data-row { padding:7px 0; border-top:1px solid #edf0f5; }
+    .data-row:first-child { border-top:0; padding-top:0; }
+    .data-label { display:block; margin-bottom:3px; color:#64748b; font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; }
+    .pill { display:inline-flex; align-items:center; padding:3px 6px; border-radius:6px; background:#e0f2fe; color:#0369a1; font-size:9px; font-weight:800; }
+    .pill.ok { background:#dcfce7; color:#166534; }
+    .pill.soon { background:#f1f5f9; color:#64748b; }
+    .notice { padding:9px 10px; border:1px solid #dfe5ee; border-radius:8px; background:#f8fafc; color:#475569; font-size:10px; line-height:1.45; }
+    .notice strong { display:block; margin-bottom:3px; color:#334155; font-size:11px; }
+    .notice p { margin:0; }
+    .notice.warn { border-color:#fde68a; background:#fffbeb; }
+    .notice.error { border-color:#fecdd3; background:#fff1f2; }
+    .check-note { margin:7px 0 0; padding:7px 8px; border-radius:7px; background:#fffbeb; color:#92400e; font-size:10px; line-height:1.4; }
+    .check-note.positive { background:#ecfdf5; color:#166534; }
+    .check-note.neutral { background:#f1f5f9; color:#475569; }
+    .compact-action { margin-top:7px; }
+    .status-row { display:flex; align-items:center; justify-content:space-between; gap:8px; margin:2px 0 7px; }
+    .status-row strong { font-size:11px; }
+    .module-feedback { min-height:14px; margin:7px 0 0; color:#15803d; font-size:9px; font-weight:750; }
+    .module-feedback.error { color:#be123c; }
+    .state-action { margin-top:9px; }
+    .spinner { display:inline-block; width:12px; height:12px; margin-right:6px; border:2px solid #c7d2fe; border-top-color:#4f46e5; border-radius:50%; animation:spin .7s linear infinite; vertical-align:-2px; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .feature-row { display:flex; align-items:center; justify-content:space-between; gap:7px; padding:7px 0; border-top:1px solid #edf0f5; color:#475569; font-size:10px; }
+    .feature-row:first-of-type { border-top:0; }
+    .feature-row .pill { flex:none; }
+    .signal-row { display:flex; align-items:baseline; justify-content:space-between; gap:8px; min-width:0; padding:7px 0; border-top:1px solid #edf0f5; font-size:10px; line-height:1.4; }
+    .signal-row span:first-child { min-width:0; overflow-wrap:anywhere; }
+    .signal-row .not-checked { flex:none; color:#64748b; font-size:9px; }
+    .schema-type { display:flex; align-items:baseline; gap:8px; min-width:0; padding:7px 0; border-top:1px solid #edf0f5; font-size:10px; line-height:1.4; }
+    .schema-type b { flex:none; color:#4338ca; font-size:9px; }
+    .schema-type span { min-width:0; overflow-wrap:anywhere; }
+    .image-summary { display:flex; flex-wrap:wrap; gap:5px; margin-top:6px; }
+    .image-summary span { padding:4px 6px; border-radius:6px; background:#f1f5f9; color:#475569; font-size:9px; font-weight:700; }
+    .image-toolbar { display:flex; align-items:center; gap:6px; min-width:0; margin:0; padding:0 0 8px; border-bottom:1px solid #edf0f5; }
+    .image-toolbar select,.image-toolbar button { min-height:27px; padding:4px 7px; border:1px solid #d6deea; border-radius:6px; background:#fff; color:#334155; font-size:9px; }
+    .image-toolbar .image-toolbar-spacer { flex:1; }
+    .image-toolbar .image-refresh { display:grid; place-items:center; width:27px; padding:0; color:#475569; font-size:14px; }
+    .image-toolbar .image-export { color:#4338ca; font-weight:800; }
+    .image-list-head { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:7px 0 5px; color:#334155; font-size:9px; font-weight:800; }
+    .soon-list { margin:8px 0 0; padding-left:17px; color:#475569; font-size:10px; line-height:1.65; }
+    .soon-list li { padding-left:1px; }
+    .image-entry { display:grid; grid-template-columns:36px minmax(0,1fr) 28px; gap:7px; align-items:start; padding:6px 0; border-top:1px solid #edf0f5; }
+    .image-thumb { display:grid; place-items:center; width:36px; height:36px; overflow:hidden; border-radius:5px; background:#f1f5f9; color:#4f46e5; font-size:16px; font-weight:800; }
+    .image-info { min-width:0; }
+    .image-info p { margin:2px 0; color:#475569; font-size:9px; line-height:1.35; overflow-wrap:anywhere; }
+    .image-info .image-alt { color:#334155; font-weight:700; }
+    .image-info .image-alt.empty { color:#a16207; }
+    .image-info .image-url { display:block; color:#6861a6; font-size:11px; font-weight:400; line-height:1.3; overflow-wrap:anywhere; text-decoration:none; }
+    .image-info .image-url:hover { text-decoration:underline; }
+    .image-info .image-size { color:#64748b; }
+    .image-status { justify-self:end; min-width:25px; padding:3px 4px; border-radius:4px; background:#dcfce7; color:#166534; font-size:9px; line-height:1; text-align:center; }
+    .popup-footer { padding:10px 12px 12px; border-top:1px solid #e2e8f0; background:#fff; }
+    .audit-button { width:100%; padding:9px 10px; border:1px solid #4f46e5; border-radius:8px; background:#4f46e5; color:#fff; font-size:11px; font-weight:800; }
+    .audit-button:hover { background:#4338ca; }
+    .audit-button:disabled { opacity:.55; cursor:default; }
+    .footer-feedback { min-height:0; margin:5px 0 0; color:#64748b; font-size:9px; line-height:1.35; }
+    .footer-feedback:empty { display:none; }
+    @container(max-width:365px) { .tool-panel { padding:9px; } .right-header { padding:8px 9px; gap:5px; } .right-header h3 { font-size:13px; } .header-actions { min-width:74px; } .page-state { font-size:9px; } .popup-header { padding:7px 4px 7px 6px; } .brand-logo { width:17px; height:17px; } .brand h2 { font-size:10px; } .help-button { width:18px; height:18px; } .field-head { align-items:flex-start; flex-direction:column; } .field-tools { width:100%; justify-content:space-between; } .card { padding:8px; } }
+    @media(max-width:760px) { .workbench { display:block; padding:0; } .controls { justify-self:auto; width:100%; max-width:none; padding:12px 16px 2px; } .controls h1 { font-size:18px; } .controls > p,.demo-note { display:none; } .control-row { max-width:440px; margin:10px 0; } .popup { max-width:100%; margin:0 auto; border-radius:0; box-shadow:none; } }
+  </style>
+</head>
+<body>
+  <div class="workbench">
+    <aside class="controls" aria-label="Prototype controls">
+      <span class="kicker">1.4.0 · Popup prototype</span>
+      <h1>Tools beside the page data</h1>
+      <p>Six left-hand tools share one Popup. The right pane shows sample scan data where it exists and names fields that still need implementation. This standalone prototype does not read the active tab or run an audit.</p>
+      <div class="control-row">
+        <div><label for="width">Popup width</label><select id="width"><option value="340">340 px</option><option value="400">400 px</option><option value="520" selected>520 px</option></select></div>
+        <div><label for="scenario">Page state</label><select id="scenario"><option value="ready">Sample page</option><option value="length">Length warning</option><option value="issues">Issues found</option><option value="missing">Data missing</option><option value="reading">Scanning</option><option value="error">Scan failed</option><option value="access">Access needed</option></select></div>
+      </div>
+      <p class="demo-note">Prototype controls are outside the Popup. Metadata is already implemented in the current Popup; Word Count, headings, canonical, schema and image fields exist in the full scan but are not yet Popup tools. Social and Links have no scanner data today.</p>
+    </aside>
+    <div id="popup" class="popup" data-width="400" aria-label="SEO Copilot Popup prototype"></div>
+  </div>
+  <script>
+    const sample = {
+      title:'SEO Copilot — Practical On-Page SEO Checks and Fixes',
+      description:'Review page titles, descriptions, headings, canonical tags, images and structured data, then open a focused SEO audit for clear next steps.',
+      url:'https://example.com/resources/on-page-seo-guide',
+      wordCount:599,
+      headings:[
+        {level:1,text:'Practical On-Page SEO Guide'}, {level:2,text:'Start with page metadata'},
+        {level:2,text:'Check the page structure'}, {level:3,text:'What makes a useful H1?'},
+        {level:3,text:'How should headings be ordered?'}, {level:2,text:'Review indexing signals'},
+        {level:2,text:'Inspect images and alt text'}, {level:3,text:'Write helpful alt text'},
+        {level:2,text:'Validate structured data'}, {level:2,text:'Next steps'}
+      ],
+      canonical:'https://example.com/resources/on-page-seo-guide',
+      schemas:['Article','BreadcrumbList'], invalidSchemaCount:0,
+      images:[
+        {url:'https://example.com/assets/seo-audit-workflow-illustration.webp',alt:'Diagram of the page audit workflow',dimensions:'1200 × 800'},
+        {url:'https://example.com/assets/checklist-cover.webp',alt:'',dimensions:'640 × 960'},
+        {url:'https://example.com/assets/long-product-image-file-name-for-an-example-content-page-2026.webp',alt:'Screenshot of the content checklist',dimensions:'1440 × 900'},
+        {url:'https://example.com/assets/section-divider.svg',alt:null,dimensions:'1200 × 80'}
+      ]
+    };
+    const modules=[['content','Content'],['indexability','Indexability'],['structured','Structured Data'],['images','Images'],['social','Social'],['links','Links']];
+    const state={module:'content',scenario:'ready',width:'520',expanded:{},headingsExpanded:false,helpOpen:false,feedback:'',copyTarget:'',copyError:false,copyFallback:'',footerFeedback:''};
+    const popup=document.getElementById('popup');
+    function esc(value){return String(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));}
+    function data(){if(state.scenario==='missing')return {...sample,title:'',description:'',wordCount:null,headings:[],canonical:'',schemas:[],invalidSchemaCount:0,images:[]};if(state.scenario==='length')return {...sample,title:'SEO Guide',description:'This deliberately long sample description demonstrates the existing yellow length warning when the description exceeds the suggested range, while preserving the full original text for reading and copying in the Popup.'};if(state.scenario==='issues')return {...sample,canonical:'',schemas:[],invalidSchemaCount:1,headings:[sample.headings[0],{level:1,text:'Another top-level heading'},...sample.headings.slice(1)]};return sample;}
+    function lengthClass(kind,value){if(!value)return 'missing';const min=kind==='title'?30:70,max=kind==='title'?60:160;return value.length<min||value.length>max?'warn':'good';}
+    function copyIcon(){return '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="2"/><path d="M13 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/></svg>';}
+    function field(key,label,value,max){
+      const expanded=!!state.expanded[key],range=key==='title'?'30–60':'70–160',status=lengthClass(key,value);
+      const hint=status==='missing'?`${label} not found. Review this field before publishing.`:status==='warn'?`Outside the suggested ${range} character range.`:'';
+      return `<div class="field"><div class="field-head"><span class="field-label">${label}</span><div class="field-tools"><span class="length ${status}" title="Existing suggested range: ${range} characters">${value.length}/${max}</span><button type="button" class="copy-icon" data-copy="${key}" aria-label="Copy ${label}" ${value?'':'disabled'}>${copyIcon()}</button></div></div><p class="field-value ${expanded?'':'collapsed'} ${value?'':'empty'}">${value?esc(value):'Not found'}</p>${value?`<button type="button" class="text-button" data-expand="${key}">${expanded?'Show less':'Show more'}</button>`:''}${hint?`<p class="check-note">${hint}</p>`:''}</div>`;
+    }
+    function notice(title,description,tone=''){return `<div class="notice ${tone}"><strong>${title}</strong><p>${description}</p></div>`;}
+    function contentView(page){
+      const missing=state.scenario==='missing',shown=state.headingsExpanded?page.headings:page.headings.slice(0,8);
+      const h1Count=page.headings.filter(h=>h.level===1).length;
+      const headingCheck=missing?'Heading data was not available in this sample.':h1Count===0?'No H1 heading found.':h1Count>1?`${h1Count} H1 headings found. Review the primary heading.`:'One H1 heading found.';
+      return `<p class="panel-lead">Read page text and heading structure.</p>
+        <section class="card"><div class="card-head"><h4>Page metadata</h4><small>Available now</small></div>
+          ${field('title','Title',page.title,60)}${field('description','Meta description',page.description,160)}
+          <div class="field"><div class="field-head"><span class="field-label">URL</span><button type="button" class="copy-icon" data-copy="url" aria-label="Copy URL">${copyIcon()}</button></div><p class="field-value">${esc(page.url)}</p></div>
+          <p class="feedback ${state.copyError?'error':''}" role="status" aria-live="polite">${state.copyTarget==='title'||state.copyTarget==='description'||state.copyTarget==='url'?esc(state.feedback):''}</p>
+        </section>
+        <section class="card"><div class="card-head"><h4>Word count</h4><small>Scan data</small></div>
+          <p class="metric">${missing?'—':page.wordCount}<small>${missing?'Not available':'words'}</small></p>
+          <p class="fine-print">Visible page text estimate. Not an SEO Score target.</p>
+        </section>
+        <section class="card"><div class="card-head"><h4>Headings</h4><small>${missing?'Not available':`${page.headings.length} found`}</small></div>
+          ${shown.length?shown.map(h=>`<div class="heading-row" data-level="${h.level}"><b>H${h.level}</b><span>${esc(h.text)}</span></div>`).join(''):notice(missing?'Heading data unavailable':'No H1–H3 headings found',missing?'This sample has no scan result.':'There are no headings to copy.')}
+          <p class="check-note ${missing?'neutral':h1Count===1?'positive':''}">${headingCheck}</p>
+          ${page.headings.length>8?`<button type="button" class="text-button" data-action="toggle-headings">${state.headingsExpanded?'Show fewer':'Show more'}</button>`:''}
+          <div class="heading-actions"><button type="button" class="outline-button" data-action="copy-headings" ${page.headings.length?'':'disabled'}>Copy headings</button><small>TSV · Page order</small></div>
+          <p class="feedback ${state.copyError?'error':''}" role="status" aria-live="polite">${state.copyTarget==='headings'?esc(state.feedback):''}</p>
+          ${state.copyFallback?`<textarea class="fallback" readonly aria-label="All headings in TSV">${esc(state.copyFallback)}</textarea>`:''}
+        </section>`;
+    }
+    function dataRow(label,value){return `<div class="data-row"><span class="data-label">${label}</span><p class="data-value ${value?'':'empty'}">${value?esc(value):'Not found'}</p></div>`;}
+    function featureRow(label){return `<div class="feature-row"><span>${label}</span><span class="pill soon">Coming soon</span></div>`;}
+    function uncollectedRow(label){return `<div class="signal-row"><span>${label}</span><span class="not-checked">Not checked</span></div>`;}
+    function indexabilityView(page){
+      const missing=state.scenario==='missing';
+      const status=missing?'Unavailable':page.canonical?'Found':'Missing';
+      return `<p class="panel-lead">Review indexing signals collected from this page.</p>
+        <section class="card"><div class="card-head"><h4>Canonical URL</h4><small>Live DOM · Scan data</small></div>
+          <div class="status-row"><strong>${status}</strong><span class="pill ${page.canonical&&!missing?'ok':missing?'soon':''}">${status}</span></div>
+          <p class="data-value ${page.canonical&&!missing?'':'empty'}">${missing?'Not available':page.canonical?esc(page.canonical):'Not found'}</p>
+          <p class="check-note ${missing?'neutral':page.canonical?'positive':''}">${missing?'No scan data is available for this field.':page.canonical?'A canonical URL was found. Check that it points to the preferred page.':'No canonical link found. Review the preferred page URL.'}</p>
+          <button type="button" class="outline-button compact-action" data-copy="canonical" ${page.canonical&&!missing?'':'disabled'}>Copy canonical URL</button>
+          <p class="module-feedback ${state.copyError?'error':''}" role="status">${state.copyTarget==='canonical'?esc(state.feedback):''}</p>
+        </section>
+        <section class="card"><div class="card-head"><h4>Robots</h4><small>Coming soon</small></div>
+          ${['Robots Meta Tag','Robots.txt','X-Robots-Tag HTTP'].map(uncollectedRow).join('')}
+        </section>
+        <section class="card"><div class="card-head"><h4>Sitemaps</h4><small>Coming soon</small></div>
+          ${uncollectedRow('Sitemap URL')}
+        </section>
+        <section class="card"><div class="card-head"><h4>Hreflangs</h4><small>Coming soon</small></div>
+          ${uncollectedRow('Language alternatives')}
+          <p class="fine-print">Only the live DOM canonical is collected. Raw HTML and these other signals are not checked; no indexability conclusion is made for them.</p>
+        </section>`;
+    }
+    function structuredView(page){
+      const missing=state.scenario==='missing';
+      const detected=page.schemas.length+page.invalidSchemaCount;
+      const status=missing?'Unavailable':detected?'Detected':'Not detected';
+      return `<p class="panel-lead">Inspect JSON-LD detected in the page scan.</p>
+        <section class="card"><div class="card-head"><h4>JSON-LD detection</h4><small>Scan data</small></div>
+          <div class="status-row"><strong>${status}</strong><span class="pill ${detected&&!missing?'ok':'soon'}">${status}</span></div>
+          ${dataRow('Parse errors',missing?'Unavailable':String(page.invalidSchemaCount))}
+          <p class="check-note ${missing?'neutral':page.invalidSchemaCount?'':'positive'}">${missing?'No structured data scan is available.':page.invalidSchemaCount?`${page.invalidSchemaCount} JSON-LD block${page.invalidSchemaCount===1?'':'s'} could not be parsed. Review the source JSON.`:detected?'No JSON parse errors detected. Rich result eligibility is not checked.':'No JSON-LD was detected in this sample. Add markup only if it fits the page.'}</p>
+          <button type="button" class="outline-button compact-action" data-copy="schemas" ${page.schemas.length&&!missing?'':'disabled'}>Copy schema types</button>
+          <p class="module-feedback ${state.copyError?'error':''}" role="status">${state.copyTarget==='schemas'?esc(state.feedback):''}</p>
+        </section>
+        <section class="card"><div class="card-head"><h4>Schema types</h4><small>${missing?'Unavailable':`${page.schemas.length} found`}</small></div>
+          ${missing?notice('Schema data unavailable','This sample has no scan result.'):page.schemas.length?page.schemas.map(type=>`<div class="schema-type"><b>JSON-LD</b><span>${esc(type)}</span></div>`).join(''):notice('No schema types found',page.invalidSchemaCount?'A JSON-LD block could not be parsed, so its type is unknown.':'No JSON-LD types were detected in this sample.')}
+          <p class="fine-print">Types are collected from JSON-LD. Nested properties and rich result eligibility are not checked.</p>
+        </section>
+        <section class="card"><div class="card-head"><h4>Deeper validation</h4><small>Not checked</small></div>
+          ${['Schema Details','Google Rich Results Test','Schema Markup Validator'].map(featureRow).join('')}
+        </section>`;
+    }
+    function imagesView(page){
+      const missing=state.scenario==='missing';
+      const absent=page.images.filter(image=>image.alt===null).length,empty=page.images.filter(image=>image.alt==='').length;
+      return `<p class="panel-lead">Review image URLs, alt text and natural dimensions.</p>
+        <section class="card"><div class="card-head"><h4>Image count</h4><small>Scan data</small></div>
+          <p class="metric">${missing?'—':page.images.length}<small>${missing?'Not available':'images in sample'}</small></p>
+          ${!missing?`<div class="image-summary"><span>${absent} without alt attribute</span><span>${empty} with empty alt</span></div>`:''}
+          <p class="check-note ${missing?'neutral':absent?'':'positive'}">${missing?'No image scan data is available.':absent?`${absent} image${absent===1?' has':'s have'} no alt attribute. Review whether these images convey content.`:'Alt attributes are present in this sample. Empty alt can be intentional for decorative images.'}</p>
+        </section>
+        <section class="card">
+          <div class="image-toolbar" aria-label="Image filters and actions">
+            <select aria-label="Filter by alt text"><option>Alt text</option><option>All</option><option>Not empty</option><option>Empty</option></select>
+            <select aria-label="Filter by status"><option>Status</option><option>All</option><option>OK</option><option>Broken</option></select>
+            <button class="image-refresh" type="button" aria-label="Refresh image status" title="Refresh">↻</button>
+            <span class="image-toolbar-spacer"></span>
+            <button class="image-export" type="button">Export CSV</button>
+          </div>
+          <div class="image-list-head"><span>Image details</span><span>Status</span></div>
+          ${missing?notice('Image data unavailable','This sample has no scan result.'):page.images.length?page.images.map((image,index)=>`<div class="image-entry"><div class="image-thumb" aria-hidden="true">${index===0?'◉':index===1?'◌':'▧'}</div><div class="image-info"><p class="image-alt ${image.alt===''?'empty':''}">${image.alt===null?'No alt attribute':image.alt===''?'Empty':esc(image.alt)}</p><a class="image-url" href="${esc(image.url)}" target="_blank" rel="noopener noreferrer">${esc(image.url)}</a><p class="image-size">${esc(image.dimensions)}</p></div><span class="image-status">—</span></div>`).join(''):notice('No images found','There are no image details to inspect.')}
+          <p class="module-feedback ${state.copyError?'error':''}" role="status">${state.copyTarget==='image'?esc(state.feedback):''}</p>
+        </section>`;
+    }
+    function socialView(){return `<p class="panel-lead">Social metadata is not collected in the current scanner.</p>
+        <section class="card"><div class="card-head"><h4>Open Graph</h4><small>Coming soon</small></div>
+          ${['og:title','og:description','og:image','og:url'].map(uncollectedRow).join('')}
+        </section>
+        <section class="card"><div class="card-head"><h4>X (Twitter) Card</h4><small>Coming soon</small></div>
+          ${['twitter:card','twitter:title','twitter:description','twitter:image'].map(uncollectedRow).join('')}
+          <p class="fine-print">No missing or incomplete result is reported until these tags are scanned.</p>
+        </section>`;}
+    function comingSoonView(name,items){return `${notice(`${name} is coming soon`,'These fields are not collected yet. No checks or results are available.')}<section class="card" style="margin-top:9px"><div class="card-head"><h4>Planned fields</h4><small>Not checked</small></div>${items.map(featureRow).join('')}</section>`;}
+    function panel(page){switch(state.module){case 'content':return contentView(page);case 'indexability':return indexabilityView(page);case 'structured':return structuredView(page);case 'images':return imagesView(page);case 'social':return socialView();case 'links':return comingSoonView('Links',['Internal / External','Dofollow / Nofollow','UGC / Sponsored']);}}
+    function render(){
+      const page=data(),busy=state.scenario==='reading',failed=state.scenario==='error',access=state.scenario==='access';
+      const view=busy?`${notice('Scanning page…','Reading page data. The tools will appear when the scan finishes.')}<p class="fine-print"><span class="spinner"></span>Waiting for page data</p>`:
+        failed?`${notice('Could not scan this page','The page data could not be read. Previous results are hidden.','error')}<button type="button" class="outline-button state-action" data-action="retry">Try again</button>`:
+        access?`${notice('Page access needed','Allow access to this site before reading its page data.','warn')}<button type="button" class="outline-button state-action" data-action="allow">Allow access to this site</button>`:panel(page);
+      popup.style.width=`${state.width}px`;popup.dataset.width=state.width;
+      popup.innerHTML=`<div class="workspace"><aside class="sidebar">
+          <header class="popup-header"><div class="brand"><img class="brand-logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAJAUlEQVR42u1Zf2yU5R3/fJ/nuXvfu/ZKqW3FCTjAWQSDGzpdUHctWCRYM9l8MZr9cMm2LJgl08VMt+H1MFt0mWOby+aPGd0S49bTbYmCzNLQLmpxUzYmAxGhwShoLb3e9a5374/n+e6P90oBESi26pJ+k/dy977P+zzfz/N8vj8PmJIpmZIp+SiFJmymVEo4O9upv390zm4AzQC60dzcbNJpYgD8sdsBx+mQqRSLUxmbTG5RANPH5ASYUgClQQYArrh+zyy7pC4GaCGMOROGJSTliNRrkMG2Z/86d/vo/jtOh8xkVuuPDMCRClz5xX1XCS+yBpqXRlVVtZBqjClMYBh4/jCYaBsEP5K333x4a2ZJyXFYZjKkP3QAowtf1vbS7Dif+UsF61opJNxyAaVSoP0ATJVZmQEpCbYNFbPjIGHBN8VdgSjc2vXU/E0TAYJOR/lk278vj5r6DktUneW6Q3q4oJFICLHgfJuamizMmCEhJTCY1di318eOHWUcPOibWFyYeLxKGSb4nLtj88bz7v6gIGi8tEm27bjc0nV/U0TxkVIxIBKqra0Gq65NYM6cyHGnzGYDdHUV8fjjObz9tm9qpkVYylpZ1m+nu55pak8mt6ienpZg8gCkWCANTq76z9nRcu22CEUbCoWibqiPyB/8sAGLF8cAAMYwjMFR3pJAkCr8NjAQ4J57BvD880WeVhsJhEhEXLzz5a4N5z92uidxSu4vFarCqhx7wBKJhtJIMaivj8ifr5+BxYtj8H0DoxlEgJQh70cvIQGtGZ6rUV8vcPfdjWhurqZczpdsRowI4r9Jrto+M5OBwSm643EBcByW6TSZK7+w5ypL1K30/FwAEiqVasTs2VH4voFSBBJ4nzjFkFIgakkAAlIKrF3bgHlzLVEsusaKTKtRpdidALGzc/xO5aQAFiwItSJP3CIFcT4f0DXXJLBokX1Y+fdjJIdvYnAwh76+t9DX9yYGB4cRiwmsWTMdWkMGQZ6J5Y1JZ8eMkELjC3TiZOlBOk0muWr7TBhKlssFStQIcd11NWAGxHHeZgZ05Qq0BhHhtu+vxwUXXoeFi76En937KJiBSy+xsWiRTYWCZ+xIbZUsqqvDaN0tJwxAsrtZAIBwrSXRSI09UvL1wgUxmjUrCmYDIehYtkAIQFWuqApvl0pl+L4P1/VRKpdBBAhJuOKKODwPTAQWhpaejhdSJ37cXFFMLhRCQfvg+fOt0ONoVLzLYd1BBOR9xn8L4e8YAZ+pBYQQEEIADMjDx8aYP99C1IIItE8EOR8Aenqa9QTaQDcAQAqaQWCAgMZGeRTdNQMBA54J73UeApY8Z3DZCwZXv2wqizAMMxhcsYtQzqiTsG0BHWgQoe6iB16KAMTjsQN1SmkbOMIVBYQ80mQZqrKjkcpIw+FJKAGM2jcdZdxjCIQESADMDAKp6gPDEoA/8RQKaBBRATAhN2QOPw2YkDk0gmxgEDBwY4MNiwTGEn86Rmk6ylMVCgzPY8RsCQPke9pbXKTHl+GcUuAwZPYyGFIS9u4NI74iQskYtL+Vx+1v5nHLGzm8WgoQE4QK204Y8BmEfX0eyiVmJRXAZj8I7DgdcjyFzwkBNDfDAICyuNf3h9m2Sb7ySgn5vAaLcJlaKdCgBOqVhBKjK49+8nsgEI3Rb+vWEojARAosuRcA+vudiYsD6TQZgKk2uv2VwLiv2nYcBw565tnOIogI2oQaGQaCIw20ouUo90eBSEHwfA1moK/PQ29vEdXVQvrBMIz2nz5y0yaMQslkt8xkVmsj9EMgi+JxYR57LIehrIYdJRR9Aw2GfA9Fxj5H3ahbKmL6tASIgAcezKJQ0NqKVpPmUm/XpoX/SoFFuGkTCCD0y0wmETzkeQNvxOyY7O93zV0/fhcWC9wxKwHWwJA2ICKIimdQhMOgymUP5eK7+NpNDlKpm9DRkUN39whqEkRsyKMIpRynQ3Ynu8UkZKPEjgPRk7mgYKC/bYykmkTE9L5Q4B/d2Y8bq2LYvLgBLdU2tGaUAiBwGWUXGPAIbsCYPfMs/Pb+n+DRR9J44kkfv7rvEBLVMErVimzupf3PPnVeZyazWvf0tIw7F6LxVmPLWneutdQn1hnOBvl8IOZ9Kia+d/MZuPCzNgBgvwZ+vc/AZ+C8GsKaGeESQ0PAz9e/g87OAmoS0FJUU6G4F7v2rBM6KDy5+HN/uKfr6XkvAzAhCOIJLylHK6ely3eti4qGtUAJxREvYEB++sI4ff7yGC5YYOGcRgkhgPywwfbXfbzQW8Jzz+VRKLCuSZBQqo4Khd3Y9dpd7PsDdO6829DY2Ao3GPxzcOnvr+9Jt2ugnYC0mbSiftnynV8VnFgfjVbXBUEehWIQBIGhaFRQNCYgCHBdhucyg5mr4pCWlSBjAAj/d//Y9vWzOChdPXfud03jGS3w/SxbdoN0TfYvm6tuc1KZDk6jHScDcZptlRBEy8rnz1HB2bcTxA2RSNU0QYRA+9A6CDsSQkBKBQgJ3yvCkPk7ZPmnmzc2bQBgXXTJE/88s375As/rB5GUAPxodHrE5ewTmzfMWZ0ipnQYFnnCG1tH1rDJFdtnWkisZC2aGaYJQtczSIIpL0juN+AXtfSe6d7Y9CIArFjxmrVpU5N7VdvBW5WJ3+v6hzwCR0EEMPxotC7icfZPnRs+ecOY7scH8QHbfCnhOO10bDG+4jsbrSFVK7b+Yknp6KSAyXEyIpNZrStdDrNs2e77opHGmwOd80EcqQz0rWhdpKwP/dG/ZM5XmoHJ7q2mRDK5RTkOy2PdYCrFIplkVclxjm5NVor4Zcv33L9yZY5bl/d5ra193Lq8j1tb+9y2tgIvXbF73VhfdTK708cod8T0fKJxjgMRuufXH7RU/Tf9IOuDEGGGlsKGpvzOzZuaFr2faxWTA4BGDY9PNi6TgXEcll2d537L9QYejqjpETAHBPaltCURHQht7vi6ThKA8YENQXTIrq5zv+EG7zyiZK1SqtYOuJhnRnu4+xl8iBT6QLTjlhW7V0qVmK2DA51bNl28dzyR+WMEZMxB/N/97+U4LJNJVqfTapySKZmSKflw5X+wDUXuMetrvAAAAABJRU5ErkJggg==" alt=""><h2>SEO Copilot</h2></div><button type="button" class="help-button" data-action="help" aria-label="Help and how to use" aria-expanded="${state.helpOpen}">?</button>
+            ${state.helpOpen?'<div class="help-popover" role="dialog" aria-label="How to use SEO Copilot"><strong>How to use SEO Copilot</strong><p>Choose a tool to inspect this page. Open SEO Audit for prioritized issues.</p><a href="https://seo-copilot-website.vercel.app/features/#feature-workflow" target="_blank" rel="noopener noreferrer">View guide</a></div>':''}
+          </header>
+          <nav class="tool-nav" role="tablist" aria-label="Page tools">${modules.map(([id,label])=>`<button type="button" role="tab" aria-selected="${state.module===id}" data-module="${id}">${label}</button>`).join('')}</nav>
+        </aside><div class="right-column"><header class="right-header"><h3>${modules.find(([id])=>id===state.module)[1]}</h3>
+          <div class="header-actions" aria-label="Page actions"><span class="page-state ${busy?'is-busy':failed||access?'is-error':state.scenario==='length'||state.scenario==='issues'?'is-review':''}">${busy?'Scanning…':failed?'Scan failed':access?'Access needed':state.scenario==='missing'?'Data missing':state.scenario==='length'||state.scenario==='issues'?'Needs review':'Current page'}</span></div>
+        </header><main class="tool-panel" role="tabpanel" aria-label="${modules.find(([id])=>id===state.module)[1]}">${view}</main></div></div>
+        <footer class="popup-footer"><button type="button" class="audit-button" data-action="audit">Open SEO Audit <span aria-hidden="true">→</span></button><p class="footer-feedback" role="status">${esc(state.footerFeedback)}</p></footer>`;
+    }
+    async function copyText(value){try{await navigator.clipboard.writeText(value);return true;}catch{return false;}}
+    popup.addEventListener('click',async event=>{
+      const button=event.target.closest('button');if(!button)return;
+      if(button.dataset.module){state.module=button.dataset.module;state.helpOpen=false;state.feedback='';state.copyTarget='';state.copyFallback='';render();return;}
+      if(button.dataset.expand){state.expanded[button.dataset.expand]=!state.expanded[button.dataset.expand];render();return;}
+      if(button.dataset.copy){
+        const key=button.dataset.copy,value=key==='schemas'?data().schemas.join(', '):data()[key];
+        const label={title:'Title',description:'Meta description',url:'URL',canonical:'Canonical URL',schemas:'Schema types'}[key];
+        const copied=await copyText(value);state.copyTarget=key;
+        state.feedback=copied?`${label} copied`:'Copy failed. Select the text and copy it manually.';
+        state.copyError=!copied;render();return;
+      }
+      if(button.dataset.copyImage!==undefined){
+        const image=data().images[Number(button.dataset.copyImage)];if(!image)return;
+        const copied=await copyText(image.url);state.copyTarget='image';
+        state.feedback=copied?'Image URL copied':'Copy failed. Select the URL and copy it manually.';
+        state.copyError=!copied;render();return;
+      }
+      switch(button.dataset.action){
+        case 'help':state.helpOpen=!state.helpOpen;render();break;
+        case 'toggle-headings':state.headingsExpanded=!state.headingsExpanded;render();break;
+        case 'copy-headings':{
+          const list=data().headings,tsv=list.map(h=>`H${h.level}\t${h.text.replace(/[\t\r\n]/g,' ')}`).join('\n');
+          const copied=await copyText(tsv);state.copyTarget='headings';
+          state.feedback=copied?`All ${list.length} headings copied as TSV`:'Copy failed. Select the complete TSV below and copy manually.';
+          state.copyError=!copied;state.copyFallback=copied?'':tsv;render();break;
+        }
+        case 'audit':state.footerFeedback='Prototype only · opens the Side Panel in the extension.';render();break;
+        case 'retry':case 'allow':state.scenario='ready';document.getElementById('scenario').value='ready';render();break;
+      }
+    });
+    document.getElementById('width').addEventListener('change',event=>{state.width=event.target.value;render();});
+    document.getElementById('scenario').addEventListener('change',event=>{state.scenario=event.target.value;state.helpOpen=false;state.feedback='';state.copyTarget='';state.copyFallback='';state.footerFeedback='';render();});
+    document.addEventListener('click',event=>{if(state.helpOpen&&!event.target.closest('.help-button,.help-popover')){state.helpOpen=false;render();}});
+    document.addEventListener('keydown',event=>{if(event.key==='Escape'&&state.helpOpen){state.helpOpen=false;render();popup.querySelector('[data-action="help"]').focus();}});
+    render();
+  </script>
+</body>
+</html>
