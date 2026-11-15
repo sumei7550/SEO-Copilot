@@ -64,8 +64,9 @@ describe('P1-A report', () => {
     expect(headingsAsTsv([
       { level: 2, text: 'Repeated' },
       { level: 2, text: 'Repeated' },
-      { level: 3, text: `First\tpart\n${longText}` },
-    ])).toBe(`H2\tRepeated\nH2\tRepeated\nH3\tFirst part ${longText}`);
+      { level: 4, text: `First\tpart\n${longText}` },
+      { level: 6, text: 'Implementation note' },
+    ])).toBe(`H2\tRepeated\nH2\tRepeated\nH4\tFirst part ${longText}\nH6\tImplementation note`);
   });
 
   it('counts actual issues across the four groups and filters without changing totals', async () => {
@@ -73,16 +74,16 @@ describe('P1-A report', () => {
     const originalIssues = structuredClone(result.issues);
     await render(result);
     const cards = Array.from(container.querySelectorAll('.audit-category-card'));
-    expect(cards.map((item) => item.textContent)).toEqual(['Content SEO1', 'Page Structure0', 'Technical SEO2', 'Images0']);
-    expect(container.querySelectorAll('.issue-card')).toHaveLength(3);
-    await click('Technical SEO2');
+    expect(cards.map((item) => item.textContent)).toEqual(['Content SEO1', 'Page Structure0', 'Technical SEO1', 'Images0']);
     expect(container.querySelectorAll('.issue-card')).toHaveLength(2);
-    expect(container.querySelector('.issue-count')?.textContent).toBe('3');
-    expect(Array.from(container.querySelectorAll('.severity-summary b')).map((item) => item.textContent)).toEqual(['0', '2', '1']);
+    await click('Technical SEO1');
+    expect(container.querySelectorAll('.issue-card')).toHaveLength(1);
+    expect(container.querySelector('.issue-count')?.textContent).toBe('2');
+    expect(Array.from(container.querySelectorAll('.severity-summary b')).map((item) => item.textContent)).toEqual(['0', '2', '0']);
     expect(result.issues).toEqual(originalIssues);
-    expect(result.score).toBe(88);
+    expect(result.score).toBe(90);
     await click('Show all issues');
-    expect(container.querySelectorAll('.issue-card')).toHaveLength(3);
+    expect(container.querySelectorAll('.issue-card')).toHaveLength(2);
   });
 
   it('keeps only Audit and restores the complete list from an empty category', async () => {
@@ -92,6 +93,6 @@ describe('P1-A report', () => {
     await click('Images0');
     expect(container.textContent).toContain('No issues in this category');
     await click('Show all issues');
-    expect(container.querySelectorAll('.issue-card')).toHaveLength(3);
+    expect(container.querySelectorAll('.issue-card')).toHaveLength(2);
   });
 });

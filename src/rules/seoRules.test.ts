@@ -26,7 +26,7 @@ function issuesFor(page: PageData) {
 }
 
 describe('evaluateRules', () => {
-  it('defines 20 existing rules and the zero-impact empty-alt review rule', () => {
+  it('defines 21 rules with unique ids', () => {
     expect(seoRules).toHaveLength(21);
     expect(new Set(seoRules.map((rule) => rule.id)).size).toBe(21);
   });
@@ -48,8 +48,13 @@ describe('evaluateRules', () => {
 
   it('reports missing critical metadata and technical recommendations', () => {
     const issues = issuesFor(validPage({ title: '', metaDescription: '', headings: [], canonical: '', schemas: [] }));
-    expect(issues.map((issue) => issue.id)).toEqual(expect.arrayContaining(['TITLE_001', 'META_001', 'HEADING_001', 'TECH_001', 'TECH_002']));
+    expect(issues.map((issue) => issue.id)).toEqual(expect.arrayContaining(['TITLE_001', 'META_001', 'HEADING_001', 'TECH_001']));
+    expect(issues.map((issue) => issue.id)).not.toContain('TECH_002');
     expect(issues.every((issue) => issue.impactKey && issue.solutionKey && issue.impact <= 0)).toBe(true);
+  });
+
+  it('does not treat absent structured data as a generic SEO problem', () => {
+    expect(issuesFor(validPage({ schemas: [] }))).toEqual([]);
   });
 
   it('detects structural, image, URL, schema, and content issues', () => {
@@ -62,6 +67,7 @@ describe('evaluateRules', () => {
       textRatio: 0.02
     }));
     expect(issues.map((issue) => issue.id)).toEqual(expect.arrayContaining(['HEADING_003', 'IMAGE_001', 'IMAGE_002', 'IMAGE_003', 'URL_001', 'URL_002', 'TECH_003', 'CONTENT_001', 'CONTENT_002']));
+    expect(issues.find((issue) => issue.id === 'HEADING_003')).toMatchObject({ severity: 'info', impact: 0 });
     expect(issues.find((issue) => issue.id === 'CONTENT_002')?.impact).toBe(0);
   });
 
@@ -70,7 +76,28 @@ describe('evaluateRules', () => {
     expect(issuesFor(validPage({ titleTagCount: 2 })).map((issue) => issue.id)).toContain('TITLE_004');
   });
 
-  it('IMAGE_001 checks missing alt only on auditable images', () => {
+  it('reports a non-H1 first heading without duplicating the missing-H1 issue', () => {
+    const misplacedH1 = issuesFor(validPage({ headings: [
+      { level: 3, text: 'Utility heading' },
+      { level: 1, text: 'Primary heading' },
+      { level: 2, text: 'Section' }
+    ] })).map((issue) => issue.id);
+    expect(misplacedH1).toContain('HEADING_004');
+    expect(misplacedH1).not.toContain('HEADING_001');
+
+    const misplacedH1WithJump = issuesFor(validPage({ headings: [
+      { level: 2, text: 'Utility heading' },
+      { level: 4, text: 'Nested utility heading' },
+      { level: 1, text: 'Primary heading' }
+    ] })).map((issue) => issue.id);
+    expect(misplacedH1WithJump).toEqual(expect.arrayContaining(['HEADING_003', 'HEADING_004']));
+
+    const missingH1 = issuesFor(validPage({ headings: [{ level: 2, text: 'Section' }] })).map((issue) => issue.id);
+    expect(missingH1).toContain('HEADING_001');
+    expect(missingH1).not.toContain('HEADING_004');
+  });
+
+  it('IMAGE_001 checks missing alt on every reportable DOM image', () => {
     const issues = issuesFor(validPage({ images: [
       { src: 'decorative.svg', alt: '', auditable: true, naturalWidth: 100, naturalHeight: 100, transferSize: 0 },
       { src: 'icon.svg', alt: '', auditable: true, naturalWidth: 24, naturalHeight: 24, transferSize: 0 },
@@ -82,22 +109,24 @@ describe('evaluateRules', () => {
     expect(issuesFor(validPage({ images: [
       { src: 'decorative.svg', alt: '', auditable: true, naturalWidth: 100, naturalHeight: 100, transferSize: 0 },
       { src: 'hidden.png', alt: null, auditable: false, naturalWidth: 800, naturalHeight: 600, transferSize: 0 }
-    ] })).map((issue) => issue.id)).not.toContain('IMAGE_001');
+    ] })).map((issue) => issue.id)).toContain('IMAGE_001');
   });
 
   it.each([
     ['Apple product page', 'https://www.apple.com/shop/buy-iphone', 6, 2, false],
     ['Shopify page', 'https://example.myshopify.com/products/widget', 4, 3, true],
     ['decorative images', 'https://example.com/decorative', 0, 0, false],
-    ['hidden images', 'https://example.com/hidden', 0, 0, false]
-  ])('IMAGE_002 uses auditable images for %s', (_name, url, auditableCount, missingAltCount, expectedIssue) => {
-    const images = Array.from({ length: auditableCount }, (_, index) => ({
+    ['hidden images', 'https://example.com/hidden', 0, 0, true]
+  ])('IMAGE_002 uses every reportable image for %s', (_name, url, imageCount, missingAltCount, expectedIssue) => {
+    const images = Array.from({ length: imageCount }, (_, index) => ({
       src: `content-${index}.jpg`, alt: index < missingAltCount ? null : `Image ${index}`,
       auditable: true, naturalWidth: 800, naturalHeight: 600, transferSize: 0
     }));
-    const excludedImages = _name === 'decorative images' || _name === 'hidden images'
-      ? [{ src: `${_name}.png`, alt: null, auditable: false, naturalWidth: 800, naturalHeight: 600, transferSize: 0 }]
-      : [];
+    const excludedImages = _name === 'decorative images'
+      ? [{ src: 'decorative.png', alt: '', auditable: false, naturalWidth: 800, naturalHeight: 600, transferSize: 0 }]
+      : _name === 'hidden images'
+        ? [{ src: 'hidden.png', alt: null, auditable: false, naturalWidth: 800, naturalHeight: 600, transferSize: 0 }]
+        : [];
     const issues = issuesFor(validPage({ url, images: [...images, ...excludedImages] }));
     expect(issues.map((issue) => issue.id).includes('IMAGE_002')).toBe(expectedIssue);
   });

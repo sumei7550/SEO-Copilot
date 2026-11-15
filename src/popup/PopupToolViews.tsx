@@ -11,6 +11,9 @@ import { inspectIndexability, type IndexabilitySignals } from './inspectIndexabi
 export type PopupTool = 'content' | 'indexability' | 'structured' | 'images' | 'social' | 'links';
 export type PageScanState = { status: 'idle' | 'scanning' | 'ready' | 'error'; result?: SeoResult; message?: string };
 type CheckedImageStatus = { kind: 'ok' | 'broken' | 'unchecked'; code?: number; fileSize?: number };
+type IndexedSchema = { schema: SchemaData; index: number };
+const SCHEMA_INSTANCE_PREVIEW_LIMIT = 5;
+const SCHEMA_ARRAY_PREVIEW_LIMIT = 5;
 
 function Notice({ title, children, tone = '' }: { title: string; children: React.ReactNode; tone?: string }) {
   return <div className={`inspector-notice ${tone}`}><strong>{title}</strong><p>{children}</p></div>;
@@ -43,12 +46,76 @@ function canonicalStatus(value: string | null | undefined, pageUrl: string): str
   catch { return 'Found'; }
 }
 
+function schemaTypeLabel(value: string): string {
+  try {
+    const url = new URL(value);
+    if (url.hostname === 'schema.org' || url.hostname.endsWith('.schema.org')) {
+      const segments = url.pathname.split('/').filter(Boolean);
+      const type = segments[segments.length - 1];
+      if (type) return decodeURIComponent(type);
+    }
+  } catch {
+    // Plain type names such as "Organization" are already display-ready.
+  }
+  return value;
+}
+
+function compactSchemaTypes(name: string, value: SchemaValue): { text: string; raw: string } | null {
+  if (name !== '@type') return null;
+  if (typeof value === 'string') return { text: schemaTypeLabel(value), raw: value };
+  if (Array.isArray(value) && value.length > 0 && value.every((item): item is string => typeof item === 'string')) {
+    return { text: value.map(schemaTypeLabel).join(', '), raw: value.join(', ') };
+  }
+  return null;
+}
+
+function SchemaArrayValue({ value, depth }: { value: SchemaValue; depth: number }) {
+  if (value === null) return <span className="inspector-schema-array-value">null</span>;
+  if (typeof value !== 'object') {
+    const text = String(value);
+    return /^https?:\/\//i.test(text)
+      ? <a className="inspector-schema-array-value" href={text} target="_blank" rel="noopener noreferrer" referrerPolicy="no-referrer">{text}</a>
+      : <span className="inspector-schema-array-value">{text}</span>;
+  }
+  if (Array.isArray(value)) {
+    return <div className="inspector-schema-array-list is-nested">
+      {value.length ? value.map((item, index) => <div className="inspector-schema-array-item" key={index}><SchemaArrayValue value={item} depth={depth + 1} /></div>) : <span className="inspector-schema-array-empty">Empty list</span>}
+    </div>;
+  }
+  return <div className="inspector-schema-array-fields">
+    {schemaEntries(value).map(([key, child]) => <SchemaProperty key={key} name={key} value={child} depth={depth + 1} />)}
+  </div>;
+}
+
+function SchemaArrayProperty({ name, values, depth }: { name: string; values: SchemaValue[]; depth: number }) {
+  const [showAll, setShowAll] = useState(false);
+  const visibleValues = showAll ? values : values.slice(0, SCHEMA_ARRAY_PREVIEW_LIMIT);
+  return <details className="inspector-schema-nested inspector-schema-array" style={{ marginLeft: depth ? 12 : 0 }}>
+    <summary>{name}{values.length > 1 ? <span className="inspector-schema-array-count" aria-label={`${values.length} items`}>× {values.length}</span> : null}</summary>
+    <div className="inspector-schema-array-list">
+      {visibleValues.length
+        ? visibleValues.map((item, index) => <div className="inspector-schema-array-item" key={index}><SchemaArrayValue value={item} depth={depth} /></div>)
+        : <span className="inspector-schema-array-empty">Empty list</span>}
+      {values.length > SCHEMA_ARRAY_PREVIEW_LIMIT ? <button
+        type="button"
+        className="inspector-schema-show-more"
+        aria-expanded={showAll}
+        onClick={() => setShowAll((current) => !current)}
+      >{showAll ? 'Show fewer' : `Show all ${values.length} items`}</button> : null}
+    </div>
+  </details>;
+}
+
 function SchemaProperty({ name, value, depth = 0 }: { name: string; value: SchemaValue; depth?: number }) {
+  const compactTypes = compactSchemaTypes(name, value);
+  if (compactTypes) {
+    return <div className="inspector-schema-property" style={{ marginLeft: depth ? 12 : 0, gridTemplateColumns: `calc(var(--schema-label-width) - ${depth * 12}px) minmax(0, 1fr)` }}><span>{name}</span><span title={compactTypes.raw}>{compactTypes.text}</span></div>;
+  }
+  if (Array.isArray(value)) return <SchemaArrayProperty name={name} values={value} depth={depth} />;
   if (value !== null && typeof value === 'object') {
-    const entries = Array.isArray(value) ? value.map((item, index) => [String(index), item] as const) : Object.entries(value);
     return <details className="inspector-schema-nested" style={{ marginLeft: depth ? 12 : 0 }}>
       <summary>{name}</summary>
-      {entries.sort((a, b) => Number(a[1] !== null && typeof a[1] === 'object') - Number(b[1] !== null && typeof b[1] === 'object')).map(([key, child]) => <SchemaProperty key={key} name={key} value={child} depth={depth + 1} />)}
+      {schemaEntries(value).map(([key, child]) => <SchemaProperty key={key} name={key} value={child} depth={depth + 1} />)}
     </details>;
   }
   const text = value === null ? 'null' : String(value);
@@ -57,6 +124,43 @@ function SchemaProperty({ name, value, depth = 0 }: { name: string; value: Schem
 
 function schemaEntries(properties: Record<string, SchemaValue>): Array<[string, SchemaValue]> {
   return Object.entries(properties).sort((a, b) => Number(a[1] !== null && typeof a[1] === 'object') - Number(b[1] !== null && typeof b[1] === 'object'));
+}
+
+function SchemaEntrySection({ entry, title }: { entry: IndexedSchema; title?: string }) {
+  const { schema } = entry;
+  return <IndexSection title={title ?? (schema.type || 'Untyped item')} className="inspector-schema-entry" initiallyOpen={false}>
+    {schemaEntries(schema.properties ?? { '@type': schema.type }).map(([name, value]) => <SchemaProperty key={name} name={name} value={value} />)}
+  </IndexSection>;
+}
+
+function RepeatedSchemaGroup({ type, entries }: { type: string; entries: IndexedSchema[] }) {
+  const [showAll, setShowAll] = useState(false);
+  const visibleEntries = showAll ? entries : entries.slice(0, SCHEMA_INSTANCE_PREVIEW_LIMIT);
+  return <IndexSection
+    title={<>{type}<span className="inspector-schema-count" aria-label={`${entries.length} instances`}>× {entries.length}</span></>}
+    className="inspector-schema-type-group"
+    initiallyOpen={false}
+  >
+    <div className="inspector-schema-instance-list">
+      {visibleEntries.map((entry, instanceIndex) => <SchemaEntrySection key={`${entry.schema.format}-${entry.schema.id}-${entry.index}`} entry={entry} title={`Instance ${instanceIndex + 1}`} />)}
+      {entries.length > SCHEMA_INSTANCE_PREVIEW_LIMIT ? <button
+        type="button"
+        className="inspector-schema-show-more"
+        aria-expanded={showAll}
+        onClick={() => setShowAll((current) => !current)}
+      >{showAll ? 'Show fewer' : `Show all ${entries.length} instances`}</button> : null}
+    </div>
+  </IndexSection>;
+}
+
+function StructuredDataEmpty({ markupFound }: { markupFound: boolean }) {
+  return <div className="inspector-schema-empty">
+    <span className="inspector-schema-empty-icon" aria-hidden="true">i</span>
+    <div>
+      <strong>{markupFound ? 'No structured data item could be displayed' : 'No structured data detected'}</strong>
+      <p>{markupFound ? 'Markup was found, but no readable item was collected.' : 'No JSON-LD, Microdata, or RDFa markup was found in the rendered page.'}</p>
+    </div>
+  </div>;
 }
 
 function ImageFilterMenu({ label, value, options, onChange }: {
@@ -304,7 +408,8 @@ export function PopupToolViews({ tool, metadata, scan, tabId, onRetry, onRequest
         <div className="inspector-content-section-head"><h3 id="inspector-content-heading">Content</h3><button type="button" className="inspector-outline" disabled={!headings.length} onClick={() => void copy('headings', headingsAsTsv(headings), true)}><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="2" /><path d="M13 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" /></svg><span>Copy headings</span></button></div>
         <div className="inspector-content-stat-row"><span>Word count</span><span>{page.wordCount} words</span></div>
         <div className="inspector-content-heading-list"><span className="inspector-content-row-label">Headings</span><div className="inspector-content-heading-body">
-          {headings.length > 0 && (h1Count === 0 || headings[0].level !== 1) ? <div className="inspector-content-heading-warning"><span className="inspector-content-heading-info-icon" aria-hidden="true">i</span><span>{h1Count === 0 ? 'No H1 heading found.' : 'The first heading is not H1'}</span></div> : null}
+          {headings.length > 0 && h1Count === 0 ? <div className="inspector-content-heading-warning"><span className="inspector-content-heading-info-icon" aria-hidden="true">i</span><span>No H1 heading found.</span></div> : null}
+          {h1Count > 0 && headings[0]?.level !== 1 ? <div className="inspector-content-heading-warning"><span className="inspector-content-heading-info-icon" aria-hidden="true">i</span><span>The first heading is not H1</span></div> : null}
           {visible.length ? visible.map((heading, index) => <div className="inspector-heading-row" data-level={heading.level} key={index}><b>H{heading.level}</b><span className={!heading.text ? 'is-empty' : ''}>{heading.text || 'Empty heading'}</span></div>) : <span className="inspector-content-heading-missing">Missing</span>}
           {headings.length > 8 ? <button type="button" className="inspector-text-button" aria-expanded={expandedHeadings} onClick={() => setExpandedHeadings((value) => !value)}>{expandedHeadings ? 'Show fewer' : 'Show more'}</button> : null}
         </div></div>
@@ -362,14 +467,23 @@ export function PopupToolViews({ tool, metadata, scan, tabId, onRetry, onRequest
     const schemas: SchemaData[] = page.schemas.length ? page.schemas : Array.from(new Set(result.metrics.schemaTypes)).map((type) => ({ type }));
     const detected = (blocks ?? 0) > 0 || schemas.length > 0;
     const formats = Array.from(new Set(schemas.map((schema) => schema.format ?? 'JSON-LD')));
-    const entries = schemas.map((schema, index) => ({ schema, index }));
-    const renderEntry = ({ schema, index }: typeof entries[number]) => <IndexSection title={schema.type || 'Untyped item'} key={`${schema.format}-${schema.id}-${index}`} className="inspector-schema-entry" initiallyOpen={false}>
-      {schemaEntries(schema.properties ?? { '@type': schema.type }).map(([name, value]) => <SchemaProperty key={name} name={name} value={value} />)}
-    </IndexSection>;
+    const entries: IndexedSchema[] = schemas.map((schema, index) => ({ schema, index }));
+    const renderEntry = (entry: IndexedSchema) => <SchemaEntrySection key={`${entry.schema.format}-${entry.schema.id}-${entry.index}`} entry={entry} />;
+    const renderFormatEntries = (formatEntries: typeof entries, format: string) => {
+      if (format !== 'RDFa') return formatEntries.map((entry) => renderEntry(entry));
+      const groups = new Map<string, typeof entries>();
+      formatEntries.forEach((entry) => {
+        const type = entry.schema.type || 'Untyped item';
+        groups.set(type, [...(groups.get(type) ?? []), entry]);
+      });
+      return Array.from(groups.entries()).map(([type, groupedEntries]) => groupedEntries.length === 1
+        ? renderEntry(groupedEntries[0])
+        : <RepeatedSchemaGroup type={type} entries={groupedEntries} key={`RDFa-${type}`} />);
+    };
     return <div className="inspector-unified-sheet inspector-structured-sheet">
-      {schemas.length ? formats.length > 1 ? formats.map((format) => <div className="inspector-schema-group" key={format}><h3>{format}</h3>{entries.filter(({ schema }) => (schema.format ?? 'JSON-LD') === format).map(renderEntry)}</div>) : entries.map(renderEntry) : <div className="inspector-schema-empty">{page.invalidSchemaCount ? 'Structured data was found, but a JSON-LD block could not be parsed.' : detected ? 'Structured data was found, but no item was collected.' : 'No structured data detected.'}</div>}
-      <div className="inspector-schema-metrics"><div><span>JSON-LD blocks</span><span>{blocks === undefined ? 'Not available' : blocks}</span></div><div><span>Items</span><span>{schemas.length}</span></div><div><span>JSON-LD parse errors</span><span>{page.invalidSchemaCount}</span></div></div>
-      <p className="inspector-index-footnote">Markup is collected from this page. Google rich result eligibility is not checked.</p>
+      {page.invalidSchemaCount > 0 ? <p className="inspector-schema-warning" role="status">{page.invalidSchemaCount} JSON-LD block{page.invalidSchemaCount === 1 ? '' : 's'} couldn’t be parsed.</p> : null}
+      {schemas.length ? formats.length > 1 ? formats.map((format) => <div className="inspector-schema-group" key={format}><h3>{format}</h3>{renderFormatEntries(entries.filter(({ schema }) => (schema.format ?? 'JSON-LD') === format), format)}</div>) : renderFormatEntries(entries, formats[0]) : <StructuredDataEmpty markupFound={detected} />}
+      {schemas.length ? <p className="inspector-index-footnote">Detection only — Google rich result eligibility is not validated.</p> : null}
     </div>;
   }
 
@@ -430,9 +544,7 @@ export function PopupToolViews({ tool, metadata, scan, tabId, onRetry, onRequest
         const fileSize = image.fileSize ?? status?.fileSize;
         const safeLink = /^https?:\/\//i.test(image.src);
         const emptyAlt = image.alt === null || image.alt.trim() === '';
-        const helpText = image.alt === null
-          ? 'This image has no alt attribute. Describe it if it conveys information. If it is decorative, set alt="".'
-          : 'This image has an empty alt attribute. Keep it empty if the image is decorative; describe it if it conveys information.';
+        const helpText = 'Review this image issue and get the recommended action for its alt text.';
         return <div className="inspector-image-entry" key={key}>
           <ImageThumbnail image={image} />
           <div className="inspector-image-content">
@@ -442,8 +554,8 @@ export function PopupToolViews({ tool, metadata, scan, tabId, onRetry, onRequest
           </div>
           <span className={`inspector-image-status ${status?.kind ?? 'unchecked'}`}>{status?.code ?? '—'}</span>
         </div>;
-      }) : <Notice title={images.length ? 'No matching images' : 'No reportable images'}>{images.length ? 'Change the filters to see more images.' : 'Non-HTTP images and images without usable natural dimensions are excluded from this list.'}</Notice>}
+      }) : <Notice title={images.length ? 'No matching images' : 'No reportable images'}>{images.length ? 'Change the filters to see more images.' : 'Images without a usable HTTP(S) source and known tracking-sized images are excluded from this list.'}</Notice>}
     </section>
-    {imageHelpOverlay ? createPortal(<div id="inspector-image-help-tooltip" className="inspector-image-help-tooltip" role="group" aria-label="Image alt text guidance" style={{ top: imageHelpOverlay.top, left: imageHelpOverlay.left }} onMouseEnter={cancelImageHelpHide} onMouseLeave={() => setImageHelpOverlay(undefined)}><p id="inspector-image-help-description">{imageHelpOverlay.text}</p><button type="button" className="inspector-image-help-audit" onClick={() => onOpenImageAudit?.()}>Open image audit →</button></div>, document.body) : null}
+    {imageHelpOverlay ? createPortal(<div id="inspector-image-help-tooltip" className="inspector-image-help-tooltip" role="group" aria-label="SEO Audit" style={{ top: imageHelpOverlay.top, left: imageHelpOverlay.left }} onMouseEnter={cancelImageHelpHide} onMouseLeave={() => setImageHelpOverlay(undefined)}><strong>SEO Audit</strong><p id="inspector-image-help-description">{imageHelpOverlay.text}</p><button type="button" className="inspector-image-help-audit" onClick={() => onOpenImageAudit?.()}>Open image audit →</button></div>, document.body) : null}
   </>;
 }

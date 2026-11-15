@@ -80,20 +80,21 @@ describe('QuickMetadataCard', () => {
     await act(async () => normal.dispatchEvent(new MouseEvent('mouseover', { bubbles: true })));
     expect(container.querySelector('[role="tooltip"]')).toBeNull();
 
-    await render(ready('x'.repeat(18), 'x'.repeat(161)));
+    await render(ready('x'.repeat(14), 'x'.repeat(161)));
     const short = container.querySelector<HTMLElement>('.metadata-length.is-short')!;
     const long = container.querySelector<HTMLElement>('.metadata-length.is-long')!;
     expect(short.tabIndex).toBe(0);
     expect(long.tabIndex).toBe(0);
     await act(async () => short.dispatchEvent(new MouseEvent('mouseover', { bubbles: true })));
-    expect(container.querySelector('[role="tooltip"]')?.textContent).toBe('Title is shorter than suggested. Suggested range: 30–60 characters.');
+    expect(container.querySelector('[role="tooltip"]')?.textContent).toBe("The title may be too short. Short titles may not clearly communicate the page's main topic to Google.");
+    expect(container.querySelector('[role="tooltip"]')?.textContent).not.toMatch(/15|range|minimum/i);
     expect(short.getAttribute('aria-describedby')).toBe('metadata-title-length-tip');
     await act(async () => short.dispatchEvent(new MouseEvent('mouseout', { bubbles: true })));
     expect(container.querySelector('[role="tooltip"]')).toBeNull();
     await act(async () => long.focus());
     expect(document.activeElement).toBe(long);
-    expect(container.querySelector('[role="tooltip"]')?.textContent).toBe('Meta description is longer than suggested. Suggested range: 110–160 characters.');
-    expect(long.getAttribute('aria-label')).toContain('Long. Suggested range: 110–160 characters');
+    expect(container.querySelector('[role="tooltip"]')?.textContent).toBe('The meta description may be too long. Lengthy descriptions risk being truncated when presented in Google search results. The recommended maximum length is ~160 characters.');
+    expect(long.getAttribute('aria-label')).toContain('Long. Suggested maximum: 160 characters');
     await act(async () => long.blur());
     expect(container.querySelector('[role="tooltip"]')).toBeNull();
 
@@ -102,6 +103,15 @@ describe('QuickMetadataCard', () => {
     expect(container.querySelector('[role="tooltip"]')?.textContent).toBe('The title may be too long. Lengthy page titles risk being truncated when presented in Google search results. The recommended maximum title length is ~60 characters.');
     await act(async () => container.querySelector<HTMLElement>('.metadata-length.is-short')!.focus());
     expect(container.querySelector('[role="tooltip"]')?.textContent).toBe("The meta description may be too short. It is recommended to write longer descriptions as they provide an explanation of the page's content to Google.");
+    expect(container.querySelector('[role="tooltip"]')?.textContent).not.toMatch(/100|range|minimum/i);
+  });
+
+  it('treats the competitor example 29/60 title as in range', async () => {
+    await render(ready('x'.repeat(29), 'x'.repeat(100)));
+    const title = container.querySelector<HTMLElement>('.metadata-field-title .metadata-length')!;
+    expect(title.textContent).toBe('29/60');
+    expect(title.classList.contains('is-in-range')).toBe(true);
+    expect(title.hasAttribute('tabindex')).toBe(false);
   });
 
   it('keeps the full long text while folding it and copies the full value', async () => {

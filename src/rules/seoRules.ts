@@ -55,7 +55,8 @@ export const seoRules: readonly SeoRule[] = [
 
   rule({ id: 'HEADING_001', category: 'heading', severity: 'critical', impact: -8, messageKey: 'issueH1Missing', impactKey: 'impactHeading', solutionKey: 'fixH1Missing', check: (_page, metrics) => metrics.h1Count === 0 }),
   rule({ id: 'HEADING_002', category: 'heading', severity: 'warning', impact: -4, messageKey: 'issueH1Multiple', impactKey: 'impactHeading', solutionKey: 'fixH1Multiple', check: (_page, metrics) => metrics.h1Count > 1 }),
-  rule({ id: 'HEADING_003', category: 'heading', severity: 'warning', impact: -3, messageKey: 'issueHeadingStructure', impactKey: 'impactHeading', solutionKey: 'fixHeadingStructure', check: (page) => hasHeadingJump(page) }),
+  rule({ id: 'HEADING_003', category: 'heading', severity: 'info', impact: 0, messageKey: 'issueHeadingStructure', impactKey: 'impactHeading', solutionKey: 'fixHeadingStructure', check: (page) => hasHeadingJump(page) }),
+  rule({ id: 'HEADING_004', category: 'heading', severity: 'warning', impact: -3, messageKey: 'issueHeadingStructure', impactKey: 'impactHeading', solutionKey: 'fixHeadingStructure', check: (page, metrics) => metrics.h1Count > 0 && page.headings.length > 0 && page.headings[0].level !== 1 }),
 
   rule({ id: 'IMAGE_001', category: 'images', severity: 'warning', impact: -5, messageKey: 'issueImageAlt', impactKey: 'impactImages', solutionKey: 'fixImageAlt', check: (_page, metrics) => metrics.imagesWithoutAlt > 0 }),
   rule({ id: 'IMAGE_002', category: 'images', severity: 'warning', impact: -5, messageKey: 'issueImageAltRatio', impactKey: 'impactImages', solutionKey: 'fixImageAltRatio', check: (_page, metrics) => metrics.auditableImageCount > 0 && metrics.altCoverage < 50 }),
@@ -66,7 +67,6 @@ export const seoRules: readonly SeoRule[] = [
   rule({ id: 'URL_002', category: 'url', severity: 'warning', impact: -3, messageKey: 'issueUrlStructure', impactKey: 'impactUrl', solutionKey: 'fixUrlStructure', check: (page) => hasPoorUrlStructure(page.url) }),
 
   rule({ id: 'TECH_001', category: 'technical', severity: 'warning', impact: -5, messageKey: 'issueCanonicalMissing', impactKey: 'impactTechnical', solutionKey: 'fixCanonicalMissing', check: (page) => !page.canonical }),
-  rule({ id: 'TECH_002', category: 'technical', severity: 'info', impact: -2, messageKey: 'issueSchemaMissing', impactKey: 'impactTechnical', solutionKey: 'fixSchemaMissing', check: (page) => page.schemas.length === 0 }),
   rule({ id: 'TECH_003', category: 'technical', severity: 'warning', impact: -5, messageKey: 'issueSchemaInvalid', impactKey: 'impactTechnical', solutionKey: 'fixSchemaInvalid', check: (page) => page.invalidSchemaCount > 0 }),
 
   rule({ id: 'CONTENT_001', category: 'content', severity: 'warning', impact: -5, messageKey: 'issueContentLowWords', impactKey: 'impactContent', solutionKey: 'fixContentLowWords', check: (page) => page.wordCount < 300 }),

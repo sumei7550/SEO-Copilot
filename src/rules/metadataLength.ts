@@ -1,6 +1,6 @@
 export const METADATA_LENGTH_LIMITS = {
-  title: { min: 30, max: 60 },
-  metaDescription: { min: 110, max: 160 }
+  title: { min: 15, max: 60 },
+  metaDescription: { min: 100, max: 160 }
 } as const;
 
 export type MetadataLengthField = keyof typeof METADATA_LENGTH_LIMITS;

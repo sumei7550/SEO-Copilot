@@ -4,7 +4,8 @@ import { createRoot, type Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { PopupApp } from './PopupApp';
 import { previewResult } from './previewResult';
-import { seoRules } from '../rules/seoRules';
+import { analyzePage } from '../analyzer/pageAnalyzer';
+import { evaluateRules, seoRules } from '../rules/seoRules';
 
 const url = 'https://example.com/';
 let container: HTMLDivElement;
@@ -68,11 +69,12 @@ describe('Quick Metadata Popup', () => {
     expect(container.querySelectorAll('.inspector-header-schema-format')).toHaveLength(1);
     expect(Array.from(container.querySelectorAll('.inspector-schema-entry > summary')).map((item) => item.textContent)).toEqual(['WebPage', 'Organization']);
   });
-  it('keeps the heading short when the page mixes markup formats', async () => {
+  it('keeps the heading short and groups all supported markup formats', async () => {
     vi.mocked(chrome.tabs.sendMessage).mockImplementation(vi.fn().mockResolvedValue({ ok: true, result: {
       ...previewResult, page: { ...previewResult.page, url, jsonLdBlockCount: 1, schemas: [
         { type: 'WebPage', format: 'JSON-LD', properties: { '@type': 'WebPage' } },
-        { type: 'Product', format: 'Microdata', properties: { '@type': 'Product' } }
+        { type: 'Product', format: 'Microdata', properties: { '@type': 'Product' } },
+        { type: 'Organization', format: 'RDFa', properties: { '@type': 'Organization' } }
       ] }
     } }));
     await act(async () => root.render(<PopupApp />));
@@ -80,7 +82,25 @@ describe('Quick Metadata Popup', () => {
     const structured = Array.from(container.querySelectorAll<HTMLButtonElement>('.inspector-tool-nav button')).find((item) => item.textContent?.includes('Structured data'))!;
     await act(async () => structured.click());
     expect(container.querySelector('.inspector-right-header h2')?.textContent).toBe('Structured data');
-    expect(Array.from(container.querySelectorAll('.inspector-schema-group > h3')).map((item) => item.textContent)).toEqual(['JSON-LD', 'Microdata']);
+    expect(Array.from(container.querySelectorAll('.inspector-schema-group > h3')).map((item) => item.textContent)).toEqual(['JSON-LD', 'Microdata', 'RDFa']);
+  });
+  it('does not show a Structured data issue badge when markup is absent', async () => {
+    await act(async () => root.render(<PopupApp />));
+    await flush();
+    const structured = Array.from(container.querySelectorAll<HTMLButtonElement>('.inspector-tool-nav button')).find((item) => item.querySelector('span')?.textContent === 'Structured data')!;
+    expect(structured.querySelector('.inspector-nav-count')).toBeNull();
+  });
+  it('keeps the Structured data issue badge for invalid JSON-LD', async () => {
+    const { check: _check, ...issue } = seoRules.find((rule) => rule.id === 'TECH_003')!;
+    vi.mocked(chrome.tabs.sendMessage).mockImplementation(vi.fn().mockResolvedValue({ ok: true, result: {
+      ...previewResult,
+      issues: [issue],
+      page: { ...previewResult.page, url, invalidSchemaCount: 2, jsonLdBlockCount: 2 }
+    } }));
+    await act(async () => root.render(<PopupApp />));
+    await flush();
+    const structured = Array.from(container.querySelectorAll<HTMLButtonElement>('.inspector-tool-nav button')).find((item) => item.querySelector('span')?.textContent === 'Structured data')!;
+    expect(structured.querySelector('.inspector-nav-count')?.textContent).toBe('1');
   });
   it('shows coming-soon guidance within the unimplemented tools', async () => {
     await act(async () => root.render(<PopupApp />));
@@ -112,6 +132,39 @@ describe('Quick Metadata Popup', () => {
     const content = Array.from(container.querySelectorAll('.inspector-tool-nav button')).find((item) => item.textContent?.includes('Content'))!;
     expect(content.querySelector('.inspector-nav-count')?.textContent).toBe('1');
   });
+  it('counts a short Description and a non-H1 first heading as two Content issues', async () => {
+    const issues = ['META_002', 'HEADING_004'].map((id) => {
+      const { check: _check, ...issue } = seoRules.find((rule) => rule.id === id)!;
+      return issue;
+    });
+    vi.mocked(chrome.tabs.sendMessage).mockImplementation(vi.fn().mockResolvedValue({ ok: true, result: {
+      ...previewResult,
+      issues,
+      page: {
+        ...previewResult.page,
+        url,
+        metaDescription: 'A short description.',
+        headings: [{ level: 3, text: 'Utility heading' }, { level: 1, text: 'Primary heading' }]
+      }
+    } }));
+    await act(async () => root.render(<PopupApp />));
+    await flush();
+    const content = Array.from(container.querySelectorAll('.inspector-tool-nav button')).find((item) => item.textContent?.includes('Content'))!;
+    expect(content.querySelector('.inspector-nav-count')?.textContent).toBe('2');
+    expect(content.querySelector('.inspector-nav-count')?.getAttribute('aria-label')).toBe('2 content issues');
+  });
+  it('does not count a heading-level jump in the Popup Content badge', async () => {
+    const { check: _check, ...issue } = seoRules.find((rule) => rule.id === 'HEADING_003')!;
+    vi.mocked(chrome.tabs.sendMessage).mockImplementation(vi.fn().mockResolvedValue({ ok: true, result: {
+      ...previewResult,
+      issues: [issue],
+      page: { ...previewResult.page, url, headings: [{ level: 1, text: 'Primary heading' }, { level: 3, text: 'Subsection' }] }
+    } }));
+    await act(async () => root.render(<PopupApp />));
+    await flush();
+    const content = Array.from(container.querySelectorAll('.inspector-tool-nav button')).find((item) => item.textContent?.includes('Content'))!;
+    expect(content.querySelector('.inspector-nav-count')).toBeNull();
+  });
   it('marks a missing canonical as a critical Indexability badge', async () => {
     const { check: _check, ...issue } = seoRules.find((rule) => rule.id === 'TECH_001')!;
     vi.mocked(chrome.tabs.sendMessage).mockImplementation(vi.fn().mockResolvedValue({ ok: true, result: { ...previewResult, issues: [issue], page: { ...previewResult.page, url, canonical: '' } } }));
@@ -138,6 +191,30 @@ describe('Quick Metadata Popup', () => {
     await flush();
     const images = Array.from(container.querySelectorAll('.inspector-tool-nav button')).find((item) => item.querySelector('span')?.textContent === 'Images');
     expect(images?.querySelector('.inspector-nav-count')?.textContent).toBe('1');
+  });
+  it('shows the full lazy-image count and an Images badge for missing alt text', async () => {
+    const page = {
+      ...previewResult.page,
+      url,
+      images: Array.from({ length: 121 }, (_, index) => ({
+        src: `https://example.com/lazy-${index}.webp`,
+        alt: index === 0 ? null : `Image ${index}`,
+        auditable: false,
+        naturalWidth: 0,
+        naturalHeight: 0,
+        transferSize: 0
+      }))
+    };
+    const metrics = analyzePage(page);
+    const issues = evaluateRules(page, metrics);
+    vi.mocked(chrome.tabs.sendMessage).mockImplementation(vi.fn().mockResolvedValue({ ok: true, result: { ...previewResult, page, metrics, issues } }));
+    await act(async () => root.render(<PopupApp />));
+    await flush();
+    const images = Array.from(container.querySelectorAll<HTMLButtonElement>('.inspector-tool-nav button')).find((item) => item.querySelector('span')?.textContent === 'Images')!;
+    expect(images.querySelector('.inspector-nav-count')?.textContent).toBe('1');
+    await act(async () => images.click());
+    expect(container.querySelector('.inspector-right-header h2')?.textContent).toBe('Images121');
+    expect(container.textContent).toContain('Missing alt text');
   });
   it('shows Metadata first and reads the shared scanner once for page tools', async () => {
     await act(async () => root.render(<PopupApp />));
@@ -185,12 +262,13 @@ describe('Quick Metadata Popup', () => {
     expect(openPanel).toHaveBeenCalledWith({ windowId: 2 });
   });
 
-  it('uses the shorter popup viewport for Indexability', async () => {
+  it('keeps the standard popup viewport for Indexability', async () => {
     await act(async () => root.render(<PopupApp />));
     await flush();
     const indexability = Array.from(container.querySelectorAll<HTMLButtonElement>('.inspector-tool-nav button')).find((item) => item.textContent?.includes('Indexability'))!;
     await act(async () => indexability.click());
-    expect(container.querySelector('.inspector-popup.is-indexability')).not.toBeNull();
+    expect(container.querySelector('.inspector-popup')).not.toBeNull();
+    expect(container.querySelector('.inspector-popup.is-indexability')).toBeNull();
   });
 
   it('does not offer Audit on a restricted page', async () => {

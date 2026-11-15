@@ -86,13 +86,42 @@ function renderedImageSize(image: HTMLImageElement): { width: number; height: nu
   return { width: image.width, height: image.height };
 }
 
+function firstSrcsetUrl(value: string): string {
+  return value.split(',')[0]?.trim().split(/\s+/)[0] ?? '';
+}
+
+function imageSource(image: HTMLImageElement, baseUrl: string): string {
+  const attribute = (name: string) => image.getAttribute?.(name)?.trim() ?? '';
+  const candidates = [
+    attribute('data-src'),
+    attribute('data-lazy-src'),
+    attribute('data-lazy'),
+    attribute('data-original'),
+    firstSrcsetUrl(attribute('data-srcset')),
+    image.currentSrc,
+    attribute('src'),
+    firstSrcsetUrl(attribute('srcset')),
+    image.src
+  ];
+  for (const candidate of candidates) {
+    if (!candidate) continue;
+    try {
+      const resolved = new URL(candidate, baseUrl).href;
+      if (/^https?:\/\//i.test(resolved)) return resolved;
+    } catch {
+      // Try the next source candidate when an attribute is malformed.
+    }
+  }
+  return '';
+}
+
 export function scanPage(
   doc: Document = document,
   locationValue: Location = window.location,
   performanceValue?: Performance
 ): PageData {
   const sizes = resourceSizes(performanceValue ?? globalThis.performance);
-  const headings = Array.from(doc.querySelectorAll<HTMLHeadingElement>('h1, h2, h3')).map<HeadingData>((heading) => ({
+  const headings = Array.from(doc.querySelectorAll<HTMLHeadingElement>('h1, h2, h3, h4, h5, h6')).map<HeadingData>((heading) => ({
     level: Number(heading.tagName.slice(1)) as HeadingData['level'],
     text: (heading.textContent ?? '').trim()
   }));
@@ -100,11 +129,14 @@ export function scanPage(
   let excludedImageCount = 0;
   let imageLimitReached = false;
   for (const image of Array.from(doc.images)) {
-    const src = image.currentSrc || image.src;
-    // Inline artwork and unloaded/tracking-sized elements are not useful in
-    // the network image inventory. Keep duplicates and original DOM order.
-    if (!/^https?:\/\//i.test(src) || !Number.isFinite(image.naturalWidth) || !Number.isFinite(image.naturalHeight)
-      || image.naturalWidth <= 1 || image.naturalHeight <= 1) {
+    const src = imageSource(image, locationValue.href);
+    const hasNaturalSize = Number.isFinite(image.naturalWidth) && Number.isFinite(image.naturalHeight)
+      && image.naturalWidth > 0 && image.naturalHeight > 0;
+    const trackingSized = hasNaturalSize && (image.naturalWidth <= 1 || image.naturalHeight <= 1);
+    // Include lazy and off-screen images in DOM order. They still need alt text
+    // before loading, but inline artwork and known tracking pixels are not
+    // useful in the network image inventory.
+    if (!src || trackingSized) {
       excludedImageCount++;
       continue;
     }

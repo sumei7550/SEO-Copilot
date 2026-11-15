@@ -155,7 +155,7 @@ describe('Popup Page Inspector tools', () => {
     result.page.excludedImageCount = 1;
     await show('images');
     expect(container.textContent).toContain('No reportable images');
-    expect(container.textContent).toContain('Non-HTTP images and images without usable natural dimensions');
+    expect(container.textContent).toContain('Images without a usable HTTP(S) source and known tracking-sized images');
     expect(container.querySelector('.inspector-image-entry')).toBeNull();
     expect(container.querySelector('.inspector-image-warning')).toBeNull();
     expect(container.querySelector('.inspector-image-thumb img')).toBeNull();
@@ -315,8 +315,11 @@ describe('Popup Page Inspector tools', () => {
     expect(document.getElementById('inspector-image-help-tooltip')).toBeNull();
     await act(async () => triggers[0].dispatchEvent(new MouseEvent('mouseover', { bubbles: true })));
     expect(document.getElementById('inspector-image-help-tooltip')?.parentElement).toBe(document.body);
-    expect(document.getElementById('inspector-image-help-tooltip')?.textContent).toContain('no alt attribute');
+    expect(triggers[0].getAttribute('aria-describedby')).toBe('inspector-image-help-description');
+    expect(document.getElementById('inspector-image-help-tooltip')?.textContent).toContain('SEO Audit');
+    expect(document.getElementById('inspector-image-help-tooltip')?.textContent).toContain('recommended action for its alt text');
     expect(document.getElementById('inspector-image-help-tooltip')?.textContent).toContain('Open image audit');
+    expect(document.getElementById('inspector-image-help-tooltip')?.textContent).not.toContain('no alt attribute');
     expect(container.querySelector('.inspector-image-help-tooltip')).toBeNull();
     await act(async () => triggers[0].dispatchEvent(new MouseEvent('mouseout', { bubbles: true })));
     expect(document.getElementById('inspector-image-help-tooltip')).not.toBeNull();
@@ -326,8 +329,10 @@ describe('Popup Page Inspector tools', () => {
     expect(openAudit).toHaveBeenCalledOnce();
     await act(async () => tooltip.dispatchEvent(new MouseEvent('mouseout', { bubbles: true })));
     expect(document.getElementById('inspector-image-help-tooltip')).toBeNull();
+    expect(triggers[0].hasAttribute('aria-describedby')).toBe(false);
     await act(async () => triggers[1].focus());
-    expect(document.getElementById('inspector-image-help-tooltip')?.textContent).toContain('empty alt attribute');
+    expect(document.getElementById('inspector-image-help-tooltip')?.textContent).toContain('recommended action for its alt text');
+    expect(document.getElementById('inspector-image-help-tooltip')?.textContent).not.toContain('empty alt attribute');
     await act(async () => triggers[1].blur());
     await act(async () => { await new Promise((resolve) => setTimeout(resolve, 170)); });
     expect(document.getElementById('inspector-image-help-tooltip')).toBeNull();
@@ -396,6 +401,23 @@ describe('Popup Page Inspector tools', () => {
     expect(body.textContent).not.toContain('No H1 heading found.');
   });
 
+  it('shows heading-level jumps as page structure without emphasizing them in the Inspector', async () => {
+    result.page.headings = [
+      { level: 1, text: 'Plans & pricing' },
+      { level: 3, text: 'Lite' },
+      { level: 4, text: 'Traffic reports' },
+      { level: 5, text: 'Regional reports' },
+      { level: 6, text: 'Implementation note' }
+    ];
+    await show('content');
+    const body = container.querySelector('.inspector-content-heading-body')!;
+    expect(body.querySelector('.inspector-content-heading-warning')).toBeNull();
+    expect(body.querySelector('.is-level-jump')).toBeNull();
+    expect(Array.from(body.querySelectorAll('.inspector-heading-row')).map((row) => row.textContent)).toEqual([
+      'H1Plans & pricing', 'H3Lite', 'H4Traffic reports', 'H5Regional reports', 'H6Implementation note'
+    ]);
+  });
+
   it('shows a missing H1 warning at the start of headings', async () => {
     result.page.headings = [{ level: 2, text: 'Intro' }];
     await show('content');
@@ -410,16 +432,16 @@ describe('Popup Page Inspector tools', () => {
     expect(container.querySelector<HTMLButtonElement>('.inspector-content-section-head button')?.disabled).toBe(true);
   });
 
-  it('starts with schema nodes and keeps block counts separate from items', async () => {
+  it('shows parse failures as an actionable warning without persistent metrics', async () => {
     result.page.jsonLdBlockCount = 3;
     result.page.invalidSchemaCount = 1;
     result.metrics.schemaTypes = ['WebPage', 'WebPage', 'Article'];
     await show('structured');
-    expect(container.textContent).toContain('3');
-    expect(container.querySelector('.inspector-structured-sheet')?.firstElementChild?.classList.contains('inspector-schema-entry')).toBe(true);
+    expect(container.querySelector('.inspector-schema-warning')?.textContent).toBe('1 JSON-LD block couldn’t be parsed.');
     expect(container.querySelectorAll('.inspector-schema-entry')).toHaveLength(2);
+    expect(container.querySelector('.inspector-schema-metrics')).toBeNull();
     expect(container.textContent).not.toContain('Copy schema types');
-    expect(container.textContent).toContain('Google rich result eligibility is not checked');
+    expect(container.textContent).toContain('Detection only — Google rich result eligibility is not validated.');
   });
 
   it('shows each graph item and its nested properties without merging duplicate types', async () => {
@@ -434,7 +456,8 @@ describe('Popup Page Inspector tools', () => {
     expect(container.textContent).toContain('BreadcrumbList');
     expect(container.textContent).toContain('1200');
     expect(container.textContent).toContain('600');
-    expect(container.textContent).toContain('Items3');
+    expect(container.querySelector('.inspector-schema-warning')).toBeNull();
+    expect(container.querySelector('.inspector-schema-metrics')).toBeNull();
     await act(async () => container.querySelector<HTMLElement>('.inspector-schema-entry > summary')!.click());
     expect(container.querySelectorAll('.inspector-schema-entry[open]')).toHaveLength(1);
     const nested = container.querySelector<HTMLDetailsElement>('.inspector-schema-nested')!;
@@ -465,13 +488,134 @@ describe('Popup Page Inspector tools', () => {
     result.page.schemas = [
       { type: 'WebPage', format: 'JSON-LD', properties: { '@type': 'WebPage' } },
       { type: 'Product', format: 'Microdata', properties: { '@type': 'Product' } },
-      { type: 'Organization', format: 'JSON-LD', properties: { '@type': 'Organization' } }
+      { type: 'Organization', format: 'JSON-LD', properties: { '@type': 'Organization' } },
+      { type: 'BreadcrumbList', format: 'RDFa', properties: { '@type': 'BreadcrumbList' } }
     ];
     await show('structured');
-    expect(Array.from(container.querySelectorAll('.inspector-schema-group > h3')).map((item) => item.textContent)).toEqual(['JSON-LD', 'Microdata']);
+    expect(Array.from(container.querySelectorAll('.inspector-schema-group > h3')).map((item) => item.textContent)).toEqual(['JSON-LD', 'Microdata', 'RDFa']);
     expect(Array.from(container.querySelectorAll('.inspector-schema-group')).map((group) => Array.from(group.querySelectorAll('.inspector-schema-entry > summary')).map((item) => item.textContent))).toEqual([
-      ['WebPage', 'Organization'], ['Product']
+      ['WebPage', 'Organization'], ['Product'], ['BreadcrumbList']
     ]);
+  });
+
+  it('shows Microdata type arrays as readable type names instead of numeric children', async () => {
+    result.page.schemas = [{
+      type: 'Organization', format: 'Microdata', properties: {
+        '@type': ['http://schema.org/Organization', 'https://schema.org/LocalBusiness'],
+        url: 'https://example.com/'
+      }
+    }];
+    await show('structured');
+    const typeProperty = Array.from(container.querySelectorAll('.inspector-schema-property')).find((property) => property.firstElementChild?.textContent === '@type');
+    expect(typeProperty?.textContent).toBe('@typeOrganization, LocalBusiness');
+    expect(typeProperty?.querySelector('span:last-child')?.getAttribute('title')).toBe('http://schema.org/Organization, https://schema.org/LocalBusiness');
+    expect(container.querySelector('.inspector-schema-nested')).toBeNull();
+    expect(container.textContent).not.toContain('0http://schema.org/Organization');
+  });
+
+  it('renders FAQ object arrays without exposing numeric JSON indexes and limits the preview', async () => {
+    result.page.schemas = [{
+      type: 'FAQPage', format: 'JSON-LD', properties: {
+        '@context': 'https://schema.org/', '@type': 'FAQPage',
+        mainEntity: Array.from({ length: 7 }, (_, index) => ({
+          '@type': 'Question',
+          name: `Question ${index + 1}`,
+          acceptedAnswer: { '@type': 'Answer', text: `Answer ${index + 1}` }
+        }))
+      }
+    }];
+    await show('structured');
+    await act(async () => container.querySelector<HTMLElement>('.inspector-schema-entry > summary')!.click());
+    const mainEntity = Array.from(container.querySelectorAll<HTMLDetailsElement>('.inspector-schema-array')).find((item) => item.querySelector(':scope > summary')?.textContent === 'mainEntity× 7')!;
+    expect(mainEntity).toBeDefined();
+    await act(async () => mainEntity.querySelector<HTMLElement>(':scope > summary')!.click());
+    expect(mainEntity.open).toBe(true);
+    expect(mainEntity.querySelectorAll(':scope > .inspector-schema-array-list > .inspector-schema-array-item')).toHaveLength(5);
+    const questionItems = Array.from(mainEntity.querySelectorAll(':scope > .inspector-schema-array-list > .inspector-schema-array-item'));
+    expect(questionItems.map((item) => Array.from(item.querySelectorAll(':scope > .inspector-schema-array-fields > .inspector-schema-property')).map((property) => property.textContent))).toEqual([
+      ['@typeQuestion', 'nameQuestion 1'],
+      ['@typeQuestion', 'nameQuestion 2'],
+      ['@typeQuestion', 'nameQuestion 3'],
+      ['@typeQuestion', 'nameQuestion 4'],
+      ['@typeQuestion', 'nameQuestion 5']
+    ]);
+    expect(questionItems.every((item) => item.querySelector(':scope > .inspector-schema-array-fields > .inspector-schema-nested > summary')?.textContent === 'acceptedAnswer')).toBe(true);
+    expect(Array.from(mainEntity.querySelectorAll('summary')).some((summary) => /^\d+$/.test(summary.textContent ?? ''))).toBe(false);
+    expect(mainEntity.querySelectorAll('.inspector-schema-nested')).toHaveLength(5);
+    const showAll = mainEntity.querySelector<HTMLButtonElement>('.inspector-schema-show-more')!;
+    expect(showAll.textContent).toBe('Show all 7 items');
+    await act(async () => showAll.click());
+    expect(mainEntity.querySelectorAll(':scope > .inspector-schema-array-list > .inspector-schema-array-item')).toHaveLength(7);
+    expect(showAll.textContent).toBe('Show fewer');
+  });
+
+  it('renders scalar, empty and mixed arrays without numeric field labels', async () => {
+    result.page.schemas = [{ type: 'Organization', format: 'JSON-LD', properties: {
+      '@type': 'Organization',
+      sameAs: ['https://social.example.com/example', 'https://video.example.com/example'],
+      emptyValues: [],
+      mixedValues: ['Featured', { '@type': 'Thing', name: 'Example thing' }, 3]
+    } }];
+    await show('structured');
+    await act(async () => container.querySelector<HTMLElement>('.inspector-schema-entry > summary')!.click());
+    const arrays = Array.from(container.querySelectorAll<HTMLDetailsElement>('.inspector-schema-array'));
+    const sameAs = arrays.find((item) => item.querySelector(':scope > summary')?.textContent === 'sameAs× 2')!;
+    await act(async () => sameAs.querySelector<HTMLElement>(':scope > summary')!.click());
+    expect(Array.from(sameAs.querySelectorAll<HTMLAnchorElement>(':scope > .inspector-schema-array-list > .inspector-schema-array-item > a')).map((link) => link.href)).toEqual([
+      'https://social.example.com/example', 'https://video.example.com/example'
+    ]);
+    const emptyValues = arrays.find((item) => item.querySelector(':scope > summary')?.textContent === 'emptyValues')!;
+    expect(emptyValues.textContent).toContain('Empty list');
+    const mixedValues = arrays.find((item) => item.querySelector(':scope > summary')?.textContent === 'mixedValues× 3')!;
+    expect(mixedValues.textContent).toContain('Featured');
+    expect(Array.from(mixedValues.querySelectorAll('.inspector-schema-array-fields > .inspector-schema-property')).map((property) => property.textContent)).toEqual(['@typeThing', 'nameExample thing']);
+    expect(mixedValues.textContent).toContain('3');
+    expect(Array.from(container.querySelectorAll('summary')).some((summary) => /^\d+$/.test(summary.textContent ?? ''))).toBe(false);
+  });
+
+  it('previews five repeated RDFa instances and renders the rest only on request', async () => {
+    result.page.schemas = [
+      { type: 'foaf:Image', format: 'RDFa', properties: { '@type': 'foaf:Image', about: 'https://example.com/1.jpg' } },
+      { type: 'foaf:Image', format: 'RDFa', properties: { '@type': 'foaf:Image', about: 'https://example.com/2.jpg' } },
+      { type: 'foaf:Image', format: 'RDFa', properties: { '@type': 'foaf:Image', about: 'https://example.com/3.jpg' } },
+      { type: 'foaf:Image', format: 'RDFa', properties: { '@type': 'foaf:Image', about: 'https://example.com/4.jpg' } },
+      { type: 'foaf:Image', format: 'RDFa', properties: { '@type': 'foaf:Image', about: 'https://example.com/5.jpg' } },
+      { type: 'foaf:Image', format: 'RDFa', properties: { '@type': 'foaf:Image', about: 'https://example.com/6.jpg' } },
+      { type: 'schema:Organization', format: 'RDFa', properties: { '@type': 'schema:Organization', name: 'Example' } }
+    ];
+    await show('structured');
+    const group = container.querySelector<HTMLDetailsElement>('.inspector-schema-type-group')!;
+    expect(group).not.toBeNull();
+    expect(group.open).toBe(false);
+    expect(group.querySelector(':scope > summary')?.textContent).toBe('foaf:Image× 6');
+    expect(group.querySelector('.inspector-schema-count')?.getAttribute('aria-label')).toBe('6 instances');
+    expect(group.querySelectorAll('.inspector-schema-entry')).toHaveLength(5);
+    expect(Array.from(group.querySelectorAll('.inspector-schema-entry > summary')).map((item) => item.textContent)).toEqual(['Instance 1', 'Instance 2', 'Instance 3', 'Instance 4', 'Instance 5']);
+    expect(group.textContent).toContain('https://example.com/1.jpg');
+    expect(group.textContent).not.toContain('https://example.com/6.jpg');
+    const showAll = group.querySelector<HTMLButtonElement>('.inspector-schema-show-more')!;
+    expect(showAll.textContent).toBe('Show all 6 instances');
+    expect(showAll.getAttribute('aria-expanded')).toBe('false');
+    await act(async () => showAll.click());
+    expect(group.querySelectorAll('.inspector-schema-entry')).toHaveLength(6);
+    expect(group.textContent).toContain('https://example.com/6.jpg');
+    expect(showAll.textContent).toBe('Show fewer');
+    expect(showAll.getAttribute('aria-expanded')).toBe('true');
+    await act(async () => showAll.click());
+    expect(group.querySelectorAll('.inspector-schema-entry')).toHaveLength(5);
+    expect(Array.from(container.querySelectorAll(':scope .inspector-structured-sheet > .inspector-schema-entry > summary')).map((item) => item.textContent)).toContain('schema:Organization');
+    await act(async () => group.querySelector('summary')!.click());
+    expect(group.open).toBe(true);
+  });
+
+  it('shows a neutral empty state without a validation disclaimer when no markup exists', async () => {
+    result.page.schemas = [];
+    result.page.jsonLdBlockCount = 0;
+    result.metrics.schemaTypes = [];
+    await show('structured');
+    expect(container.querySelector('.inspector-schema-empty strong')?.textContent).toBe('No structured data detected');
+    expect(container.querySelector('.inspector-schema-empty p')?.textContent).toBe('No JSON-LD, Microdata, or RDFa markup was found in the rendered page.');
+    expect(container.querySelector('.inspector-index-footnote')).toBeNull();
   });
 
   it('does not add excluded images to alt filter counts', async () => {

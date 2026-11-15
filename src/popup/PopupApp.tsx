@@ -17,9 +17,9 @@ const tools: Array<{ id: PopupTool; label: string }> = [
   { id: 'links', label: 'Outgoing links' }
 ];
 const toolIssueIds: Record<PopupTool, string[]> = {
-  content: ['TITLE_001', 'TITLE_002', 'TITLE_003', 'TITLE_004', 'META_001', 'META_002', 'META_003', 'HEADING_001', 'HEADING_002', 'HEADING_003'],
+  content: ['TITLE_001', 'TITLE_002', 'TITLE_003', 'TITLE_004', 'META_001', 'META_002', 'META_003', 'HEADING_001', 'HEADING_002', 'HEADING_004'],
   indexability: ['URL_001', 'URL_002', 'TECH_001'],
-  structured: ['TECH_002', 'TECH_003'],
+  structured: ['TECH_003'],
   images: ['IMAGE_001', 'IMAGE_002', 'IMAGE_003', 'IMAGE_004'],
   social: [],
   links: []
@@ -201,7 +201,7 @@ export function PopupApp() {
     ]))
     : [];
   const logo = globalThis.chrome?.runtime?.getURL?.('icons/icon48.png') ?? '/icons/icon48.png';
-  return <main className={`inspector-popup${tool === 'indexability' ? ' is-indexability' : ''}`}>
+  return <main className="inspector-popup">
     <div className="inspector-workspace">
       <aside className="inspector-sidebar">
         <header className="inspector-brand-header" ref={helpRef}>

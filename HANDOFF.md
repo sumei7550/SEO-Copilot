@@ -1,24 +1,37 @@
-## 当前交接状态（2026-11-13，1.4 开发快照）
+## 当前交接状态（2026-11-15，1.4 开发快照）
 
-仓库配置版本仍为 `1.3.1`；以下是 1.4 候选功能的开发快照，**不是已发布版本**。本节优先于下方 2026-10-19 的历史记录，以及 `docs/planning/SEO_COPILOT_1.4.0_IMPLEMENTATION_PLAN.md` 中后来已被用户逐项调整的旧范围描述。
+当前开发分支为 `main`，仓库配置版本仍为 `1.3.1`。以下内容是 1.4 候选功能的可继续开发快照，**不是已发布版本**。本节优先于下方历史记录，以及 `docs/planning/SEO_COPILOT_1.4.0_IMPLEMENTATION_PLAN.md` 中后来已被用户逐项调整的旧范围描述。
 
-提交前验证：`npm test` 为 **32 个测试文件、206 项测试通过**；`npm run build`（TypeScript、Vite、MV3 构建校验）通过；`git diff --check` 无空白错误。此前 `docs/testing/` 的较早测试数字不代表当前代码。
+最新验证：`npm test` 为 **33 个测试文件、222 项测试通过**；`npm run build`（i18n fallback 同步、TypeScript、两次 Vite 构建、Manifest V3 产物校验）通过；`git diff --check` 无空白错误。此前 `docs/testing/` 中的较早测试数字不代表当前代码。
 
 ### 当前已实现
 
-- **Popup Page Inspector：**六个入口。Content 展示 Meta、字数和 H1–H3，并支持复制标题；Indexability 展示 Rendered/Raw Canonical、Robots、Sitemaps、Hreflangs；Images 有 Alt 筛选、图片状态刷新、CSV 导出、How to fix 提示及 Audit 入口。Social tags 与 Outgoing links 明确标为 Coming soon。
-- **Structured data：**从当前页面 DOM 采集 JSON-LD（含多个块、数组、`@graph`、嵌套字段）、常见 Microdata 和 RDFa 标记。一级、二级节点默认收起；单一格式在模块标题后显示，混合格式在列表中分组。只展示已采集标记和 JSON-LD 解析错误，不声称 Google 富媒体结果资格已验证。复杂 RDFa 语义与 Google 各结果类型的验证尚未覆盖。
-- **Side Panel Audit：**保留评分、问题分类和现有 AI Fix；Popup 与 Side Panel 使用按 Tab、URL、generation 隔离的 `chrome.storage.session` 快照。单条快照上限 1 MB，过大时可重新扫描但不会写入会话缓存。
-- **扫描与规则：**图片清单区分可报告与可审查子集，状态刷新与 SEO 评分分离；可见文本字数、Title/Description 长度提示及部分规则口径已调整。Manifest 使用工具栏 Popup 入口，并分别构建自包含的内容脚本。
+- **Popup Page Inspector：**原生 Popup 固定为 720×600，保留 Content、Indexability、Structured data、Social tags、Images、Outgoing links 六个入口和底部 `Open SEO Audit`。模块主体独立滚动，底部入口固定；默认高度、长内容和宽屏字号已调整。
+- **Content：**展示 Title、Description、URL、字数和 H1–H6；标题列表保持 DOM 顺序、默认折叠并支持复制完整 TSV。Title/Description 长度颜色和提示与当前竞品口径对齐。入口问题数只统计 Popup 中可见且可定位的问题；标题层级跳跃继续作为 Side Panel 的 0 分 Info，不在 Popup 入口制造无法定位的计数。
+- **Indexability：**展示 Canonical、Robots、Sitemaps 和 Hreflangs 的现有采集结果，不把检测结果夸大为 Google 索引资格验证。
+- **Structured data：**从当前页面 DOM 采集并展示 JSON-LD、常见 Microdata 和 RDFa。支持多个块、数组、`@graph`、嵌套对象、标量数组和混合格式分组；对象数组使用真实字段而非数字索引，长数组支持 `Show all / Show fewer`。单一格式显示在模块标题后，混合格式按格式分组；空态为中性检测结果。只声明 Detection，不声称 Google Rich Results 资格已验证。
+- **Images：**扫描普通、懒加载和离屏图片，按 `data-src`、`data-lazy-src`、`data-lazy`、`data-original`、`data-srcset`、`currentSrc`、`src`、`srcset` 等来源解析可报告 URL；过滤无 HTTP(S) 来源及已知追踪尺寸。Alt 筛选、状态刷新、CSV、缩略图、URL、自然尺寸和文件大小可用。入口 Badge 可显示缺少 `alt` 属性的问题数。
+- **Images 修复入口：**`Missing alt text` 与 `Empty alt text` 都保留行内 `How to fix →`。悬停/键盘焦点提示框通过 Portal 显示并可安全移入，不会因鼠标离开触发文字而消失。Popup 只显示 `SEO Audit` 能力说明和 `Open image audit →`；装饰图与信息图的具体处理建议保留在 Side Panel，避免重复。
+- **Side Panel Audit：**保留 SEO Score、Critical/Warning/Info、四类问题、Issue Details、Impact、Recommended Action、现有 AI Fix 和 Rescan。Popup 与 Side Panel 使用按 Tab、URL、generation 隔离的 `chrome.storage.session` 快照；单条快照上限 1 MB，超限时重新扫描但不写入会话缓存。
+- **扫描与规则：**图片列表区分可报告图片与可审查子集；状态刷新与 SEO 评分分离。`accountantsonair.com` 的懒加载图片场景已用于修正扫描口径（页面 121 个 `<img>`，旧实现只发现已加载子集）。`HEADING_003` 保留标题层级跳跃的 0 分 Info，但不计入 Popup Badge；`HEADING_004` 单独检查“首个标题不是 H1”并可在 Popup 定位。Title/Description 短文本提示已收口。
 
-### 继续开发与验收
+### 尚未完成／不要误判为已完成
 
-1. 在新电脑执行 `npm ci`、`npm test`、`npm run build`，到 `chrome://extensions/` 加载 `dist`。正式 Chrome 原生 Popup、权限拒绝/允许、同 URL 刷新、跨 Tab 快照、Extension Reload 和 AI 后端仍需按 [人工验收清单](docs/testing/SEO_COPILOT_1.4.0_MANUAL_CHROME_ACCEPTANCE.md) 复核。清单是早期基线；其中“Copy schema types”、旧宽度与旧截图/哈希应以当前构建为准。
-2. 用 Backlinko 等页面复核结构化数据树，特别是混合格式、深层属性和大数据量。Microdata/RDFa 目前是常见标记采集，不等同完整规范解析；Google 富媒体资格校验尚未实现。
-3. 检查 Images 的状态请求在不同站点和权限条件下是否完成，复核 CSV、筛选与长 URL。Social tags 和 Outgoing links 仍是后续功能。
-4. 通过手工验收后，再统一确定 1.4 版本号、更新商店文案和发布产物。不要把当前 `1.3.1` Manifest 的开发构建当作 1.4 正式版。
+1. Structured data 是标记采集与树形展示，不是完整 RDFa/Microdata 规范解析器，也没有执行 Google Rich Results 或 Schema Validator 外部验证。大规模 RDFa（大量重复实例）、深层混合结构和异常数据仍需真实网站人工复核。
+2. Social tags 与 Outgoing links 仍是后续能力；SEO Metrics、Keyword Research 只进入产品后续规划，当前版本没有增加入口，也不能替代底部 SEO Audit。
+3. 正式 Chrome 原生 Popup、权限拒绝/允许、同 URL 刷新、跨 Tab 快照、Extension Reload、图片跨域状态请求和 AI 后端仍需按 [人工验收清单](docs/testing/SEO_COPILOT_1.4.0_MANUAL_CHROME_ACCEPTANCE.md) 复核。清单中的旧宽度、旧截图和旧哈希应以当前构建为准。
+4. 通过手工验收后，再统一确定 1.4 版本号、商店文案和发布产物。不要把当前 `1.3.1` Manifest 开发构建当作 1.4 正式版。
 
-相关设计、研究、原型和早期验证记录位于 `docs/planning/`、`docs/prototypes/`、`docs/research/`、`docs/testing/`。这些文件记录不同阶段的决定；以上当前代码状态及最新用户反馈优先。
+### 换电脑继续开发
+
+1. 克隆仓库并进入项目目录：`git clone git@github.com:sumei7550/SEO-Copilot.git`。
+2. 安装锁定依赖：`npm ci`。
+3. 验证基线：`npm test`，预期至少为 **33 files / 222 tests**；如后续提交增加测试，以仓库最新结果为准。
+4. 生成扩展：`npm run build`。构建会生成被 Git 忽略的 `dist/`，并执行 Manifest V3 校验。
+5. 打开 `chrome://extensions/`，启用开发者模式，选择“加载已解压的扩展程序”，加载仓库的 `dist` 目录。
+6. 优先阅读本文件顶部、[1.4 实施验证记录](docs/testing/SEO_COPILOT_1.4.0_IMPLEMENTATION_VERIFICATION.md)和[人工验收清单](docs/testing/SEO_COPILOT_1.4.0_MANUAL_CHROME_ACCEPTANCE.md)。不要依据下方历史记录回退当前产品结构。
+
+本地旧发布包 `seo-copilot-v1.1.1.zip` 不属于本次源码快照，不应加入提交。相关设计、研究、原型和早期验证记录位于 `docs/planning/`、`docs/prototypes/`、`docs/research/`、`docs/testing/`；当前代码状态及本节最新用户反馈优先。
 
 ---
 

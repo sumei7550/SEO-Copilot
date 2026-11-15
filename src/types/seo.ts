@@ -4,13 +4,14 @@ export type ScoreCategory = Exclude<Category, 'url'>;
 export type Grade = 'excellent' | 'good' | 'needsImprovement' | 'poor';
 
 export interface HeadingData {
-  level: 1 | 2 | 3;
+  level: 1 | 2 | 3 | 4 | 5 | 6;
   text: string;
 }
 
 export interface ImageData {
   src: string;
   alt: string | null;
+  /** Loaded and visible enough for checks that require rendered image data. */
   auditable: boolean;
   naturalWidth: number;
   naturalHeight: number;
@@ -40,7 +41,7 @@ export interface PageData {
   metaDescription: string;
   headings: HeadingData[];
   images: ImageData[];
-  /** DOM images omitted from the report (embedded, unloaded, or tracking-sized). */
+  /** DOM images omitted from the report (no HTTP(S) candidate or tracking-sized). */
   excludedImageCount?: number;
   /** More reportable images existed beyond the scanner limit. */
   imageLimitReached?: boolean;
@@ -60,6 +61,7 @@ export interface PageMetrics {
   h2Count: number;
   h3Count: number;
   imageCount: number;
+  /** Reportable DOM images included in alt coverage; retained for snapshot compatibility. */
   auditableImageCount: number;
   imagesWithoutAlt: number;
   altCoverage: number;

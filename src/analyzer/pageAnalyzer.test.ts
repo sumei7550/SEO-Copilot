@@ -8,7 +8,7 @@ const pageWithImages = (images: PageData['images']): PageData => ({
 });
 
 describe('analyzePage image audit collection', () => {
-  it('counts only auditable informative images as missing-alt candidates', () => {
+  it('counts loaded, hidden and lazy reportable images as missing-alt candidates', () => {
     const metrics = analyzePage(pageWithImages([
       { src: 'decorative.svg', alt: '', auditable: true, naturalWidth: 100, naturalHeight: 100, transferSize: 0 },
       { src: 'icon.svg', alt: '', auditable: true, naturalWidth: 24, naturalHeight: 24, transferSize: 0 },
@@ -17,9 +17,9 @@ describe('analyzePage image audit collection', () => {
     ]));
 
     expect(metrics.imageCount).toBe(4);
-    expect(metrics.auditableImageCount).toBe(3);
-    expect(metrics.imagesWithoutAlt).toBe(1);
-    expect(metrics.altCoverage).toBe(67);
+    expect(metrics.auditableImageCount).toBe(4);
+    expect(metrics.imagesWithoutAlt).toBe(2);
+    expect(metrics.altCoverage).toBe(50);
   });
 
   it('does not treat an empty alt attribute as missing alt', () => {

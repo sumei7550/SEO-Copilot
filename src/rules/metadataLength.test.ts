@@ -11,8 +11,8 @@ const basePage: PageData = {
 
 describe('metadata length indicator and Audit rules', () => {
   it.each([
-    ['title', 30, 60],
-    ['metaDescription', 110, 160]
+    ['title', 15, 60],
+    ['metaDescription', 100, 160]
   ] as const)('uses the same inclusive %s range in Popup and SEO Audit', (field, min, max) => {
     expect(METADATA_LENGTH_LIMITS[field]).toEqual({ min, max });
     const [missing, short, long] = field === 'title'
@@ -38,6 +38,14 @@ describe('metadata length indicator and Audit rules', () => {
     expect(metadataLengthStatus('metaDescription', metaDescription)).toBe('short');
     const page = { ...basePage, metaDescription };
     expect(seoRules.find((rule) => rule.id === 'META_002')?.check(page, {} as never)).toBe(true);
+  });
+
+  it('keeps a 29-character title in range while preserving the exact lower boundaries', () => {
+    expect(metadataLengthStatus('title', 'x'.repeat(14))).toBe('short');
+    expect(metadataLengthStatus('title', 'x'.repeat(15))).toBe('in-range');
+    expect(metadataLengthStatus('title', 'x'.repeat(29))).toBe('in-range');
+    expect(metadataLengthStatus('metaDescription', 'x'.repeat(99))).toBe('short');
+    expect(metadataLengthStatus('metaDescription', 'x'.repeat(100))).toBe('in-range');
   });
 
   it('uses JavaScript string length for Emoji, as the Audit does', () => {

@@ -11,18 +11,20 @@ function LengthIndicator({ field, value }: { field: MetadataLengthField; value: 
   const [hovered, setHovered] = useState(false);
   const [focused, setFocused] = useState(false);
   const status = metadataLengthStatus(field, value);
-  const { min, max } = METADATA_LENGTH_LIMITS[field];
+  const { max } = METADATA_LENGTH_LIMITS[field];
   const warning = status === 'short' || status === 'long';
   const tipId = `metadata-${field}-length-tip`;
-  const tip = field === 'title' && status === 'long'
+  const tip = field === 'title' && status === 'short'
+    ? "The title may be too short. Short titles may not clearly communicate the page's main topic to Google."
+    : field === 'title' && status === 'long'
     ? 'The title may be too long. Lengthy page titles risk being truncated when presented in Google search results. The recommended maximum title length is ~60 characters.'
     : field === 'metaDescription' && status === 'short'
     ? "The meta description may be too short. It is recommended to write longer descriptions as they provide an explanation of the page's content to Google."
-    : `${fieldLabels[field]} is ${status === 'short' ? 'shorter' : 'longer'} than suggested. Suggested range: ${min}–${max} characters.`;
+    : 'The meta description may be too long. Lengthy descriptions risk being truncated when presented in Google search results. The recommended maximum length is ~160 characters.';
   const showTip = warning && (hovered || focused);
   return <span className={`metadata-length is-${status}`} tabIndex={warning ? 0 : undefined}
-    title={status === 'missing' ? `Missing · SEO Copilot suggested range: ${min}–${max} characters` : undefined}
-    aria-label={`${fieldLabels[field]}: ${value.length} of ${max} characters; ${lengthLabels[status]}${warning ? `. Suggested range: ${min}–${max} characters` : ''}`}
+    title={status === 'missing' ? `Missing ${fieldLabels[field].toLowerCase()}` : undefined}
+    aria-label={`${fieldLabels[field]}: ${value.length} of ${max} characters; ${lengthLabels[status]}${status === 'long' ? `. Suggested maximum: ${max} characters` : ''}`}
     aria-describedby={showTip ? tipId : undefined}
     onMouseEnter={warning ? () => setHovered(true) : undefined} onMouseLeave={warning ? () => setHovered(false) : undefined}
     onFocus={warning ? () => setFocused(true) : undefined} onBlur={warning ? () => setFocused(false) : undefined}>

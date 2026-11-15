@@ -1,10 +1,13 @@
 import type { PageData, PageMetrics } from '../types/seo';
 
 export function analyzePage(page: PageData): PageMetrics {
-  const auditableImages = page.images.filter((image) => image.auditable);
-  const imagesWithoutAlt = auditableImages.filter((image) => image.alt === null).length;
+  // Alt requirements apply to every reportable <img>, including lazy-loaded
+  // and currently hidden variants. `auditable` remains the signal for checks
+  // that require a loaded, visible image, such as performance opportunities.
+  const altCandidates = page.images;
+  const imagesWithoutAlt = altCandidates.filter((image) => image.alt === null).length;
   const imageCount = page.images.length;
-  const auditableImageCount = auditableImages.length;
+  const auditableImageCount = altCandidates.length;
 
   return {
     h1Count: page.headings.filter((heading) => heading.level === 1).length,

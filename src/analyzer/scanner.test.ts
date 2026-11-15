@@ -13,7 +13,10 @@ function documentFixture(options: FixtureOptions = {}): Document {
   const headings = [
     { tagName: 'H1', textContent: 'SEO audit' },
     { tagName: 'H2', textContent: 'Checks' },
-    { tagName: 'H3', textContent: 'Metadata' }
+    { tagName: 'H3', textContent: 'Metadata' },
+    { tagName: 'H4', textContent: 'Title checks' },
+    { tagName: 'H5', textContent: 'Advanced cases' },
+    { tagName: 'H6', textContent: 'Implementation note' }
   ];
   const scripts = (options.schemaScripts ?? ['{"@type":"Article"}']).map((textContent) => ({ textContent }));
   const images = [{
@@ -28,7 +31,7 @@ function documentFixture(options: FixtureOptions = {}): Document {
     body: { textContent: options.bodyText ?? 'Useful page content '.repeat(120) },
     documentElement: { outerHTML: options.html ?? '<html>Useful page content</html>'.repeat(40) },
     querySelectorAll: (selector: string) => {
-      if (selector === 'h1, h2, h3') return headings;
+      if (selector === 'h1, h2, h3, h4, h5, h6') return headings;
       if (selector === 'script[type="application/ld+json"]') return scripts;
       if (selector === 'head > title') return Array.from({ length: options.headTitleCount ?? 1 }, () => ({ textContent: 'A complete SEO title for the scanner fixture' }));
       if (selector === 'title') return Array.from({ length: options.bodyTitleCount ?? 1 }, () => ({ textContent: 'Example title in body content' }));
@@ -57,22 +60,24 @@ it('does not interpret response header bytes as image file size', () => {
 });
 
 describe('scanPage', () => {
-  it('keeps network images in DOM order while excluding embedded and tracking-sized images', () => {
+  it('keeps loaded and lazy network images in DOM order while excluding embedded and tracking-sized images', () => {
     const doc = documentFixture();
-    const makeImage = (src: string, width: number, alt: string | null = null) => ({
+    const makeImage = (src: string, width: number, alt: string | null = null, dataSrc = '') => ({
       currentSrc: src, src, alt: alt ?? '', naturalWidth: width, naturalHeight: width,
-      width, height: width, hasAttribute: (name: string) => name === 'alt' && alt !== null
+      width, height: width, hasAttribute: (name: string) => name === 'alt' && alt !== null,
+      getAttribute: (name: string) => name === 'src' ? src : name === 'data-src' ? dataSrc : null
     });
     (doc as unknown as { images: unknown[] }).images = [
       makeImage('data:image/svg+xml;base64,PHN2Zz4=', 32),
       makeImage('https://example.com/photo.png', 64),
       makeImage('https://example.com/pixel.gif', 1),
       makeImage('https://example.com/photo.png', 64),
-      makeImage('https://example.com/unloaded.png', 0),
+      makeImage('', 0, null, '/unloaded.png'),
     ];
     const page = scanPage(doc, locationFixture, { getEntriesByType: () => [] } as unknown as Performance);
-    expect(page.images.map((image) => image.src)).toEqual(['https://example.com/photo.png', 'https://example.com/photo.png']);
-    expect(page.excludedImageCount).toBe(3);
+    expect(page.images.map((image) => image.src)).toEqual(['https://example.com/photo.png', 'https://example.com/photo.png', 'https://example.com/unloaded.png']);
+    expect(page.images[2]).toMatchObject({ alt: null, auditable: false, naturalWidth: 0, naturalHeight: 0 });
+    expect(page.excludedImageCount).toBe(2);
     expect(page.imageLimitReached).toBe(false);
   });
 
@@ -95,7 +100,8 @@ describe('scanPage', () => {
   it('collects structured page data without retaining raw visible text', () => {
     const page = scanPage(documentFixture(), locationFixture, { getEntriesByType: () => [] } as unknown as Performance);
     expect(page.url).toBe('https://example.com/audit');
-    expect(page.headings.map((heading) => heading.level)).toEqual([1, 2, 3]);
+    expect(page.headings.map((heading) => heading.level)).toEqual([1, 2, 3, 4, 5, 6]);
+    expect(page.headings[page.headings.length - 1]?.text).toBe('Implementation note');
     expect(page.images[0]).toMatchObject({ alt: 'SEO report', auditable: true, naturalWidth: 1200, renderedWidth: 1200, renderedHeight: 800 });
     expect(page.schemas).toMatchObject([{ type: 'Article', format: 'JSON-LD', properties: { '@type': 'Article' } }]);
     expect(page.jsonLdBlockCount).toBe(1);
