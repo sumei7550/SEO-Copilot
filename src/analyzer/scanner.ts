@@ -115,6 +115,15 @@ function imageSource(image: HTMLImageElement, baseUrl: string): string {
   return '';
 }
 
+function isKnownTrackingImage(src: string): boolean {
+  try {
+    const url = new URL(src);
+    return url.hostname === 'bat.bing.com' && url.pathname === '/action/0';
+  } catch {
+    return false;
+  }
+}
+
 export function scanPage(
   doc: Document = document,
   locationValue: Location = window.location,
@@ -136,7 +145,7 @@ export function scanPage(
     // Include lazy and off-screen images in DOM order. They still need alt text
     // before loading, but inline artwork and known tracking pixels are not
     // useful in the network image inventory.
-    if (!src || trackingSized) {
+    if (!src || trackingSized || isKnownTrackingImage(src)) {
       excludedImageCount++;
       continue;
     }

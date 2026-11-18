@@ -37,8 +37,8 @@ if (manifest.background?.service_worker && manifest.background.type !== 'module'
   }
 }
 
-if (manifest.version !== '1.3.1') {
-  throw new Error(`Expected release version 1.3.1, received ${manifest.version}.`);
+if (manifest.version !== '1.4.0') {
+  throw new Error(`Expected release version 1.4.0, received ${manifest.version}.`);
 }
 
 const permissions = [...(manifest.permissions ?? [])].sort().join(',');
@@ -84,4 +84,4 @@ if (existsSync(masterIcon)) {
   rmSync(masterIcon);
 }
 
-console.log('Extension build verified: V1.3.1, minimal permissions, self-contained content script, and valid Manifest V3 manifest.');
+console.log('Extension build verified: V1.4.0, minimal permissions, self-contained content script, and valid Manifest V3 manifest.');

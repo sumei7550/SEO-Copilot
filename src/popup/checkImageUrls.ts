@@ -1,7 +1,9 @@
 // This function runs in the inspected tab through chrome.scripting.executeScript.
 // Keep it self-contained: Chrome serializes the function without its module scope.
-export async function checkImageUrls(urls: string[]): Promise<Array<{ code?: number; fileSize?: number }>> {
-  const results: Array<{ code?: number; fileSize?: number }> = new Array(urls.length);
+export type ImageUrlCheck = { code?: number; fileSize?: number; retryAfter?: string; receivedAt?: number };
+
+export async function checkImageUrls(urls: string[]): Promise<ImageUrlCheck[]> {
+  const results: ImageUrlCheck[] = new Array(urls.length);
   const throttledOrigins = new Set<string>();
   let next = 0;
   const request = async (url: string, method: 'HEAD' | 'GET') => {
@@ -19,6 +21,8 @@ export async function checkImageUrls(urls: string[]): Promise<Array<{ code?: num
         : response.headers.get('content-length');
       const bytes = Number(length);
       return { code: response.status,
+        receivedAt: Date.now(),
+        ...(response.status === 429 && response.headers.get('retry-after') ? { retryAfter: response.headers.get('retry-after')! } : {}),
         fileSize: response.ok && (!encoding || encoding === 'identity') && Number.isFinite(bytes) && bytes > 0 ? bytes : undefined };
     } finally { window.clearTimeout(timer); }
   };

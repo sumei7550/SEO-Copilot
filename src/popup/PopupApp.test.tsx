@@ -247,18 +247,23 @@ describe('Quick Metadata Popup', () => {
     const images = Array.from(container.querySelectorAll<HTMLButtonElement>('.inspector-tool-nav button')).find((item) => item.textContent?.includes('Images'))!;
     await act(async () => images.click());
     await act(async () => container.querySelector<HTMLButtonElement>('.inspector-image-help-trigger')!.click());
-    expect(sendRuntime).toHaveBeenCalledWith({ type: 'QUEUE_AUDIT_INTENT', intent: expect.objectContaining({ category: 'images', tabId: 3, url }) });
+    expect(sendRuntime).toHaveBeenCalledWith({ type: 'QUEUE_AUDIT_INTENT', intent: expect.objectContaining({ category: 'images', issueIds: ['IMAGE_001'], generation: 1, scannedAt: previewResult.scannedAt, tabId: 3, url }) });
     expect(openPanel).toHaveBeenCalledWith({ windowId: 2 });
   });
 
   it('opens the Content SEO audit from missing Description guidance', async () => {
     executeScript.mockResolvedValueOnce([{ frameId: 0, result: { title: 'Page title', metaDescription: '', url } }]);
+    const { check: _check, ...missingDescriptionIssue } = seoRules.find((rule) => rule.id === 'META_001')!;
+    vi.mocked(chrome.tabs.sendMessage).mockImplementation(vi.fn().mockResolvedValue({ ok: true, result: {
+      ...previewResult, issues: [missingDescriptionIssue],
+      page: { ...previewResult.page, url, metaDescription: '' }
+    } }));
     await act(async () => root.render(<PopupApp />));
     await flush();
     const trigger = container.querySelector<HTMLButtonElement>('.metadata-missing-help-trigger')!;
     expect(trigger).not.toBeNull();
     await act(async () => trigger.click());
-    expect(sendRuntime).toHaveBeenCalledWith({ type: 'QUEUE_AUDIT_INTENT', intent: expect.objectContaining({ category: 'content', tabId: 3, url }) });
+    expect(sendRuntime).toHaveBeenCalledWith({ type: 'QUEUE_AUDIT_INTENT', intent: expect.objectContaining({ category: 'content', issueIds: ['META_001'], generation: 1, scannedAt: previewResult.scannedAt, tabId: 3, url }) });
     expect(openPanel).toHaveBeenCalledWith({ windowId: 2 });
   });
 

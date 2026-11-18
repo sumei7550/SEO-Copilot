@@ -100,8 +100,18 @@ export interface ScoreResult {
   categoryWeights: CategoryScores;
 }
 
+export interface ImageStatusRecord {
+  kind: 'ok' | 'broken' | 'unchecked';
+  code?: number;
+  fileSize?: number;
+  checkedAt?: number;
+  expiresAt?: number;
+  source?: 'live' | 'cache' | 'previous';
+  runId?: number;
+}
+
 export interface SeoResult extends ScoreResult {
-  imageStatuses?: Record<string, { kind: 'ok' | 'broken' | 'unchecked'; code?: number; fileSize?: number }>;
+  imageStatuses?: Record<string, ImageStatusRecord>;
   page: PageData;
   metrics: PageMetrics;
   issues: SeoIssue[];

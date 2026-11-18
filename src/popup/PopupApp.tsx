@@ -37,6 +37,7 @@ export function PopupApp() {
   const [openError, setOpenError] = useState('');
   const [openingPanel, setOpeningPanel] = useState(false);
   const [scanState, setScanState] = useState<PageScanState>({ status: 'idle' });
+  const [scanGeneration, setScanGeneration] = useState<number>();
   const [tool, setTool] = useState<PopupTool>('content');
   const [helpOpen, setHelpOpen] = useState(false);
   const helpRef = useRef<HTMLDivElement>(null);
@@ -56,11 +57,13 @@ export function PopupApp() {
     const url = target.url;
     const version = ++scanVersion.current;
     setScanState({ status: 'scanning' });
+    setScanGeneration(undefined);
     void (async () => {
       try {
         const cached = await getSnapshot(tabId, url);
         if (version !== scanVersion.current) return;
         if (cached.ok && cached.result) {
+          setScanGeneration(cached.generation);
           setScanState({ status: 'ready', result: cached.result });
           return;
         }
@@ -80,6 +83,7 @@ export function PopupApp() {
             setScanState({ status: 'error', message: 'Page changed during the scan. Try again.' });
             return;
           }
+          setScanGeneration(started.generation);
         }
         setScanState({ status: 'ready', result: response.result });
       } catch {
@@ -131,6 +135,7 @@ export function PopupApp() {
       if (change.url !== undefined || change.status === 'loading') {
         states.current.invalidate(tabId, url);
         scanVersion.current += 1;
+        setScanGeneration(undefined);
         setScanState({ status: 'idle' });
       }
       setTab({ ...updatedTab, url });
@@ -140,6 +145,7 @@ export function PopupApp() {
     chrome.tabs.onUpdated.addListener(updated);
     const activated = () => {
       scanVersion.current += 1;
+      setScanGeneration(undefined);
       setScanState({ status: 'idle' });
       void chrome.tabs.query({ active: true, currentWindow: true }).then(([current]) => {
         if (!active || !current) return;
@@ -158,17 +164,34 @@ export function PopupApp() {
     };
   }, [read]);
 
-  const openAudit = (category?: 'images' | 'content') => {
+  const openAudit = (category?: 'images' | 'content', issueIds?: string[]) => {
     if (!tab?.id || !tab.windowId || !tab.url || opening.current || !permissionPattern(tab.url)) return;
+    if (issueIds?.length && (scanState.status !== 'ready' || !scanState.result || scanState.result.page.url !== tab.url || !Number.isInteger(scanGeneration))) {
+      setOpenError('This issue is no longer available in the current scan. Rescan the page and try again.');
+      return;
+    }
     opening.current = true;
     setOpeningPanel(true);
     setOpenError('');
-    const intent: AuditIntent = { id: crypto.randomUUID(), tabId: tab.id, windowId: tab.windowId, url: tab.url, ...(category ? { category } : {}) };
+    const intent: AuditIntent = {
+      id: crypto.randomUUID(), tabId: tab.id, windowId: tab.windowId, url: tab.url,
+      ...(category ? { category } : {}),
+      ...(issueIds?.length && scanState.status === 'ready' && scanState.result && Number.isInteger(scanGeneration)
+        ? { issueIds, generation: scanGeneration, scannedAt: scanState.result.scannedAt } : {})
+    };
     // Both API calls start in this click gesture. Awaiting either one first
     // could cause Chrome to reject sidePanel.open().
     const queued = chrome.runtime.sendMessage({ type: 'QUEUE_AUDIT_INTENT', intent });
     const opened = chrome.sidePanel.open({ windowId: tab.windowId });
-    void Promise.all([queued, opened]).then(() => window.close()).catch(() => {
+    void Promise.all([queued, opened]).then(([queueResult]) => {
+      if (issueIds?.length && !queueResult?.ok) {
+        opening.current = false;
+        setOpeningPanel(false);
+        setOpenError(queueResult?.error ?? 'This issue is no longer available in the current scan. Rescan the page and try again.');
+        return;
+      }
+      window.close();
+    }).catch(() => {
       void chrome.runtime.sendMessage({ type: 'CANCEL_AUDIT_INTENT', intent }).catch(() => {});
       opening.current = false;
       setOpeningPanel(false);
@@ -223,7 +246,7 @@ export function PopupApp() {
       </aside>
       <div className="inspector-right">
         <header className="inspector-right-header"><h2>{tools.find((item) => item.id === tool)?.label}{structuredFormats.length === 1 ? <span className="inspector-header-schema-format">{structuredFormats[0]}</span> : null}{tool === 'images' && scanState.status === 'ready' && scanState.result ? <span className="inspector-header-count" aria-label={`${scanState.result.page.images.length}${scanState.result.page.imageLimitReached ? ' or more' : ''} reportable images`}>{scanState.result.page.images.length}{scanState.result.page.imageLimitReached ? '+' : ''}</span> : null}</h2><div className="inspector-header-actions" aria-label="Page actions"><span className={`inspector-page-state ${status === 'Current page' ? '' : status === 'Scanning…' ? 'is-busy' : 'is-error'}`}>{status}</span></div></header>
-        <div className="inspector-tool-panel" role="tabpanel" aria-label={tools.find((item) => item.id === tool)?.label}><PopupToolViews tool={tool} metadata={metadata} scan={scanState} tabId={tab?.id} onRetry={() => { if (tab) loadPageData(tab); }} onRequestAccess={requestMetadataAccess} onOpenImageAudit={() => openAudit('images')} onOpenContentAudit={() => openAudit('content')} /></div>
+        <div className="inspector-tool-panel" role="tabpanel" aria-label={tools.find((item) => item.id === tool)?.label}><PopupToolViews tool={tool} metadata={metadata} scan={scanState} scanGeneration={scanGeneration} tabId={tab?.id} onRetry={() => { if (tab) loadPageData(tab); }} onRequestAccess={requestMetadataAccess} onOpenImageAudit={(ids) => openAudit('images', ids)} onOpenContentAudit={(ids) => openAudit('content', ids)} /></div>
       </div>
     </div>
     <footer className="inspector-footer"><button type="button" className="primary-button popup-audit-button" onClick={() => openAudit()} disabled={!tab?.id || restricted || openingPanel}>{openingPanel ? 'Opening SEO Audit…' : <>Open SEO Audit <span aria-hidden="true">→</span></>}</button>{openError ? <p className="popup-open-error" role="alert">{openError}</p> : null}</footer>

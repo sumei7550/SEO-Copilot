@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>A descriptive title for mixed schema testing</title>
+  <meta name="description" content="This fixture contains JSON LD, Microdata, RDFa, and one invalid JSON LD block so detection and parse errors can be checked together.">
+  <link rel="canonical" href="https://fixture.test/structured-mixed">
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebPage","name":"Fixture page"},{"@type":"WebSite","name":"Fixture site"}]}</script>
+  <script type="application/ld+json">{"@type":</script>
+</head>
+<body><main>
+  <h1>Schema inventory</h1>
+  <div itemscope itemtype="https://schema.org/Product"><span itemprop="name">Fixture product</span></div>
+  <div typeof="Organization"><span property="name">Fixture organization</span></div>
+</main></body>
+</html>

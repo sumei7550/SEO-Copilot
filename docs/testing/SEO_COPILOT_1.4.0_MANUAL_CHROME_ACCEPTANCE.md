@@ -1,12 +1,12 @@
 # SEO Copilot 1.4.0 正式 Chrome 人工验收清单
 
-日期：2026-11-12。**状态：等待人工执行；以下勾选框均不代表已经通过。**只使用本机正式 Google Chrome，不把 Chrome for Testing、Edge 或旧截图计入本表的通过证据。目标是核对当前 1.4.0 候选功能；本轮不改版本号、业务代码或 Release Notes。
+创建日期：2026-11-12；版本状态更新：2026-11-17。**状态：等待人工执行；以下勾选框均不代表已经通过。**只使用本机正式 Google Chrome，不把 Chrome for Testing、Edge 或旧截图计入本表的通过证据。目标是核对当前 1.4.0 候选功能；本轮不改业务代码或 Release Notes。
 
 ## 构建身份与加载
 
 - [ ] 记录 Chrome 版本、操作系统、测试日期及本次加载后 `chrome://extensions/` 显示的扩展 ID。测试者：____；Chrome 版本：____；扩展 ID：____。
-- [ ] 加载目录：`E:\susm-program\SEO-Copilot\dist`。2026-11-12 16:06（北京时间）重新执行 `npm run build` 通过，并修复了原生 Popup 初始尺寸。`dist/index.html` SHA-256：`C9C7F9BA3446927FB19D44FB9B976A5ED0F3A81034AD9AF102154FF5E783A17F`；`dist/assets/styles.css` SHA-256：`5EDF4A872ADE32F218B2E091DDA2A1259D146413F83FEE1850ED5F8CF7A687B3`；`dist/popup.js` SHA-256：`24450AF0768FA6914B9D274703BF5B4DAA97812B60CFF8A6BBEAE07041C7E2BB`。验收前如重新构建，重新记录哈希并以新构建为准。
-- [ ] **版本标识注意：**当前候选构建的 Manifest 仍显示 `1.3.1`；产品上一发布版由用户确认为 `1.3.2`。此差异待验收结束后核对并统一更新为 `1.4.0`。测试期间不要改版本，也不要把本候选构建作为 1.3.1 正式版。
+- [ ] 加载目录：`E:\susm-program\SEO-Copilot\dist`。下列 SHA-256 均来自 2026-11-12 的旧构建，仅作历史追溯，**不得用于当前 1.4.0 验收**：`dist/index.html`：`C9C7F9BA3446927FB19D44FB9B976A5ED0F3A81034AD9AF102154FF5E783A17F`；`dist/assets/styles.css`：`5EDF4A872ADE32F218B2E091DDA2A1259D146413F83FEE1850ED5F8CF7A687B3`；`dist/popup.js`：`24450AF0768FA6914B9D274703BF5B4DAA97812B60CFF8A6BBEAE07041C7E2BB`。验收时重新记录当前构建哈希。
+- [ ] **版本标识注意：**2026-11-17 已将当前候选构建的 Manifest 和相关版本标识统一为 `1.4.0`。上方 2026-11-12 的构建哈希已过期；正式 Chrome 验收须记录重新构建后的哈希和实际加载的扩展 ID。版本号更新不代表已通过验收或已发布。
 
 **人工加载：**Chrome 地址栏打开 `chrome://extensions/` → 开启右上角「开发者模式」→「加载已解压的扩展程序」→ 选择上述 `dist` **文件夹本身**。确认卡片是 SEO Copilot，记下扩展 ID；如浏览器已有商店版，用 ID 区分两者。将本次扩展固定到工具栏，点击其图标打开原生 Popup。不要选择项目根目录或历史 `release/` ZIP。
 

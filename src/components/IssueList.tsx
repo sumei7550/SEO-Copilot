@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { AiFixRequest, AiFixType } from '../types/aiFix';
 import type { PageData, PageMetrics, SeoIssue } from '../types/seo';
 import { AiFixPanel, Sparkles } from './AiFixPanel';
@@ -20,21 +20,28 @@ function getCurrentValue(type: AiFixType, page: PageData): string {
   return page.headings.filter((heading) => heading.level === 1).map((heading) => heading.text).join(' | ');
 }
 
-export function IssueList({ issues, page, metrics, onRescan }: { issues: SeoIssue[]; page: PageData; metrics: PageMetrics; onRescan: () => void }) {
+export function IssueList({ issues, page, metrics, onRescan, targetIssueId, targetNonce }: { issues: SeoIssue[]; page: PageData; metrics: PageMetrics; onRescan: () => void; targetIssueId?: string; targetNonce?: string }) {
   if (!issues.length) return <><div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">{t('noIssues')}</div><button className="rescan-button" type="button" onClick={onRescan}>Done editing? Re-scan page <span>→</span></button></>;
-  return <><div className="issue-list">{issues.map((issue) => <IssueCard key={issue.id} issue={issue} page={page} metrics={metrics} />)}</div><button className="rescan-button" type="button" onClick={onRescan}>Done editing? Re-scan page <span>→</span></button></>;
+  return <><div className="issue-list">{issues.map((issue) => <IssueCard key={issue.id} issue={issue} page={page} metrics={metrics} targeted={issue.id === targetIssueId} targetNonce={targetNonce} />)}</div><button className="rescan-button" type="button" onClick={onRescan}>Done editing? Re-scan page <span>→</span></button></>;
 }
 
-function IssueCard({ issue, page, metrics }: { issue: SeoIssue; page: PageData; metrics: PageMetrics }) {
+function IssueCard({ issue, page, metrics, targeted = false, targetNonce }: { issue: SeoIssue; page: PageData; metrics: PageMetrics; targeted?: boolean; targetNonce?: string }) {
   const [open, setOpen] = useState(false);
+  const cardRef = useRef<HTMLElement>(null);
   const fixType = getAiFixType(issue);
   const issueLabel = t(issue.messageKey);
   const request: AiFixRequest | undefined = fixType ? { type: fixType, issueId: issue.id, issueLabel, currentValue: getCurrentValue(fixType, page), page: { title: page.title, metaDescription: page.metaDescription, h1: getCurrentValue('h1', page) }, context: buildAiFixContext(page, issue, fixType, issueLabel) } : undefined;
   const action = issue.solutionKey ? t(issue.solutionKey) : '';
   const hasAction = Boolean(action && action !== issue.solutionKey);
-  const severityClass = issue.severity === 'critical' ? 'high' : issue.severity;
+  const severityClass = issue.severity;
   const severityLabel = t(`severity${issue.severity[0].toUpperCase()}${issue.severity.slice(1)}`);
-  return <article className={`issue-card ${fixType ? '' : 'compact'} ${open ? 'is-open' : ''}`}>
+  useEffect(() => {
+    if (!targeted) return;
+    if (fixType) setOpen(true);
+    const frame = window.requestAnimationFrame(() => cardRef.current?.scrollIntoView?.({ behavior: 'smooth', block: 'center' }));
+    return () => window.cancelAnimationFrame(frame);
+  }, [targeted, targetNonce, fixType]);
+  return <article ref={cardRef} data-issue-id={issue.id} tabIndex={targeted ? -1 : undefined} className={`issue-card ${fixType ? '' : 'compact'} ${open ? 'is-open' : ''}`}>
     <div className="issue-topline"><span className={`severity ${severityClass}`}>{severityLabel}</span><span className="impact">{issue.impact} {t('points')}</span></div>
     <h3>{t(issue.messageKey)}</h3>
     {issue.id === 'IMAGE_004' ? <p className="issue-context"><b>{t('affectedImages')}</b><span>{page.images.filter((image) => image.alt !== null && image.alt.trim() === '').length}</span></p> : null}

@@ -2,15 +2,16 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { QuickMetadataCard } from '../components/QuickMetadataCard';
 import { headingsAsTsv } from '../report/ContentAnalysis';
-import type { SchemaData, SchemaValue, SeoResult } from '../types/seo';
+import type { ImageStatusRecord, SchemaData, SchemaValue, SeoResult } from '../types/seo';
 import type { MetadataState } from './perTabMetadataState';
-import { getSnapshot, putImageStatuses } from './sessionSnapshot';
-import { checkImageUrls } from './checkImageUrls';
+import { getImageStatusState, getSnapshot, putImageCooldowns, putImageStatusState, startImageRefreshRun } from './sessionSnapshot';
+import { checkImageUrls, type ImageUrlCheck } from './checkImageUrls';
+import { imageCooldownUntil, imageStatusKind, imageStatusSource, normalizeImageStatusUrl, restoreFreshImageStatuses } from './imageStatusUtils';
 import { inspectIndexability, type IndexabilitySignals } from './inspectIndexability';
 
 export type PopupTool = 'content' | 'indexability' | 'structured' | 'images' | 'social' | 'links';
 export type PageScanState = { status: 'idle' | 'scanning' | 'ready' | 'error'; result?: SeoResult; message?: string };
-type CheckedImageStatus = { kind: 'ok' | 'broken' | 'unchecked'; code?: number; fileSize?: number };
+type CheckedImageStatus = ImageStatusRecord;
 type IndexedSchema = { schema: SchemaData; index: number };
 const SCHEMA_INSTANCE_PREVIEW_LIMIT = 5;
 const SCHEMA_ARRAY_PREVIEW_LIMIT = 5;
@@ -220,21 +221,25 @@ function imageUrlLabel(src: string): string {
   return src;
 }
 
-export function PopupToolViews({ tool, metadata, scan, tabId, onRetry, onRequestAccess, onOpenImageAudit, onOpenContentAudit }: {
+export function PopupToolViews({ tool, metadata, scan, tabId, scanGeneration, onRetry, onRequestAccess, onOpenImageAudit, onOpenContentAudit }: {
   tool: PopupTool;
   metadata: MetadataState;
   scan: PageScanState;
   tabId?: number;
+  scanGeneration?: number;
   onRetry: () => void;
   onRequestAccess: () => Promise<void>;
-  onOpenImageAudit?: () => void;
-  onOpenContentAudit?: () => void;
+  onOpenImageAudit?: (issueIds: string[]) => void;
+  onOpenContentAudit?: (issueIds: string[]) => void;
 }) {
   const [expandedHeadings, setExpandedHeadings] = useState(false);
   const [imageAltFilter, setImageAltFilter] = useState<'all' | 'not-empty' | 'empty'>('all');
   const [imageStatusFilter, setImageStatusFilter] = useState<'all' | 'ok' | 'broken' | 'unchecked'>('all');
   const [imageHelpOverlay, setImageHelpOverlay] = useState<{ key: string; text: string; top: number; left: number }>();
   const [imageStatuses, setImageStatuses] = useState<Record<string, CheckedImageStatus>>({});
+  const [imageCooldowns, setImageCooldowns] = useState<Record<string, number>>({});
+  const [imageRefreshingKeys, setImageRefreshingKeys] = useState<string[]>([]);
+  const [imageStatusNow, setImageStatusNow] = useState(Date.now());
   const [imageStatusReady, setImageStatusReady] = useState(false);
   const [imageStatusProgress, setImageStatusProgress] = useState<{ done: number; total: number }>();
   const imageStatusRun = useRef(0);
@@ -250,24 +255,55 @@ export function PopupToolViews({ tool, metadata, scan, tabId, onRetry, onRequest
     imageRefreshBusy.current = false;
     setExpandedHeadings(false); setImageAltFilter('all'); setImageStatusFilter('all');
     setImageHelpOverlay(undefined);
-    setImageStatuses(scan.result?.imageStatuses ?? {});
-    setImageStatusReady(Boolean(Object.keys(scan.result?.imageStatuses ?? {}).length));
+    const initialStatuses = restoreFreshImageStatuses(scan.result?.imageStatuses);
+    setImageStatuses(initialStatuses);
+    setImageStatusReady(Boolean(Object.keys(initialStatuses).length));
+    setImageCooldowns({});
+    setImageRefreshingKeys([]);
     setImageStatusProgress(undefined);
     setFeedback({ target: '', text: '', failed: false });
     if (tool === 'images' && tabId && scan.status === 'ready' && scan.result) {
       const result = scan.result;
-      void getSnapshot(tabId, result.page.url).then((cached) => {
-        if (run === imageStatusRun.current && cached.ok && cached.result?.scannedAt === result.scannedAt) {
-          setImageStatuses(cached.result.imageStatuses ?? {});
-          setImageStatusReady(Boolean(Object.keys(cached.result.imageStatuses ?? {}).length));
-        }
+      const pageOrigin = new URL(result.page.url).origin;
+      const imageUrls = result.page.images.map((image) => image.src);
+      void Promise.all([getSnapshot(tabId, result.page.url), getImageStatusState(pageOrigin, imageUrls)]).then(([snapshot, state]) => {
+        if (run !== imageStatusRun.current) return;
+        const restored = snapshot.ok && snapshot.result?.scannedAt === result.scannedAt
+          ? restoreFreshImageStatuses(snapshot.result.imageStatuses) : initialStatuses;
+        const merged = { ...restored };
+        result.page.images.forEach((image, index) => {
+          const normalized = normalizeImageStatusUrl(image.src);
+          const cached = normalized ? state.cache?.[normalized] : undefined;
+          const fresh = cached ? restoreFreshImageStatuses({ cached }, Date.now()).cached : undefined;
+          const key = `${image.src}-${index}`;
+          if (fresh && (!merged[key]?.checkedAt || fresh.checkedAt! > merged[key].checkedAt!)) merged[key] = { ...fresh, source: 'cache' };
+        });
+        const now = Date.now();
+        setImageStatuses(merged);
+        setImageStatusReady(Boolean(Object.keys(merged).length));
+        setImageCooldowns(Object.fromEntries(Object.entries(state.cooldowns ?? {}).filter(([, until]) => until > now)));
+        setImageStatusNow(now);
       });
     }
     return () => { imageStatusRun.current++; };
   }, [scan.result?.scannedAt, scan.result?.page.url, scan.status, tool, tabId]);
 
+  useEffect(() => {
+    const expiries = Object.values(imageStatuses).map((status) => status.expiresAt ?? (status.checkedAt ? status.checkedAt + 5 * 60_000 : 0)).filter((value) => value > imageStatusNow);
+    const cooldownExpiries = Object.values(imageCooldowns).filter((value) => value > imageStatusNow);
+    const next = Math.min(...expiries, ...cooldownExpiries);
+    if (!Number.isFinite(next)) return;
+    const timer = window.setTimeout(() => {
+      const now = Date.now();
+      setImageStatusNow(now);
+      setImageCooldowns((current) => Object.fromEntries(Object.entries(current).filter(([, until]) => until > now)));
+    }, Math.max(1, next - Date.now() + 1));
+    return () => window.clearTimeout(timer);
+  }, [imageStatuses, imageCooldowns, imageStatusNow]);
+
   const result = scan.status === 'ready' ? scan.result : undefined;
   const page = result?.page;
+  const issueNavigationAvailable = Boolean(result && Number.isInteger(scanGeneration) && result.page.url === metadata.url);
   const indexKey = page ? `${page.url}|${result?.scannedAt ?? 0}` : '';
   useEffect(() => {
     if (tool !== 'indexability' || !page || !tabId || !globalThis.chrome?.scripting) return;
@@ -326,31 +362,62 @@ export function PopupToolViews({ tool, metadata, scan, tabId, onRetry, onRequest
     if (imageRefreshBusy.current) return;
     imageRefreshBusy.current = true;
     const run = ++imageStatusRun.current;
-    const grouped = new Map<string, string[]>();
+    setImageRefreshingKeys(entries.map(({ key }) => key));
+    const grouped = new Map<string, { src: string; keys: string[] }>();
     entries.forEach(({ image, key }) => {
-      if (!/^https?:\/\//i.test(image.src)) return;
-      try { new URL(image.src); } catch { return; }
-      const keys = grouped.get(image.src) ?? [];
-      keys.push(key);
-      grouped.set(image.src, keys);
+      const normalized = normalizeImageStatusUrl(image.src);
+      if (!normalized) return;
+      const group = grouped.get(normalized) ?? { src: normalized, keys: [] };
+      group.keys.push(key);
+      grouped.set(normalized, group);
     });
-    const targets = [...grouped].map(([src, keys]) => ({ src, keys }));
+    const targets = [...grouped.values()];
     setImageStatusProgress({ done: 0, total: entries.length });
-    const cached = tabId && page ? await getSnapshot(tabId, page.url) : undefined;
+    const snapshot = tabId && page ? await getSnapshot(tabId, page.url) : undefined;
     if (run !== imageStatusRun.current) return;
-    let done = entries.length - targets.reduce((count, task) => count + task.keys.length, 0);
-    setImageStatusProgress({ done, total: entries.length });
     const results: Record<string, CheckedImageStatus> = { ...imageStatuses };
-    const throttledOrigins = new Set<string>();
+    const preservePrevious = (task: { keys: string[] }) => {
+      for (const key of task.keys) {
+        const previous = imageStatuses[key];
+        if (previous?.code) results[key] = { ...previous, source: 'previous' };
+        else delete results[key];
+      }
+    };
+    const pageOrigin = page ? new URL(page.url).origin : '';
+    const state = pageOrigin ? await getImageStatusState(pageOrigin, targets.map(({ src }) => src)) : undefined;
+    if (run !== imageStatusRun.current) return;
+    const now = Date.now();
+    const cooldowns = Object.fromEntries(Object.entries(state?.cooldowns ?? {}).filter(([, until]) => until > now));
+    setImageCooldowns(cooldowns);
+    const coolingOrigins = new Set(Object.keys(cooldowns));
+    const skippedAtStart = targets.filter((task) => coolingOrigins.has(new URL(task.src).origin));
+    skippedAtStart.forEach(preservePrevious);
+    let done = entries.length - targets.reduce((count, task) => count + task.keys.length, 0)
+      + skippedAtStart.reduce((count, task) => count + task.keys.length, 0);
+    setImageStatusProgress({ done, total: entries.length });
+    const refreshRun = tabId && page && result && snapshot?.ok && snapshot.result?.scannedAt === result.scannedAt
+      ? await startImageRefreshRun(tabId, page.url, snapshot.generation, result.scannedAt)
+      : undefined;
+    if (run !== imageStatusRun.current) return;
+    if (refreshRun && !refreshRun.ok) {
+      imageRefreshBusy.current = false;
+      setImageStatusProgress(undefined);
+      setImageRefreshingKeys([]);
+      return;
+    }
+    const runId = refreshRun?.ok ? refreshRun.runId : undefined;
+    const liveCacheEntries = new Map<string, { url: string; status: ImageStatusRecord }>();
     let scriptingUnavailable = false;
     let lastProgressAt = 0;
+    let cooldownsChanged = false;
     // Bound both the injected work and cross-process script calls. A long
     // image list no longer injects one function for every URL on each refresh.
-    for (let offset = 0; offset < targets.length; offset += 6) {
+    const targetsToCheck = targets.filter((task) => !coolingOrigins.has(new URL(task.src).origin));
+    for (let offset = 0; offset < targetsToCheck.length; offset += 6) {
       if (run !== imageStatusRun.current) return;
-      const batch = targets.slice(offset, offset + 6);
-      const runnable = batch.filter((task) => !throttledOrigins.has(new URL(task.src).origin));
-      let checked: Array<{ code?: number; fileSize?: number }> = [];
+      const batch = targetsToCheck.slice(offset, offset + 6);
+      const runnable = batch.filter((task) => !coolingOrigins.has(new URL(task.src).origin));
+      let checked: ImageUrlCheck[] = [];
       if (runnable.length && tabId && globalThis.chrome?.scripting && !scriptingUnavailable) {
         try {
           const [reply] = await chrome.scripting.executeScript({ target: { tabId }, args: [runnable.map((task) => task.src)], func: checkImageUrls });
@@ -363,32 +430,57 @@ export function PopupToolViews({ tool, metadata, scan, tabId, onRetry, onRequest
       if (run !== imageStatusRun.current) return;
       const byUrl = new Map(runnable.map((task, index) => [task.src, checked[index]]));
       for (const task of batch) {
+        if (!runnable.includes(task)) {
+          preservePrevious(task);
+          done += task.keys.length;
+          continue;
+        }
         const response = byUrl.get(task.src);
         const code = response?.code;
-        const status: CheckedImageStatus = typeof code === 'number'
-          ? { kind: code === 429 ? 'unchecked' : code >= 200 && code < 400 ? 'ok' : 'broken', code, fileSize: response?.fileSize }
-          : { kind: 'unchecked' };
-        if (code === 429) throttledOrigins.add(new URL(task.src).origin);
-        for (const key of task.keys) results[key] = status;
+        if (code === 429) {
+          const origin = new URL(task.src).origin;
+          const receivedAt = response?.receivedAt ?? Date.now();
+          const until = imageCooldownUntil(response?.retryAfter, receivedAt);
+          coolingOrigins.add(origin);
+          cooldowns[origin] = Math.max(cooldowns[origin] ?? 0, until);
+          cooldownsChanged = true;
+          preservePrevious(task);
+        } else if (typeof code === 'number' && code >= 100 && code <= 599) {
+          const checkedAt = response?.receivedAt ?? Date.now();
+          const status: CheckedImageStatus = { kind: code >= 200 && code < 400 ? 'ok' : 'broken', code,
+            ...(response?.fileSize ? { fileSize: response.fileSize } : {}), checkedAt,
+            expiresAt: checkedAt + 5 * 60_000, source: 'live', ...(runId !== undefined ? { runId } : {}) };
+          for (const key of task.keys) results[key] = status;
+          liveCacheEntries.set(task.src, { url: task.src, status });
+        } else {
+          preservePrevious(task);
+        }
         done += task.keys.length;
       }
       const now = Date.now();
-      if (offset + batch.length === targets.length || now - lastProgressAt >= 100) {
+      if (offset + batch.length === targetsToCheck.length || now - lastProgressAt >= 100) {
         lastProgressAt = now;
-        setImageStatuses({ ...results });
-      setImageStatusProgress({ done, total: entries.length });
+        setImageCooldowns({ ...cooldowns });
+        setImageStatusNow(now);
+        setImageStatusProgress({ done, total: entries.length });
       }
     }
     if (run !== imageStatusRun.current) return;
-    // Non-HTTP URLs and browser-blocked requests are explicitly unchecked.
-    entries.forEach(({ key }) => { if (!results[key]) results[key] = { kind: 'unchecked' }; });
-    setImageStatuses(results);
-    setImageStatusProgress(undefined);
-    setImageStatusReady(true);
-    if (tabId && page && result && cached?.ok && cached.result?.scannedAt === result.scannedAt) {
-      await putImageStatuses(tabId, page.url, cached.generation, result.scannedAt, results);
+    if (cooldownsChanged) await putImageCooldowns(cooldowns);
+    let committed = true;
+    if (runId !== undefined && tabId && page && result && snapshot?.ok && liveCacheEntries.size > 0) {
+      const stored = await putImageStatusState(tabId, page.url, snapshot.generation, result.scannedAt, runId, results, [...liveCacheEntries.values()]);
+      committed = stored.ok;
     }
-    if (run === imageStatusRun.current) imageRefreshBusy.current = false;
+    if (run === imageStatusRun.current) {
+      if (committed) setImageStatuses(results);
+      setImageStatusProgress(undefined);
+      setImageRefreshingKeys([]);
+      setImageStatusReady(true);
+      setImageCooldowns({ ...cooldowns });
+      setImageStatusNow(Date.now());
+      imageRefreshBusy.current = false;
+    }
   };
   const accessNeeded = metadata.status === 'error' && metadata.kind === 'access-needed';
   const restricted = metadata.status === 'error' && metadata.kind === 'restricted';
@@ -403,17 +495,18 @@ export function PopupToolViews({ tool, metadata, scan, tabId, onRetry, onRequest
     const visible = expandedHeadings ? headings : headings.slice(0, 8);
     const h1Count = headings.filter((heading) => heading.level === 1).length;
     return <div className="inspector-content-sheet">
-      <QuickMetadataCard state={metadata} onRequestAccess={onRequestAccess} onOpenContentAudit={onOpenContentAudit} sectionTitle="Meta" />
+      <QuickMetadataCard state={metadata} onRequestAccess={onRequestAccess}
+        onOpenContentAudit={issueNavigationAvailable && result?.issues.some((issue) => issue.id === 'META_001') ? () => onOpenContentAudit?.(['META_001']) : undefined} sectionTitle="Meta" />
       {!page ? stateNotice : <section className="inspector-content-group" aria-labelledby="inspector-content-heading">
         <div className="inspector-content-section-head"><h3 id="inspector-content-heading">Content</h3><button type="button" className="inspector-outline" disabled={!headings.length} onClick={() => void copy('headings', headingsAsTsv(headings), true)}><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="2" /><path d="M13 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" /></svg><span>Copy headings</span></button></div>
         <div className="inspector-content-stat-row"><span>Word count</span><span>{page.wordCount} words</span></div>
         <div className="inspector-content-heading-list"><span className="inspector-content-row-label">Headings</span><div className="inspector-content-heading-body">
-          {headings.length > 0 && h1Count === 0 ? <div className="inspector-content-heading-warning"><span className="inspector-content-heading-info-icon" aria-hidden="true">i</span><span>No H1 heading found.</span></div> : null}
-          {h1Count > 0 && headings[0]?.level !== 1 ? <div className="inspector-content-heading-warning"><span className="inspector-content-heading-info-icon" aria-hidden="true">i</span><span>The first heading is not H1</span></div> : null}
-          {visible.length ? visible.map((heading, index) => <div className="inspector-heading-row" data-level={heading.level} key={index}><b>H{heading.level}</b><span className={!heading.text ? 'is-empty' : ''}>{heading.text || 'Empty heading'}</span></div>) : <span className="inspector-content-heading-missing">Missing</span>}
+          {headings.length > 0 && h1Count === 0 ? <div className="inspector-content-heading-warning"><span className="inspector-content-heading-info-icon" aria-hidden="true">i</span><span>No H1 heading found.</span>{issueNavigationAvailable && result?.issues.some((issue) => issue.id === 'HEADING_001') ? <button type="button" className="inspector-text-button" onClick={() => onOpenContentAudit?.(['HEADING_001'])}>View issue →</button> : null}</div> : null}
+          {h1Count > 0 && headings[0]?.level !== 1 ? <div className="inspector-content-heading-warning"><span className="inspector-content-heading-info-icon" aria-hidden="true">i</span><span>The first heading is not H1</span>{issueNavigationAvailable && result?.issues.some((issue) => issue.id === 'HEADING_004') ? <button type="button" className="inspector-text-button" onClick={() => onOpenContentAudit?.(['HEADING_004'])}>View issue →</button> : null}</div> : null}
+          {visible.length ? visible.map((heading, index) => <div className="inspector-heading-row" data-level={heading.level} key={index}><b>H{heading.level}</b><span className={!heading.text ? 'is-empty' : ''}>{heading.text || 'Empty heading'}</span></div>) : <><span className="inspector-content-heading-missing">Missing</span>{issueNavigationAvailable && result?.issues.some((issue) => issue.id === 'HEADING_001') ? <button type="button" className="inspector-text-button" onClick={() => onOpenContentAudit?.(['HEADING_001'])}>View issue →</button> : null}</>}
           {headings.length > 8 ? <button type="button" className="inspector-text-button" aria-expanded={expandedHeadings} onClick={() => setExpandedHeadings((value) => !value)}>{expandedHeadings ? 'Show fewer' : 'Show more'}</button> : null}
         </div></div>
-        {h1Count > 1 ? <p className="inspector-check">{h1Count} H1 headings found. Review the primary heading.</p> : null}
+        {h1Count > 1 ? <p className="inspector-check">{h1Count} H1 headings found. Review the primary heading.{issueNavigationAvailable && result?.issues.some((issue) => issue.id === 'HEADING_002') ? <> <button type="button" className="inspector-text-button" onClick={() => onOpenContentAudit?.(['HEADING_002'])}>View issue →</button></> : null}</p> : null}
         {copyStatus('headings')}{feedback.target === 'headings' && feedback.fallback ? <textarea className="inspector-fallback" readOnly aria-label="All headings in TSV" value={feedback.fallback} onFocus={(event) => event.currentTarget.select()} /> : null}
       </section>}
     </div>;
@@ -492,14 +585,13 @@ export function PopupToolViews({ tool, metadata, scan, tabId, onRetry, onRequest
   const altEmpty = images.length - altNotEmpty;
   const statusCounts = images.reduce((counts, image, index) => {
     const key = `${image.src}-${index}`;
-    const status = imageStatuses[key];
-    if (!status) counts.unchecked++;
-    else counts[status.kind]++;
+    const kind = imageStatusKind(imageStatuses[key], imageStatusNow);
+    counts[kind]++;
     return counts;
   }, { ok: 0, broken: 0, unchecked: 0 });
   const filteredImages = images.map((image, index) => ({ image, index, key: `${image.src}-${index}` })).filter(({ image, key }) => {
     const altMatches = imageAltFilter === 'all' || (imageAltFilter === 'not-empty' ? Boolean(image.alt?.trim()) : !image.alt?.trim());
-    const status = imageStatuses[key]?.kind ?? 'unchecked';
+    const status = imageStatusKind(imageStatuses[key], imageStatusNow);
     const statusMatches = imageStatusFilter === 'all' || status === imageStatusFilter;
     return altMatches && statusMatches;
   });
@@ -536,26 +628,37 @@ export function PopupToolViews({ tool, metadata, scan, tabId, onRetry, onRequest
   </div>;
   return <><section className="inspector-card inspector-images-card">
       {imageToolbar}
-      {Object.values(imageStatuses).some((status) => status.code === 429) ? <p className="inspector-check is-neutral" role="status">An image server limited requests (429). Remaining images on that server were not checked. Try again later.</p> : null}
+      {Object.entries(imageCooldowns).map(([origin, until]) => <p className="inspector-image-cooldown" role="status" key={origin}>Image server {new URL(origin).host} is rate limited. You can refresh its images after {new Date(until).toLocaleTimeString()}.</p>)}
       {imageStatusReady && !imageStatusProgress && statusCounts.unchecked > 0 ? <p className="inspector-image-status-note" role="status">Not checked means no HTTP status was verified for {statusCounts.unchecked} image{statusCounts.unchecked === 1 ? '' : 's'}. A thumbnail may still appear when the separate status request is blocked or times out.</p> : null}
       <div className="inspector-image-table-head"><strong>Image details</strong><strong>Status</strong></div>
       {filteredImages.length ? filteredImages.map(({ image, index, key }) => {
         const status = imageStatuses[key];
+        const statusKind = imageStatusKind(status, imageStatusNow);
+        const source = imageStatusSource(status, imageStatusNow, imageRefreshingKeys.includes(key));
+        const checkedAtLabel = Number.isFinite(status?.checkedAt) ? new Date(status!.checkedAt!).toLocaleString() : '';
+        const expiresAt = status?.expiresAt ?? (status?.checkedAt ? status.checkedAt + 5 * 60_000 : undefined);
+        const statusTooltip = source === 'cache' ? `Checked at ${checkedAtLabel} · Valid until ${expiresAt ? new Date(expiresAt).toLocaleString() : ''}`
+          : source === 'live' ? `Checked at ${checkedAtLabel}` : source === 'previous' ? `Last checked at ${checkedAtLabel}` : undefined;
         const fileSize = image.fileSize ?? status?.fileSize;
         const safeLink = /^https?:\/\//i.test(image.src);
         const emptyAlt = image.alt === null || image.alt.trim() === '';
         const helpText = 'Review this image issue and get the recommended action for its alt text.';
+        const directIssueId = image.alt === null ? 'IMAGE_001' : 'IMAGE_004';
+        const hasMappedIssue = issueNavigationAvailable && result.issues.some((issue) => issue.id === directIssueId);
         return <div className="inspector-image-entry" key={key}>
           <ImageThumbnail image={image} />
           <div className="inspector-image-content">
-            <p className={`inspector-image-alt ${emptyAlt ? 'is-empty-alt' : ''}`}>{emptyAlt ? <span className="inspector-image-warning" aria-hidden="true"><svg viewBox="0 0 14 14" aria-hidden="true"><rect x="6" y="3" width="2" height="2" fill="currentColor" /><rect x="6" y="6" width="2" height="5" fill="currentColor" /></svg></span> : null}<span>{image.alt === null ? 'Missing alt text' : image.alt.trim() === '' ? 'Empty alt text' : image.alt}</span>{emptyAlt ? <button type="button" className="inspector-image-help-trigger" aria-label={`How to fix ${image.alt === null ? 'missing' : 'empty'} alt text; open image audit`} aria-describedby={imageHelpOverlay?.key === key ? 'inspector-image-help-description' : undefined} onMouseEnter={(event) => showImageHelp(key, helpText, event.currentTarget)} onMouseLeave={hideImageHelpSoon} onFocus={(event) => showImageHelp(key, helpText, event.currentTarget)} onBlur={(event) => { if (!document.getElementById('inspector-image-help-tooltip')?.contains(event.relatedTarget as Node)) hideImageHelpSoon(); }} onClick={() => onOpenImageAudit?.()}>How to fix →</button> : null}</p>
+            <p className={`inspector-image-alt ${emptyAlt ? 'is-empty-alt' : ''}`}>{emptyAlt ? <span className="inspector-image-warning" aria-hidden="true"><svg viewBox="0 0 14 14" aria-hidden="true"><rect x="6" y="3" width="2" height="2" fill="currentColor" /><rect x="6" y="6" width="2" height="5" fill="currentColor" /></svg></span> : null}<span>{image.alt === null ? 'Missing alt text' : image.alt.trim() === '' ? 'Empty alt text' : image.alt}</span>{emptyAlt && hasMappedIssue ? <button type="button" className="inspector-image-help-trigger" aria-label={`View issue for ${image.alt === null ? 'missing' : 'empty'} alt text`} aria-describedby={imageHelpOverlay?.key === key ? 'inspector-image-help-description' : undefined} onMouseEnter={(event) => showImageHelp(key, helpText, event.currentTarget)} onMouseLeave={hideImageHelpSoon} onFocus={(event) => showImageHelp(key, helpText, event.currentTarget)} onBlur={(event) => { if (!document.getElementById('inspector-image-help-tooltip')?.contains(event.relatedTarget as Node)) hideImageHelpSoon(); }} onClick={() => onOpenImageAudit?.([directIssueId])}>View issue →</button> : null}</p>
             <p className="inspector-image-url">{safeLink ? <a href={image.src} target="_blank" rel="noopener noreferrer" referrerPolicy="no-referrer" aria-label={image.src}>{imageUrlLabel(image.src)}<svg className="inspector-image-external-icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M7 1.5h3.5V5M10.5 1.5 5.5 6.5M9.5 7v3.5h-8v-8H5" /></svg></a> : <span>{imageUrlLabel(image.src)}</span>}</p>
             <p className="inspector-image-size">{image.naturalWidth > 0 && image.naturalHeight > 0 ? `${image.naturalWidth} × ${image.naturalHeight}px` : 'Natural size unavailable'}{fileSize && fileSize > 0 ? ` ${fileSize < 1024 ? `${fileSize.toFixed(2)} B` : `${(fileSize / 1024).toFixed(2)} KB`}` : ''}</p>
           </div>
-          <span className={`inspector-image-status ${status?.kind ?? 'unchecked'}`}>{status?.code ?? '—'}</span>
+          <div className="inspector-image-status-column">
+            <span className={`inspector-image-status ${statusKind}`}>{status?.code ?? '—'}</span>
+            {source ? <small translate="no" className={`inspector-image-status-source is-${source}`} title={statusTooltip}>{imageRefreshingKeys.includes(key) ? 'Previous result · Refreshing' : source === 'live' ? 'Just checked' : source === 'cache' ? 'Cached' : 'Previous result'}</small> : null}
+          </div>
         </div>;
       }) : <Notice title={images.length ? 'No matching images' : 'No reportable images'}>{images.length ? 'Change the filters to see more images.' : 'Images without a usable HTTP(S) source and known tracking-sized images are excluded from this list.'}</Notice>}
     </section>
-    {imageHelpOverlay ? createPortal(<div id="inspector-image-help-tooltip" className="inspector-image-help-tooltip" role="group" aria-label="SEO Audit" style={{ top: imageHelpOverlay.top, left: imageHelpOverlay.left }} onMouseEnter={cancelImageHelpHide} onMouseLeave={() => setImageHelpOverlay(undefined)}><strong>SEO Audit</strong><p id="inspector-image-help-description">{imageHelpOverlay.text}</p><button type="button" className="inspector-image-help-audit" onClick={() => onOpenImageAudit?.()}>Open image audit →</button></div>, document.body) : null}
+    {imageHelpOverlay ? createPortal(<div id="inspector-image-help-tooltip" className="inspector-image-help-tooltip" role="group" aria-label="SEO Audit" style={{ top: imageHelpOverlay.top, left: imageHelpOverlay.left }} onMouseEnter={cancelImageHelpHide} onMouseLeave={() => setImageHelpOverlay(undefined)}><strong>SEO Audit</strong><p id="inspector-image-help-description">{imageHelpOverlay.text}</p><button type="button" className="inspector-image-help-audit" onClick={() => { const image = filteredImages.find((entry) => entry.key === imageHelpOverlay.key)?.image; if (image) onOpenImageAudit?.([image.alt === null ? 'IMAGE_001' : 'IMAGE_004']); }}>View issue →</button></div>, document.body) : null}
   </>;
 }

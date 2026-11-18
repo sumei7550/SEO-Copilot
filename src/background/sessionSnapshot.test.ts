@@ -65,11 +65,12 @@ describe('session snapshot coordinator', () => {
     await send('SNAPSHOT_START');
     await send('SNAPSHOT_PUT', 3, { generation: 1, result });
     const key = `${result.page.images[0].src}-0`;
-    const imageStatuses = { [key]: { kind: 'ok', code: 200, fileSize: 898 } };
+    const checkedAt = Date.now();
+    const imageStatuses = { [key]: { kind: 'ok', code: 200, fileSize: 898, checkedAt, expiresAt: checkedAt + 5 * 60_000, source: 'live' as const } };
     const update = { generation: 1, scannedAt: 123, imageStatuses };
     expect((await send('SNAPSHOT_IMAGE_STATUSES_PUT', 3, update)).ok).toBe(true);
     const restored = await send('SNAPSHOT_GET', 3, {}, panel);
-    expect(restored.result).toEqual({ ...result, imageStatuses });
+    expect(restored.result).toEqual({ ...result, imageStatuses: { [key]: { ...imageStatuses[key], source: 'cache' } } });
     expect((await send('SNAPSHOT_GET', 4)).reason).toBe('missing');
     expect((await send('SNAPSHOT_IMAGE_STATUSES_PUT', 3, { ...update, scannedAt: 122 })).reason).toBe('stale');
     failSnapshotWrite = true;
@@ -82,6 +83,70 @@ describe('session snapshot coordinator', () => {
     await send('SNAPSHOT_PUT', 3, { generation: 3, result: { ...result, scannedAt: 124 } });
     expect((await send('SNAPSHOT_IMAGE_STATUSES_PUT', 3, update)).reason).toBe('stale');
     expect((await send('SNAPSHOT_GET')).result.imageStatuses).toBeUndefined();
+  });
+
+  it('revalidates image TTL inside a still-live ten minute page snapshot and drops legacy timestamps', async () => {
+    await send('SNAPSHOT_START');
+    const checkedAt = Date.now() - 6 * 60_000;
+    const image = { src: 'https://cdn.example/image.png', alt: 'Photo', auditable: true, naturalWidth: 20, naturalHeight: 20, transferSize: 0 };
+    const result = { ...previewResult, page: { ...previewResult.page, url, images: [image] }, scannedAt: 456,
+      imageStatuses: { old: { kind: 'ok' as const, code: 200, checkedAt }, legacy: { kind: 'ok' as const, code: 200 } } };
+    await send('SNAPSHOT_PUT', 3, { generation: 1, result });
+    const restored = await send('SNAPSHOT_GET', 3, {}, panel);
+    expect(restored.ok).toBe(true);
+    expect(restored.result.imageStatuses).toBeUndefined();
+    expect((values.get('seoSnapshot:3') as any).result.imageStatuses).toBeUndefined();
+  });
+
+  it('isolates cache by page Origin and cooldown by image-request Origin', async () => {
+    await send('SNAPSHOT_START');
+    const image = { src: 'https://cdn.example/image.png#thumbnail', alt: 'Photo', auditable: true, naturalWidth: 20, naturalHeight: 20, transferSize: 0 };
+    const result = { ...previewResult, page: { ...previewResult.page, url, images: [image] }, scannedAt: 789 };
+    await send('SNAPSHOT_PUT', 3, { generation: 1, result });
+    const started = await send('IMAGE_REFRESH_RUN_START', 3, { generation: 1, scannedAt: 789 });
+    const checkedAt = Date.now();
+    const status = { kind: 'ok', code: 200, checkedAt, expiresAt: checkedAt + 300_000, source: 'live', runId: started.runId };
+    expect(started.ok).toBe(true);
+    expect((await send('IMAGE_STATUS_STATE_PUT', 3, { generation: 1, scannedAt: 789, runId: started.runId,
+      imageStatuses: { [`${image.src}-0`]: status }, cacheEntries: [{ url: image.src, status }] })).ok).toBe(true);
+    const pageCache = await send('IMAGE_STATUS_STATE_GET', 3, { pageOrigin: 'https://example.com', urls: [image.src] });
+    expect(pageCache.cache).toHaveProperty('https://cdn.example/image.png');
+    const otherPage = await send('IMAGE_STATUS_STATE_GET', 3, { pageOrigin: 'https://other.example', urls: [image.src] });
+    expect(otherPage.cache).toEqual({});
+    const until = Date.now() + 30_000;
+    await send('IMAGE_STATUS_COOLDOWNS_PUT', 3, { cooldowns: { 'https://cdn.example': until } });
+    expect((await send('IMAGE_STATUS_STATE_GET', 3, { pageOrigin: 'https://example.com', urls: [image.src] })).cooldowns)
+      .toEqual({ 'https://cdn.example': until });
+
+    const cacheKey = 'https://example.com\nhttps://cdn.example/image.png';
+    const expiredAt = Date.now() - 6 * 60_000;
+    values.set('seoImageStatusCache', { [cacheKey]: { pageOrigin: 'https://example.com', imageUrl: 'https://cdn.example/image.png',
+      status: { kind: 'ok', code: 200, checkedAt: expiredAt, runId: 1 } } });
+    const expired = await send('IMAGE_STATUS_STATE_GET', 3, { pageOrigin: 'https://example.com', urls: [image.src] });
+    expect(expired.cache).toEqual({});
+    expect(values.get('seoImageStatusCache')).toEqual({});
+  });
+
+  it('rejects an older image refresh run after a newer run starts', async () => {
+    await send('SNAPSHOT_START');
+    const image = { src: 'https://cdn.example/image.png', alt: 'Photo', auditable: true, naturalWidth: 20, naturalHeight: 20, transferSize: 0 };
+    const result = { ...previewResult, page: { ...previewResult.page, url, images: [image] }, scannedAt: 900 };
+    await send('SNAPSHOT_PUT', 3, { generation: 1, result });
+    const first = await send('IMAGE_REFRESH_RUN_START', 3, { generation: 1, scannedAt: 900 });
+    const second = await send('IMAGE_REFRESH_RUN_START', 3, { generation: 1, scannedAt: 900 });
+    const checkedAt = Date.now();
+    const staleStatus = { kind: 'broken', code: 404, checkedAt, expiresAt: checkedAt + 300_000, source: 'live', runId: first.runId };
+    const stale = await send('IMAGE_STATUS_STATE_PUT', 3, { generation: 1, scannedAt: 900, runId: first.runId,
+      imageStatuses: { [`${image.src}-0`]: staleStatus }, cacheEntries: [{ url: image.src, status: staleStatus }] });
+    expect(stale.reason).toBe('stale');
+    const status = { kind: 'ok', code: 200, checkedAt, expiresAt: checkedAt + 300_000, source: 'live', runId: second.runId };
+    const valid = await send('IMAGE_STATUS_STATE_PUT', 3, { generation: 1, scannedAt: 900, runId: second.runId,
+      imageStatuses: { [`${image.src}-0`]: status }, cacheEntries: [{ url: image.src, status }] });
+    expect(valid.ok).toBe(true);
+    expect((await send('SNAPSHOT_GET')).result.imageStatuses[`${image.src}-0`].code).toBe(200);
+    await send('SNAPSHOT_START');
+    expect((await send('IMAGE_STATUS_STATE_PUT', 3, { generation: 1, scannedAt: 900, runId: second.runId,
+      imageStatuses: { [`${image.src}-0`]: staleStatus }, cacheEntries: [{ url: image.src, status: staleStatus }] })).reason).toBe('stale');
   });
 
   it('shares the full result across extension pages and isolates the same URL on another Tab', async () => {

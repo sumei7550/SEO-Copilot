@@ -13,7 +13,7 @@ let writeText: ReturnType<typeof vi.fn>;
 const metadata = { status: 'ready' as const, url: 'https://example.com/', generation: 1, data: { title: 'Example page', metaDescription: 'Example description', url: 'https://example.com/' } };
 
 async function show(tool: PopupTool) {
-  await act(async () => root.render(<PopupToolViews tool={tool} metadata={metadata} scan={{ status: 'ready', result }} onRetry={() => {}} onRequestAccess={async () => {}} />));
+  await act(async () => root.render(<PopupToolViews tool={tool} metadata={metadata} scan={{ status: 'ready', result }} scanGeneration={1} onRetry={() => {}} onRequestAccess={async () => {}} />));
 }
 async function click(label: string) {
   const button = Array.from(container.querySelectorAll('button')).find((item) => item.textContent?.trim() === label);
@@ -95,6 +95,43 @@ describe('Popup Page Inspector tools', () => {
     } finally { vi.unstubAllGlobals(); }
   });
 
+  it('rechecks on manual Refresh and replaces a cached 200 with a newly returned 404', async () => {
+    result.page.images = [{ src: 'https://example.com/image.svg', alt: 'Icon', auditable: true, naturalWidth: 150, naturalHeight: 150, transferSize: 0 }];
+    const executeScript = vi.fn()
+      .mockResolvedValueOnce([{ result: [{ code: 200 }] }])
+      .mockResolvedValueOnce([{ result: [{ code: 404 }] }]);
+    vi.stubGlobal('chrome', { scripting: { executeScript } });
+    try {
+      await act(async () => root.render(<PopupToolViews tool="images" metadata={metadata} scan={{ status: 'ready', result }} tabId={3} onRetry={() => {}} onRequestAccess={async () => {}} />));
+      await act(async () => container.querySelector<HTMLButtonElement>('[aria-label="Refresh image statuses"]')!.click());
+      expect(container.querySelector('.inspector-image-status')?.textContent).toBe('200');
+      await act(async () => container.querySelector<HTMLButtonElement>('[aria-label="Refresh image statuses"]')!.click());
+      expect(executeScript).toHaveBeenCalledTimes(2);
+      expect(container.querySelector('.inspector-image-status')?.textContent).toBe('404');
+      expect(container.querySelector('.inspector-image-status.broken')).not.toBeNull();
+      expect(container.querySelector('.inspector-image-status-source')?.textContent).toBe('Just checked');
+      expect(container.querySelector('.inspector-image-status-source')?.getAttribute('translate')).toBe('no');
+      expect(container.querySelector('.inspector-image-status-source')?.getAttribute('title')).toContain('Checked at');
+    } finally { vi.unstubAllGlobals(); }
+  });
+
+  it('keeps the last successful status visible when a forced refresh receives 429', async () => {
+    result.page.images = [{ src: 'https://example.com/image.svg', alt: 'Icon', auditable: true, naturalWidth: 150, naturalHeight: 150, transferSize: 0 }];
+    const executeScript = vi.fn()
+      .mockResolvedValueOnce([{ result: [{ code: 200 }] }])
+      .mockResolvedValueOnce([{ result: [{ code: 429, receivedAt: Date.now() }] }]);
+    vi.stubGlobal('chrome', { scripting: { executeScript } });
+    try {
+      await act(async () => root.render(<PopupToolViews tool="images" metadata={metadata} scan={{ status: 'ready', result }} tabId={3} onRetry={() => {}} onRequestAccess={async () => {}} />));
+      const refresh = () => container.querySelector<HTMLButtonElement>('[aria-label="Refresh image statuses"]')!.click();
+      await act(async () => refresh());
+      await act(async () => refresh());
+      expect(container.querySelector('.inspector-image-status')?.textContent).toBe('200');
+      expect(container.querySelector('.inspector-image-status-source')?.textContent).toBe('Previous result');
+      expect(container.querySelector('.inspector-image-cooldown')?.textContent).toContain('example.com');
+    } finally { vi.unstubAllGlobals(); }
+  });
+
   it('checks a large page in bounded batches on two consecutive refreshes', async () => {
     result.page.images = Array.from({ length: 164 }, (_, index) => ({ src: `https://example.com/${index}.svg`, alt: 'Logo', auditable: true, naturalWidth: 150, naturalHeight: 150, transferSize: 0 }));
     const executeScript = vi.fn(async ({ args }: { args: string[][] }) => [{ result: args[0].map(() => ({ code: 200 })) }]);
@@ -133,8 +170,9 @@ describe('Popup Page Inspector tools', () => {
       await act(async () => root.render(<PopupToolViews tool="images" metadata={metadata} scan={{ status: 'ready', result }} tabId={3} onRetry={() => {}} onRequestAccess={async () => {}} />));
       await act(async () => container.querySelector<HTMLButtonElement>('[aria-label="Refresh image statuses"]')!.click());
       expect(executeScript).toHaveBeenCalledTimes(1);
-      expect(container.querySelector('.inspector-image-status')?.textContent).toBe('429');
+      expect(container.querySelector('.inspector-image-status')?.textContent).toBe('—');
       expect(container.querySelectorAll('.inspector-image-status.broken')).toHaveLength(0);
+      expect(container.querySelector('.inspector-image-cooldown')?.textContent).toContain('example.com');
       expect(container.querySelector<HTMLButtonElement>('[aria-label="Refresh image statuses"]')?.disabled).toBe(false);
     } finally { vi.unstubAllGlobals(); }
   });
@@ -166,7 +204,9 @@ describe('Popup Page Inspector tools', () => {
     let stored = structuredClone(result);
     const executeScript = vi.fn().mockResolvedValue([{ result: [{ code: 200, fileSize: 898 }] }]);
     const sendMessage = vi.fn(async (message) => {
-      if (message.type === 'SNAPSHOT_IMAGE_STATUSES_PUT') {
+      if (message.type === 'IMAGE_REFRESH_RUN_START') return { ok: true, generation: 7, runId: 1 };
+      if (message.type === 'IMAGE_STATUS_STATE_GET') return { ok: true, cache: {}, cooldowns: {} };
+      if (message.type === 'IMAGE_STATUS_STATE_PUT') {
         expect(message.generation).toBe(7);
         expect(message.scannedAt).toBe(result.scannedAt);
         stored = { ...stored, imageStatuses: message.imageStatuses };
@@ -299,9 +339,12 @@ describe('Popup Page Inspector tools', () => {
       { src: 'https://example.com/empty.png', alt: '', auditable: true, naturalWidth: 100, naturalHeight: 50, transferSize: 0 },
       { src: 'https://example.com/good.png', alt: 'Product', auditable: true, naturalWidth: 100, naturalHeight: 50, transferSize: 0 },
     ];
-    result.issues = [{ id: 'IMAGE_001', category: 'images', severity: 'warning', messageKey: 'issueImageAlt', impactKey: 'impactImages', solutionKey: 'fixImageAlt', impact: -5 }];
+    result.issues = [
+      { id: 'IMAGE_001', category: 'images', severity: 'warning', messageKey: 'issueImageAlt', impactKey: 'impactImages', solutionKey: 'fixImageAlt', impact: -5 },
+      { id: 'IMAGE_004', category: 'images', severity: 'info', messageKey: 'issueImageEmptyAlt', impactKey: 'impactImageEmptyAlt', solutionKey: 'fixImageEmptyAlt', impact: 0 }
+    ];
     const openAudit = vi.fn();
-    await act(async () => root.render(<PopupToolViews tool="images" metadata={metadata} scan={{ status: 'ready', result }} onRetry={() => {}} onRequestAccess={async () => {}} onOpenImageAudit={openAudit} />));
+    await act(async () => root.render(<PopupToolViews tool="images" metadata={metadata} scan={{ status: 'ready', result }} scanGeneration={1} onRetry={() => {}} onRequestAccess={async () => {}} onOpenImageAudit={openAudit} />));
     const empty = Array.from(container.querySelectorAll<HTMLButtonElement>('.inspector-image-filter-menu button')).find((item) => item.textContent?.includes('Empty'))!;
     await act(async () => empty.click());
     expect(container.querySelectorAll('.inspector-image-entry')).toHaveLength(2);
@@ -318,7 +361,7 @@ describe('Popup Page Inspector tools', () => {
     expect(triggers[0].getAttribute('aria-describedby')).toBe('inspector-image-help-description');
     expect(document.getElementById('inspector-image-help-tooltip')?.textContent).toContain('SEO Audit');
     expect(document.getElementById('inspector-image-help-tooltip')?.textContent).toContain('recommended action for its alt text');
-    expect(document.getElementById('inspector-image-help-tooltip')?.textContent).toContain('Open image audit');
+    expect(document.getElementById('inspector-image-help-tooltip')?.textContent).toContain('View issue');
     expect(document.getElementById('inspector-image-help-tooltip')?.textContent).not.toContain('no alt attribute');
     expect(container.querySelector('.inspector-image-help-tooltip')).toBeNull();
     await act(async () => triggers[0].dispatchEvent(new MouseEvent('mouseout', { bubbles: true })));
@@ -326,7 +369,7 @@ describe('Popup Page Inspector tools', () => {
     const tooltip = document.getElementById('inspector-image-help-tooltip')!;
     await act(async () => tooltip.dispatchEvent(new MouseEvent('mouseover', { bubbles: true })));
     await act(async () => tooltip.querySelector<HTMLButtonElement>('.inspector-image-help-audit')!.click());
-    expect(openAudit).toHaveBeenCalledOnce();
+    expect(openAudit).toHaveBeenCalledWith(['IMAGE_001']);
     await act(async () => tooltip.dispatchEvent(new MouseEvent('mouseout', { bubbles: true })));
     expect(document.getElementById('inspector-image-help-tooltip')).toBeNull();
     expect(triggers[0].hasAttribute('aria-describedby')).toBe(false);
@@ -338,8 +381,30 @@ describe('Popup Page Inspector tools', () => {
     expect(document.getElementById('inspector-image-help-tooltip')).toBeNull();
     await act(async () => triggers[0].click());
     expect(openAudit).toHaveBeenCalledTimes(2);
+    expect(openAudit).toHaveBeenLastCalledWith(['IMAGE_001']);
     await act(async () => triggers[1].click());
     expect(openAudit).toHaveBeenCalledTimes(3);
+  });
+
+  it('does not expose View issue for image data that has no matching Audit Issue', async () => {
+    result.page.images = [
+      { src: 'https://example.com/missing.png', alt: null, auditable: true, naturalWidth: 100, naturalHeight: 50, transferSize: 0 },
+      { src: 'https://example.com/empty.png', alt: '', auditable: true, naturalWidth: 100, naturalHeight: 50, transferSize: 0 },
+    ];
+    result.issues = [];
+    await show('images');
+    expect(container.querySelectorAll('.inspector-image-help-trigger')).toHaveLength(0);
+  });
+
+  it('maps a popup Description prompt only to the real META_001 issue', async () => {
+    result.page.metaDescription = '';
+    result.issues = [{ id: 'META_001', category: 'meta', severity: 'critical', messageKey: 'issueMetaMissing', impactKey: 'impactMeta', solutionKey: 'fixMetaMissing', impact: -10 }];
+    const openAudit = vi.fn();
+    await act(async () => root.render(<PopupToolViews tool="content" metadata={{ ...metadata, data: { ...metadata.data, metaDescription: '' } }} scan={{ status: 'ready', result }} scanGeneration={1} onRetry={() => {}} onRequestAccess={async () => {}} onOpenContentAudit={openAudit} />));
+    const entry = Array.from(container.querySelectorAll<HTMLButtonElement>('button')).find((button) => button.textContent?.trim() === 'View issue →');
+    expect(entry).toBeDefined();
+    await act(async () => entry!.click());
+    expect(openAudit).toHaveBeenCalledWith(['META_001']);
   });
 
   it('checks only images visible under the active Alt filter', async () => {

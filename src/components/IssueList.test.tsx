@@ -37,10 +37,11 @@ const nextTitleResult: AiFixResponse = {
 
 let container: HTMLDivElement;
 let root: Root;
+const originalScrollIntoView = HTMLElement.prototype.scrollIntoView;
 
-async function renderIssues(issues: SeoIssue[]) {
+async function renderIssues(issues: SeoIssue[], targetIssueId?: string, targetNonce?: string) {
   await act(async () => {
-    root.render(<IssueList issues={issues} page={page} metrics={metrics} onRescan={() => undefined} />);
+    root.render(<IssueList issues={issues} page={page} metrics={metrics} onRescan={() => undefined} targetIssueId={targetIssueId} targetNonce={targetNonce} />);
   });
 }
 
@@ -67,9 +68,25 @@ beforeEach(() => {
 afterEach(async () => {
   await act(async () => { root.unmount(); });
   container.remove();
+  if (originalScrollIntoView) HTMLElement.prototype.scrollIntoView = originalScrollIntoView;
+  else delete (HTMLElement.prototype as Partial<HTMLElement>).scrollIntoView;
+  vi.restoreAllMocks();
 });
 
 describe('IssueList free recommended actions', () => {
+  it('expands the targeted Issue and scrolls its card into view without changing AI Fix behavior', async () => {
+    const scrollIntoView = vi.fn();
+    HTMLElement.prototype.scrollIntoView = scrollIntoView;
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((callback) => { callback(0); return 1; });
+    await renderIssues([issue('TITLE_001'), issue('META_001')], 'META_001', 'intent-1');
+    const target = container.querySelector<HTMLElement>('[data-issue-id="META_001"]')!;
+    expect(target.classList.contains('is-open')).toBe(true);
+    expect(target.getAttribute('data-issue-id')).toBe('META_001');
+    expect(target.querySelector<HTMLButtonElement>('.ai-fix-button')?.getAttribute('aria-expanded')).toBe('true');
+    expect(scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'center' });
+    expect(container.querySelector('[data-issue-id="TITLE_001"]')?.classList.contains('is-open')).toBe(false);
+  });
+
   it('shows the mapped action for a non-AI issue without an AI entry', async () => {
     await renderIssues([issue('TITLE_004')]);
     expect(card('TITLE_004').textContent).toContain('Keep a single title element directly in the document head.');

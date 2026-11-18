@@ -7,7 +7,7 @@ import { previewResult } from './previewResult';
 import { scanActiveTab } from './scanActiveTab';
 import { PerTabScanState, type ScanType, type TabScanState } from './perTabScanState';
 import type { AuditIntent, AuditIntentClaim } from './auditIntent';
-import { AUDIT_PAGE_CHANGED } from './auditIntent';
+import { AUDIT_ISSUE_UNAVAILABLE, AUDIT_PAGE_CHANGED, resolveIssueTarget } from './auditIntent';
 import { hasSiteAccess, permissionPattern, requestSiteAccess } from './sitePermission';
 import { getSnapshot, putSnapshot, startSnapshotScan } from './sessionSnapshot';
 import { loadActivationState, recordFirstScanCompletedAt, scanActivationProperties, type ActivationState } from '../onboarding/activation';
@@ -67,6 +67,7 @@ export function App() {
   const [ready, setReady] = useState(false);
   const [pendingIntent, setPendingIntent] = useState<AuditIntent>();
   const [requestedCategory, setRequestedCategory] = useState<'images' | 'content' | 'all'>('all');
+  const [targetIssue, setTargetIssue] = useState<{ id: string; intentId: string }>();
   const [handoffError, setHandoffError] = useState('');
   const [, setRevision] = useState(0);
   const repaint = useCallback(() => setRevision((value) => value + 1), []);
@@ -144,6 +145,7 @@ export function App() {
   useEffect(() => {
     if (!globalThis.chrome?.tabs || isStorePreview) return;
     const activated = (info: chrome.tabs.OnActivatedInfo) => {
+      setTargetIssue(undefined);
       pendingActivation.current = info.tabId;
       activePage.current = undefined;
       setPage(undefined);
@@ -152,6 +154,7 @@ export function App() {
     };
     const updated = (tabId: number, change: chrome.tabs.OnUpdatedInfo) => {
       if (change.status === 'loading') {
+        if (activePage.current?.tab.id === tabId) setTargetIssue(undefined);
         states.current.remove(tabId);
         if (activePage.current?.tab.id === tabId) {
           pendingActivation.current = tabId;
@@ -162,6 +165,7 @@ export function App() {
         }
       }
       if (change.url !== undefined) {
+        if (activePage.current?.tab.id === tabId || pendingActivation.current === tabId) setTargetIssue(undefined);
         if (temporaryAccessOrigins.current.get(tabId) !== pageOrigin(change.url)) temporaryAccessOrigins.current.delete(tabId);
         states.current.get(tabId, change.url);
         if (activePage.current?.tab.id === tabId || pendingActivation.current === tabId) {
@@ -207,6 +211,7 @@ export function App() {
           seenIntents.current.add(response.intent.id);
           setHandoffError('');
           setRequestedCategory(response.intent.category ?? 'all');
+          setTargetIssue(undefined);
           setPendingIntent(response.intent);
         } else if (!response.ok && response.error) {
           setHandoffError(response.error);
@@ -242,6 +247,7 @@ export function App() {
     const before = states.current.get(tabId, url);
     const previous = before.status === 'report' ? before.result : undefined;
     const scanType = forcedType ?? (previous ? 'rescan' : 'first');
+    setTargetIssue(undefined);
     const scanId = states.current.start(tabId, url, scanType);
     if (scanId === undefined) return;
     repaint();
@@ -343,16 +349,58 @@ export function App() {
           return;
         }
         const existing = states.current.peek(pendingIntent.tabId, pendingIntent.url);
-        if (existing.status === 'report') return;
+        if (existing.status === 'report' && !pendingIntent.issueIds?.length) return;
         const snapshot = await getSnapshot(pendingIntent.tabId, pendingIntent.url);
-        if (snapshot.ok && snapshot.result && activePage.current?.tab.id === pendingIntent.tabId
+        if (pendingIntent.issueIds?.length) {
+          const currentTab = await chrome.tabs.get(pendingIntent.tabId);
+          const [active] = await chrome.tabs.query({ active: true, windowId: pendingIntent.windowId });
+          if (currentTab.url !== pendingIntent.url || currentTab.status !== 'complete' || active?.id !== pendingIntent.tabId
+            || activePage.current?.tab.id !== pendingIntent.tabId || activePage.current.url !== pendingIntent.url) {
+            setHandoffError(AUDIT_PAGE_CHANGED);
+            return;
+          }
+          if (!snapshot.ok || !snapshot.result || snapshot.generation !== pendingIntent.generation
+            || snapshot.result.scannedAt !== pendingIntent.scannedAt) {
+            if (states.current.peek(pendingIntent.tabId, pendingIntent.url).status === 'report') {
+              states.current.remove(pendingIntent.tabId);
+              repaint();
+            }
+            setHandoffError(AUDIT_ISSUE_UNAVAILABLE);
+            return;
+          }
+          const issueId = resolveIssueTarget(pendingIntent.issueIds, snapshot.result.issues.map((issue) => issue.id));
+          if (!issueId) {
+            if (states.current.peek(pendingIntent.tabId, pendingIntent.url).status === 'report') {
+              states.current.remove(pendingIntent.tabId);
+              repaint();
+            }
+            setHandoffError(AUDIT_ISSUE_UNAVAILABLE);
+            return;
+          }
+          if (existing.status !== 'report' || existing.result.scannedAt !== snapshot.result.scannedAt) {
+            const scanId = states.current.start(pendingIntent.tabId, pendingIntent.url, 'first');
+            if (scanId === undefined || !states.current.complete(pendingIntent.tabId, pendingIntent.url, scanId, snapshot.result)) {
+              setHandoffError(AUDIT_ISSUE_UNAVAILABLE);
+              return;
+            }
+            repaint();
+          }
+          setTargetIssue({ id: issueId, intentId: pendingIntent.id });
+          setHandoffError('');
+        } else if (snapshot.ok && snapshot.result && activePage.current?.tab.id === pendingIntent.tabId
           && activePage.current.url === pendingIntent.url && states.current.peek(pendingIntent.tabId, pendingIntent.url).status === 'idle') {
           const scanId = states.current.start(pendingIntent.tabId, pendingIntent.url, 'first');
           if (scanId !== undefined) states.current.complete(pendingIntent.tabId, pendingIntent.url, scanId, snapshot.result);
           repaint();
         } else if (states.current.peek(pendingIntent.tabId, pendingIntent.url).status === 'idle') runScan('first', 'popup');
       } catch {
-        setHandoffError(AUDIT_PAGE_CHANGED);
+        if (pendingIntent.issueIds?.length && states.current.peek(pendingIntent.tabId, pendingIntent.url).status === 'report') {
+          states.current.remove(pendingIntent.tabId);
+          repaint();
+        }
+        setHandoffError(pendingIntent.issueIds?.length
+          ? 'Could not verify this issue because page access is unavailable. Use Scan current page to try again.'
+          : AUDIT_PAGE_CHANGED);
       }
     })();
   }, [pendingIntent, ready, activationReady, runScan]);
@@ -364,7 +412,7 @@ export function App() {
     {pendingIntent ? <div className="audit-handoff-pending" role="status">Opening SEO Audit for this page…</div> : null}
     {currentState.status === 'scanning' ? <div className="rounded-xl border border-slate-200 bg-white p-5 text-center text-sm text-slate-500">{t('scanning')}</div> : null}
     {currentState.status === 'error' ? <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700"><p className="font-semibold">{currentState.message === PERMISSION_MESSAGE ? 'Permission required' : 'Scan failed'}</p><p className="mt-1">{currentState.message}</p><button onClick={() => runScan(currentState.scanType)} disabled={!ready || !activationReady} className="mt-3 rounded-lg bg-rose-600 px-3 py-2 text-xs font-semibold text-white disabled:opacity-60">{t('retry')}</button></div> : null}
-    {currentState.status === 'report' ? <><ScoreCard result={currentState.result} /><Report result={currentState.result} initialCategory={requestedCategory} onRescan={() => runScan('rescan')} /></> : null}
+    {currentState.status === 'report' ? <><ScoreCard result={currentState.result} /><Report result={currentState.result} initialCategory={requestedCategory} targetIssueId={targetIssue?.id} targetNonce={targetIssue?.intentId} onRescan={() => { setTargetIssue(undefined); runScan('rescan'); }} /></> : null}
     {currentState.status === 'idle' && page?.pattern && !pendingIntent ? <section className="audit-entry"><h2>SEO Audit</h2><p>Get a score, issues, and recommended actions for this page.</p><button onClick={() => { setHandoffError(''); runScan(); }} disabled={!ready || !activationReady} className="primary-button audit-scan-button">{ready && activationReady ? 'Scan current page' : 'Checking page…'}</button><p className="audit-entry-note">{t('scanPrivacyNote')}</p></section> : null}
     {currentState.status === 'idle' && page && !page.pattern ? <div className="audit-handoff-error">{UNSUPPORTED_MESSAGE}</div> : null}
     <footer>{t('footer')} · <a className="text-indigo-600 hover:underline" href="https://sumei7550.github.io/SEO-Copilot/privacy.html" target="_blank" rel="noreferrer">{t('privacyPolicy')}</a></footer>

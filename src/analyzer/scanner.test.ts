@@ -81,6 +81,31 @@ describe('scanPage', () => {
     expect(page.imageLimitReached).toBe(false);
   });
 
+  it('excludes only the exact Bing tracking endpoint', () => {
+    const doc = documentFixture();
+    const makeImage = (src: string) => ({ currentSrc: src, src, alt: 'image', naturalWidth: 20, naturalHeight: 20,
+      width: 20, height: 20, hasAttribute: () => true });
+    (doc as unknown as { images: unknown[] }).images = [
+      makeImage('https://bat.bing.com/action/0'),
+      makeImage('https://bat.bing.com/action/0?ti=123&Ver=2'),
+      makeImage('https://bat.bing.com/action/0#pixel'),
+      makeImage('https://bat.bing.com/action/0/'),
+      makeImage('https://bat.bing.com/ACTION/0'),
+      makeImage('https://example.com/action/0'),
+      makeImage('https://bat.bing.com/action/other'),
+      makeImage('https://cdn.example.com/image.png?utm_source=bing'),
+    ];
+    const page = scanPage(doc, locationFixture, { getEntriesByType: () => [] } as unknown as Performance);
+    expect(page.images.map((image) => image.src)).toEqual([
+      'https://bat.bing.com/action/0/',
+      'https://bat.bing.com/ACTION/0',
+      'https://example.com/action/0',
+      'https://bat.bing.com/action/other',
+      'https://cdn.example.com/image.png?utm_source=bing',
+    ]);
+    expect(page.excludedImageCount).toBe(3);
+  });
+
   it('applies the 1000-image limit after excluding embedded images', () => {
     const doc = documentFixture();
     const makeImage = (src: string) => ({ currentSrc: src, src, alt: '', naturalWidth: 20, naturalHeight: 20,

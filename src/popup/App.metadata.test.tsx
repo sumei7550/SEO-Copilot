@@ -6,6 +6,7 @@ import { trackExtension } from '../analytics';
 import type { SeoResult } from '../types/seo';
 import type { AuditIntent, AuditIntentClaim } from './auditIntent';
 import { App } from './App';
+import { seoRules } from '../rules/seoRules';
 
 vi.mock('../analytics', () => ({ trackExtension: vi.fn() }));
 
@@ -18,7 +19,8 @@ const report = (url: string): SeoResult => ({
   issues: [], score: 90, grade: 'excellent', categoryScores: { title: 15, meta: 15, heading: 15, images: 15, content: 15, technical: 25 },
   categoryWeights: { title: 15, meta: 15, heading: 15, images: 15, content: 15, technical: 25 }, scannedAt: 1
 });
-const intent = (url = A): AuditIntent => ({ id: 'one-time-1', tabId: 1, windowId: 2, url });
+const intent = (url = A, extra: Partial<AuditIntent> = {}): AuditIntent => ({ id: 'one-time-1', tabId: 1, windowId: 2, url, ...extra });
+function issue(id: string) { const rule = seoRules.find((item) => item.id === id)!; const { check: _check, ...data } = rule; return data; }
 
 let container: HTMLDivElement;
 let root: Root;
@@ -67,6 +69,63 @@ afterEach(async () => {
 });
 
 describe('Popup to Side Panel Audit handoff', () => {
+  it('opens the exact mapped issue from the current Tab/URL/generation snapshot', async () => {
+    const targetIssue = issue('META_002');
+    const targetResult = { ...report(A), issues: [targetIssue] };
+    claimResponse = { ok: true, intent: intent(A, { id: 'issue-intent', category: 'content', issueIds: ['META_002'], generation: 2, scannedAt: 1 }) };
+    (chrome.runtime.sendMessage as ReturnType<typeof vi.fn>).mockImplementation(async (message: { type: string }) => {
+      if (message.type === 'CLAIM_AUDIT_INTENT') return claimResponse;
+      if (message.type === 'SNAPSHOT_GET') return { ok: true, generation: 2, result: targetResult };
+      return undefined;
+    });
+    await mount();
+    const card = container.querySelector<HTMLElement>('[data-issue-id="META_002"]');
+    expect(card).not.toBeNull();
+    expect(card?.classList.contains('is-open')).toBe(true);
+    expect(card?.querySelector('.ai-fix-button')?.getAttribute('aria-expanded')).toBe('true');
+    expect(sendScan).not.toHaveBeenCalled();
+  });
+
+  it('does not rescan or show a fabricated card when the issue is absent or generation is stale', async () => {
+    claimResponse = { ok: true, intent: intent(A, { id: 'stale-issue', issueIds: ['META_002'], generation: 2, scannedAt: 1 }) };
+    (chrome.runtime.sendMessage as ReturnType<typeof vi.fn>).mockImplementation(async (message: { type: string }) => {
+      if (message.type === 'CLAIM_AUDIT_INTENT') return claimResponse;
+      if (message.type === 'SNAPSHOT_GET') return { ok: true, generation: 3, result: report(A) };
+      return undefined;
+    });
+    await mount();
+    expect(container.textContent).toContain('This issue is no longer available in the current scan');
+    expect(container.querySelector('.issue-card')).toBeNull();
+    expect(sendScan).not.toHaveBeenCalled();
+  });
+
+  it('rejects an issue intent for a different active Tab or URL', async () => {
+    currentTab = { ...currentTab, url: B };
+    claimResponse = { ok: true, intent: intent(A, { id: 'other-page-issue', issueIds: ['META_002'], generation: 2, scannedAt: 1 }) };
+    await mount();
+    expect(container.textContent).toContain('The page changed before the audit could start');
+    expect(container.querySelector('.issue-card')).toBeNull();
+    expect(sendScan).not.toHaveBeenCalled();
+  });
+
+  it('switches to a second mapped issue while the Side Panel is already open', async () => {
+    const targetResult = { ...report(A), issues: [issue('META_002'), issue('TECH_001')] };
+    claimResponse = { ok: true, intent: intent(A, { id: 'first-target', issueIds: ['META_002'], generation: 2, scannedAt: 1 }) };
+    (chrome.runtime.sendMessage as ReturnType<typeof vi.fn>).mockImplementation(async (message: { type: string }) => {
+      if (message.type === 'CLAIM_AUDIT_INTENT') return claimResponse;
+      if (message.type === 'SNAPSHOT_GET') return { ok: true, generation: 2, result: targetResult };
+      return undefined;
+    });
+    await mount();
+    expect(container.querySelector('[data-issue-id="META_002"]')?.classList.contains('is-open')).toBe(true);
+    claimResponse = { ok: true, intent: intent(A, { id: 'second-target', issueIds: ['TECH_001'], generation: 2, scannedAt: 1 }) };
+    await act(async () => announce({ type: 'AUDIT_INTENT_AVAILABLE' }));
+    await flush();
+    expect(container.querySelector('.audit-category-card[aria-pressed="true"]')?.textContent).toContain('Technical SEO');
+    expect(container.querySelector('[data-issue-id="TECH_001"]')).not.toBeNull();
+    expect(container.querySelectorAll('.issue-card')).toHaveLength(1);
+    expect(container.querySelector('[data-issue-id="META_002"]')).toBeNull();
+  });
   it('reuses a valid Popup snapshot without starting a second scan', async () => {
     claimResponse = { ok: true, intent: intent() };
     (chrome.runtime.sendMessage as ReturnType<typeof vi.fn>).mockImplementation(async (message: { type: string }) => {
